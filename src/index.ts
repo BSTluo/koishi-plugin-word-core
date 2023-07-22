@@ -1,4 +1,4 @@
-import { Context, Schema } from 'koishi'
+import { Context, Schema, h } from 'koishi'
 
 export const name = 'word-core'
 
@@ -70,4 +70,14 @@ const dbInit = (ctx: Context) => {
 
 export async function apply(ctx: Context) {
   dbInit(ctx)
+  ctx.on('message', session => {
+    if (session.content == 'test') {
+      session.send(
+        [
+          h('p', {content: 'pppppppp'}),
+          h('at', { id: session.author.username }),
+        ].join('')
+      )
+    }
+  })
 }
