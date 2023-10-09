@@ -15,6 +15,7 @@ declare module 'koishi' {
     wordUserData: wordUserData
     wordData: wordData
     recycleBinList: recycleBinList
+    wordUserConfig: wordUserConfig
   }
 }
 
@@ -22,6 +23,11 @@ export interface wordCoreConfig {
   id: string
   timeTemp: object
   permission: string[]
+}
+
+export interface wordUserConfig {
+  id: string
+  configItem: object
 }
 
 export interface wordUserData {
@@ -58,6 +64,13 @@ const dbInit = (ctx: Context) => {
   ctx.model.extend('wordData', {
     id: 'string',
     data: 'json'
+  }, {
+    primary: 'id'
+  })
+
+  ctx.model.extend('wordUserConfig', {
+    id: 'string',
+    configItem: 'json'
   }, {
     primary: 'id'
   })
