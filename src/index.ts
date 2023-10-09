@@ -1,5 +1,6 @@
 import { Context, Schema, h } from 'koishi'
 import User from './api/lib/data/User'
+import { wordSaveData } from './api/lib/data/Editor'
 
 export const name = 'word-core'
 
@@ -37,7 +38,7 @@ export interface wordUserData {
 
 export interface wordData {
   id: string
-  data: object
+  data: wordSaveData
 }
 
 export interface recycleBinList {
