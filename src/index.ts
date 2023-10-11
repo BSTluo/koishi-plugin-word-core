@@ -28,7 +28,7 @@ export interface wordCoreConfig {
 
 export interface wordUserConfig {
   id: string
-  configItem: object
+  configItem: Record<string, string>
 }
 
 export interface wordUserData {
