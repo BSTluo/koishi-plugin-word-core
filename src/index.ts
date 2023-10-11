@@ -43,7 +43,7 @@ export interface wordData {
 
 export interface recycleBinList {
   id: string
-  data: object
+  data: wordSaveData
 }
 
 const dbInit = (ctx: Context) => {
