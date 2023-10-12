@@ -1,6 +1,6 @@
 import { Context, Logger, Schema, h } from 'koishi'
-import User from './api/lib/data/User'
-import { Load, wordSaveData } from './api/lib/data/Word'
+import User from './api/core/User'
+import { Load, wordSaveData } from './api/core/Word'
 
 export const name = 'word-core'
 
