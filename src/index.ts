@@ -20,6 +20,12 @@ declare module 'koishi' {
   }
 }
 
+export interface wordSaveData {
+  saveDB: string
+  author: string[]
+  data: Record<string, string[]>
+}
+
 export interface wordUserConfig {
   id: string
   data: Record<string, string>
