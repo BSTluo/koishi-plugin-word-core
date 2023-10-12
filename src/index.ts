@@ -1,6 +1,6 @@
-import { Context, Schema, h } from 'koishi'
+import { Context, Logger, Schema, h } from 'koishi'
 import User from './api/lib/data/User'
-import { wordSaveData } from './api/lib/data/Editor'
+import { Load, wordSaveData } from './api/lib/data/Word'
 
 export const name = 'word-core'
 
@@ -9,6 +9,8 @@ export interface Config { }
 export const Config: Schema<Config> = Schema.object({})
 
 export const using = ['database']
+
+export const logger = new Logger('Word-core')
 // TypeScript 用户需要进行类型合并
 declare module 'koishi' {
   interface Tables {
@@ -86,5 +88,5 @@ const dbInit = (ctx: Context) => {
 
 export async function apply(ctx: Context) {
   dbInit(ctx)
-
+  const test = new Load(ctx)
 }
