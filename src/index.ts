@@ -1,6 +1,4 @@
-import { Context, Logger, Schema, h } from 'koishi'
-import User from './api/core/User'
-import { Load, wordSaveData } from './api/core/Word'
+import { Context, Logger, Schema } from 'koishi'
 
 export const name = 'word-core'
 
@@ -88,5 +86,4 @@ const dbInit = (ctx: Context) => {
 
 export async function apply(ctx: Context) {
   dbInit(ctx)
-  const test = new Load(ctx)
 }
