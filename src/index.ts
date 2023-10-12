@@ -1,4 +1,5 @@
-import { Context, Logger, Schema } from 'koishi'
+import { Context, DatabaseService, Logger, Schema } from 'koishi'
+import { readDB, writeDB } from './api/Tools/Tools'
 
 export const name = 'word-core'
 
@@ -12,7 +13,6 @@ export const logger = new Logger('Word-core')
 // TypeScript 用户需要进行类型合并
 declare module 'koishi' {
   interface Tables {
-    wordCoreConfig: wordCoreConfig
     wordUserData: wordUserData
     wordData: wordData
     recycleBinList: recycleBinList
@@ -20,20 +20,14 @@ declare module 'koishi' {
   }
 }
 
-export interface wordCoreConfig {
-  id: string
-  timeTemp: object
-  permission: string[]
-}
-
 export interface wordUserConfig {
   id: string
-  configItem: Record<string, string>
+  data: Record<string, string>
 }
 
 export interface wordUserData {
   id: string
-  item: object
+  data: object
 }
 
 export interface wordData {
@@ -47,17 +41,10 @@ export interface recycleBinList {
 }
 
 const dbInit = (ctx: Context) => {
-  ctx.model.extend('wordCoreConfig', {
-    id: 'string',
-    timeTemp: 'json',
-    permission: 'list'
-  }, {
-    primary: 'id'
-  })
 
   ctx.model.extend('wordUserData', {
     id: 'string',
-    item: 'json'
+    data: 'json'
   }, {
     primary: 'id'
   })
@@ -71,7 +58,7 @@ const dbInit = (ctx: Context) => {
 
   ctx.model.extend('wordUserConfig', {
     id: 'string',
-    configItem: 'json'
+    data: 'json'
   }, {
     primary: 'id'
   })
@@ -84,6 +71,24 @@ const dbInit = (ctx: Context) => {
   })
 }
 
-export async function apply(ctx: Context) {
-  dbInit(ctx)
+export let database: DatabaseService
+
+class KoishiWordDriver {
+  ctx: Context = new Context()
+
+  readDB(dbName: 'wordUserData' | 'wordData' | 'recycleBinList' | 'wordUserConfig', key: string) {
+    return readDB(this.ctx, dbName, key)
+  }
+
+  writeDB(dbName: 'wordUserData' | 'wordData' | 'recycleBinList' | 'wordUserConfig', key: string, data: any) {
+    return writeDB(this.ctx, dbName, key, data)
+  }
+
+  apply(ctx: Context) {
+    this.ctx = ctx
+  }
 }
+
+const KoishiWord = new KoishiWordDriver()
+
+export const apply = KoishiWord.apply
