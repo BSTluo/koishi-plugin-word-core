@@ -98,3 +98,7 @@ class KoishiWordDriver {
 const KoishiWord = new KoishiWordDriver()
 
 export const apply = KoishiWord.apply
+
+export const readDBTools = KoishiWord.readDB
+
+export const writeDBTools = KoishiWord.writeDB
