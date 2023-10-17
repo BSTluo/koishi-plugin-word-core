@@ -1,7 +1,7 @@
 import { Context } from "koishi";
 
 // 读取库
-export const readDB = async (ctx: Context, dbName: 'wordUserData' | 'wordData' | 'recycleBinList' | 'wordUserConfig', key: string) => {
+export const readDB = async (ctx: Context, dbName: 'wordUserData' | 'wordData' | 'recycleBinList' | 'wordUserConfig', key: string): Promise<any> => {
   const readObjTemp = await ctx.database.get(dbName, key)
   if (readObjTemp.length <= 0) { return {} }
   return readObjTemp[0]
@@ -15,8 +15,10 @@ export const writeDB = async (ctx: Context, dbName: 'wordUserData' | 'wordData' 
       id: key,
       data: data
     })
+    return true
   } else {
     await ctx.database.set(dbName, key, data)
+    return true
   }
 }
 

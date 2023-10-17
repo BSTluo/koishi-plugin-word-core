@@ -33,7 +33,7 @@ export interface wordUserConfig {
 
 export interface wordUserData {
   id: string
-  data: object
+  data: Record<string, string>
 }
 
 export interface wordData {
