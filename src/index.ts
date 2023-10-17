@@ -81,32 +81,37 @@ const dbInit = (ctx: Context) => {
 export let database: DatabaseService
 
 class KoishiWordDriver {
-  ctx: Context = new Context()
+  ctx: Context
 
-  readDB(dbName: 'wordUserData' | 'wordData' | 'recycleBinList' | 'wordUserConfig', key: string) {
+  constructor() {
+    this.ctx = new Context()
+  }
+
+  readDBFunction(dbName: 'wordUserData' | 'wordData' | 'recycleBinList' | 'wordUserConfig', key: string) {
     return readDB(this.ctx, dbName, key)
   }
 
-  writeDB(dbName: 'wordUserData' | 'wordData' | 'recycleBinList' | 'wordUserConfig', key: string, data: any) {
+  writeDBFunction(dbName: 'wordUserData' | 'wordData' | 'recycleBinList' | 'wordUserConfig', key: string, data: any) {
     return writeDB(this.ctx, dbName, key, data)
   }
 
-  getDB(dbName: 'wordUserData' | 'wordData' | 'recycleBinList' | 'wordUserConfig') {
-    return getDB(this.ctx, dbName)
+  getDBFunction(dbName: 'wordUserData' | 'wordData' | 'recycleBinList' | 'wordUserConfig') {
+    console.log(this.ctx)
+    // return getDB(this.ctx, dbName)
   }
 
-  async apply(ctx: Context) {
+  PluginApply(ctx: Context) {
     this.ctx = ctx
-    console.log(await getDBTools('wordData'))
+    dbInit(ctx)
   }
 }
 
 const KoishiWord = new KoishiWordDriver()
 
-export const apply = KoishiWord.apply
+export const apply = KoishiWord.PluginApply
 
-export const readDBTools = KoishiWord.readDB
+export const readDBTools = KoishiWord.readDBFunction
 
-export const writeDBTools = KoishiWord.writeDB
+export const writeDBTools = KoishiWord.writeDBFunction
 
-export const getDBTools = KoishiWord.getDB
+export const getDBTools = KoishiWord.getDBFunction

@@ -7,7 +7,7 @@ export const wordCache: Cache = {
 export interface Cache {
   hasKey: Record<string, string[]>
 }
-
+/*
 const getCache = async () => {
   const { idList, dataList } = await getDBTools('wordData')
   dataList.forEach((item, index) => {
@@ -17,3 +17,4 @@ const getCache = async () => {
     })
   })
 }
+*/
