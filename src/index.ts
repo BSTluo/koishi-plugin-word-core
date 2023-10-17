@@ -97,6 +97,7 @@ class KoishiWordDriver {
 
   apply(ctx: Context) {
     this.ctx = ctx
+    console.log(getDBTools('wordData'))
   }
 }
 
