@@ -95,9 +95,9 @@ class KoishiWordDriver {
     return getDB(this.ctx, dbName)
   }
 
-  apply(ctx: Context) {
+  async apply(ctx: Context) {
     this.ctx = ctx
-    console.log(getDBTools('wordData'))
+    console.log(await getDBTools('wordData'))
   }
 }
 
