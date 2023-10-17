@@ -1,5 +1,5 @@
 import { Context, DatabaseService, Logger, Schema } from 'koishi'
-import { readDB, writeDB } from './api/Tools/Tools'
+import { getDB, readDB, writeDB } from './api/Tools/Tools'
 
 export const name = 'word-core'
 
@@ -10,6 +10,7 @@ export const Config: Schema<Config> = Schema.object({})
 export const using = ['database']
 
 export const logger = new Logger('Word-core')
+
 // TypeScript 用户需要进行类型合并
 declare module 'koishi' {
   interface Tables {
@@ -90,6 +91,10 @@ class KoishiWordDriver {
     return writeDB(this.ctx, dbName, key, data)
   }
 
+  getDB(dbName: 'wordUserData' | 'wordData' | 'recycleBinList' | 'wordUserConfig') {
+    return getDB(this.ctx, dbName)
+  }
+
   apply(ctx: Context) {
     this.ctx = ctx
   }
@@ -102,3 +107,5 @@ export const apply = KoishiWord.apply
 export const readDBTools = KoishiWord.readDB
 
 export const writeDBTools = KoishiWord.writeDB
+
+export const getDBTools = KoishiWord.getDB

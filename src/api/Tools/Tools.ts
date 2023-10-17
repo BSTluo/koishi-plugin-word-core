@@ -1,4 +1,5 @@
 import { Context } from "koishi";
+import { wordSaveData } from "../..";
 
 // 读取库
 export const readDB = async (ctx: Context, dbName: 'wordUserData' | 'wordData' | 'recycleBinList' | 'wordUserConfig', key: string): Promise<any> => {
@@ -21,4 +22,18 @@ export const writeDB = async (ctx: Context, dbName: 'wordUserData' | 'wordData' 
     return true
   }
 }
+/*
+export interface dbCache {
+  idList: string[]
+  dataList: Record<string, string>[] | wordSaveData[]
+}
+*/
+export const getDB = async (ctx: Context, dbName: 'wordUserData' | 'wordData' | 'recycleBinList' | 'wordUserConfig') => {
 
+  const data/*: dbCache*/ = {
+    idList: await ctx.database.get(dbName, { id: { $regex: /^[\s\S]+$/ } }, ['id']),
+    dataList: await ctx.database.get(dbName, { id: { $regex: /^[\s\S]+$/ } }, ['data'])
+  }
+
+  return data
+}
