@@ -71,5 +71,5 @@ const dbInit = (ctx: Context) => {
 
 export const apply = (ctx: Context) => {
     dbInit(ctx);
-    ctx.plugin(word)
+    ctx.plugin(word);
 };
