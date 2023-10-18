@@ -12,8 +12,6 @@ declare module 'koishi' {
 }
 
 export class word extends Service {
-    ctx: Context;
-
     Tools: Tools.ToolsFunction = {
         async readDB(dbName, key) { },
         async writeDB(dbName, key, data) { return true; },
