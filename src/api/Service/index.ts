@@ -31,7 +31,7 @@ export class word extends Service {
 
     constructor(ctx: Context) {
         // 这样写你就不需要手动给 ctx 赋值了
-        super(ctx, 'nazrin', true);
+        super(ctx, 'word', true);
         this.ctx = ctx;
 
         this.Tools.readDB = (dbName, key) => { return Tools.readDBFunction(this.ctx, dbName, key); };

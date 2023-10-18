@@ -1,8 +1,6 @@
 import { Context } from "koishi";
 import { word } from './Service/index';
 
-export * from './Service/index';
-
 export const using = ['database'];
 
 declare module 'koishi' {
@@ -73,4 +71,5 @@ const dbInit = (ctx: Context) => {
 
 export const apply = (ctx: Context) => {
     dbInit(ctx);
+    ctx.plugin(word)
 };
