@@ -21,12 +21,7 @@ export const writeDBFunction = async (ctx: Context, dbName: 'wordUserData' | 'wo
     return true;
   }
 };
-/*
-export interface dbCache {
-  idList: string[]
-  dataList: Record<string, string>[] | wordSaveData[]
-}
-*/
+
 export const getDBFunction = async (ctx: Context, dbName: 'wordUserData' | 'wordData' | 'recycleBinList' | 'wordUserConfig') => {
 
   const data/*: dbCache*/ = {

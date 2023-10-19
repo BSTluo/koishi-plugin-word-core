@@ -13,7 +13,7 @@ export const getCache = async (getDBTools: getDBType) => {
   dataList.forEach((item: Record<string, string>, index: number) => {
     Object.keys(item).forEach(v => {
       if (!wordCache.hasKey[v]) { wordCache.hasKey[v] = []; }
-      // wordCache.hasKey[v].push(idList[index])
+      wordCache.hasKey[v].push(idList[index]);
     });
   });
 
