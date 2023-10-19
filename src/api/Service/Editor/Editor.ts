@@ -20,6 +20,8 @@ export class Editor {
     return await this.writeDB('wordData',name, data)
   }
 
+  // 读取回收站列表
+  
   // 删除词库
   // 恢复词库
 
