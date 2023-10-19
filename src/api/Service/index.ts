@@ -16,6 +16,7 @@ export class word extends Service {
     async readDB(dbName, key) { },
     async writeDB(dbName, key, data) { return true; },
     getDB(dbName) { },
+    async removeDB(dbName, key) { }
   };
 
   User: User.UserFunction = {
@@ -37,6 +38,7 @@ export class word extends Service {
     this.Tools.readDB = (dbName, key) => { return Tools.readDBFunction(this.ctx, dbName, key); };
     this.Tools.writeDB = (dbName, key, data) => { return Tools.writeDBFunction(this.ctx, dbName, key, data); };
     this.Tools.getDB = (dbName) => { return Tools.getDBFunction(ctx, dbName); };
+    this.Tools.removeDB = async (dbName, key) => { return Tools.removeDBFunction(ctx, dbName, key); };
 
     this.User.getData = (uid) => { return User.getData(this.Tools.readDB, uid); };
     this.User.updateData = (uid, data) => { return User.updateData(this.Tools.writeDB, uid, data); };

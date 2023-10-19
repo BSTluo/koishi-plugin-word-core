@@ -37,12 +37,18 @@ export const getDBFunction = async (ctx: Context, dbName: 'wordUserData' | 'word
   return data;
 };
 
+export const removeDBFunction = async (ctx: Context, dbName: 'wordUserData' | 'wordData' | 'recycleBinList' | 'wordUserConfig', key: string) => {
+  ctx.database.remove(dbName, key);
+};
+
 export type readDBType = (dbName: 'wordUserData' | 'wordData' | 'recycleBinList' | 'wordUserConfig', key: string) => Promise<any>;
 export type writeDBType = (dbName: 'wordUserData' | 'wordData' | 'recycleBinList' | 'wordUserConfig', key: string, data: any) => Promise<boolean>;
 export type getDBType = (dbName: 'wordUserData' | 'wordData' | 'recycleBinList' | 'wordUserConfig') => any;
+export type removeDBType = (dbName: 'wordUserData' | 'wordData' | 'recycleBinList' | 'wordUserConfig', key: string) => Promise<void>;
 
 export interface ToolsFunction {
   readDB: readDBType;
   writeDB: writeDBType;
   getDB: getDBType;
+  removeDB: removeDBType;
 }
