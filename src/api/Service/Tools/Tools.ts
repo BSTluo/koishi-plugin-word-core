@@ -1,23 +1,21 @@
 import { Context } from "koishi";
+import { DBTypeList, recycleBinList, wordData, wordSaveData, wordUserConfig, wordUserData } from "../..";
 
 // 读取库
-export const readDBFunction = async (ctx: Context, dbName: 'wordUserData' | 'wordData' | 'recycleBinList' | 'wordUserConfig', key: string): Promise<any> => {
+export const readDBFunction = async (ctx: Context, dbName: 'wordUserData' | 'wordData' | 'recycleBinList' | 'wordUserConfig', key: string): Promise<wordSaveData | Record<string, string[]>> => {
   const readObjTemp = await ctx.database.get(dbName, key);
   if (readObjTemp.length <= 0) { return {}; }
-  return readObjTemp[0];
+  return readObjTemp[0] as unknown as Record<string, string[]> | wordSaveData;
 };
 
 // 保存库
-export const writeDBFunction = async (ctx: Context, dbName: 'wordUserData' | 'wordData' | 'recycleBinList' | 'wordUserConfig', key: string, data: any): Promise<boolean> => {
+export const writeDBFunction = async (ctx: Context, dbName: 'wordUserData' | 'wordData' | 'recycleBinList' | 'wordUserConfig', key: string, newData: wordSaveData | Record<string, string>): Promise<boolean> => {
   const readObjTemp = await ctx.database.get(dbName, key);
   if (readObjTemp.length <= 0) {
-    await ctx.database.create(dbName, {
-      id: key,
-      data: data
-    });
+    await ctx.database.create(dbName, newData as unknown as wordUserData | wordData | recycleBinList | wordUserConfig);
     return true;
   } else {
-    await ctx.database.set(dbName, key, data);
+    await ctx.database.set(dbName, key, newData);
     return true;
   }
 };
@@ -31,8 +29,9 @@ export const getDBFunction = async (ctx: Context, dbName: 'wordUserData' | 'word
     idList: idListOrigin.map(v => {
       return v.id;
     }),
-    dataList: dataListOrigin.map(v => {
-      return v.data;
+    dataList: dataListOrigin.map((v) => {
+      const temp = v.data as wordSaveData | Record<string, string[]>;
+      return temp;
     })
   };
 
@@ -43,9 +42,9 @@ export const removeDBFunction = async (ctx: Context, dbName: 'wordUserData' | 'w
   ctx.database.remove(dbName, key);
 };
 
-export type readDBType = (dbName: 'wordUserData' | 'wordData' | 'recycleBinList' | 'wordUserConfig', key: string) => Promise<any>;
+export type readDBType = (dbName: 'wordUserData' | 'wordData' | 'recycleBinList' | 'wordUserConfig', key: string) => Promise<wordSaveData | Record<string, string[]>>;
 export type writeDBType = (dbName: 'wordUserData' | 'wordData' | 'recycleBinList' | 'wordUserConfig', key: string, data: any) => Promise<boolean>;
-export type getDBType = (dbName: 'wordUserData' | 'wordData' | 'recycleBinList' | 'wordUserConfig') => Promise<{ idList: string[], dataList: any; }>;
+export type getDBType = (dbName: 'wordUserData' | 'wordData' | 'recycleBinList' | 'wordUserConfig') => Promise<{ idList: string[], dataList: (wordSaveData | Record<string, string[]>)[]; }>;
 export type removeDBType = (dbName: 'wordUserData' | 'wordData' | 'recycleBinList' | 'wordUserConfig', key: string) => Promise<void>;
 
 export interface ToolsFunction {

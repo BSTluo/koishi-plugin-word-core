@@ -4,13 +4,15 @@ import { word } from './Service/index';
 export const using = ['database'];
 
 declare module 'koishi' {
-  interface Tables {
-    wordUserData: wordUserData;
-    wordData: wordData;
-    recycleBinList: recycleBinList;
-    wordUserConfig: wordUserConfig;
-  }
+  interface Tables extends DBTypeList {}
 }
+
+export type DBTypeList = {
+  wordUserData: wordUserData;
+  wordData: wordData;
+  recycleBinList: recycleBinList;
+  wordUserConfig: wordUserConfig;
+};
 
 export interface wordSaveData {
   saveDB: string;
