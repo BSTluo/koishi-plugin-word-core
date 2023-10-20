@@ -4,8 +4,9 @@ import { word } from './Service/index';
 export const using = ['database'];
 
 declare module 'koishi' {
-  interface Tables extends DBTypeList {}
+  interface Tables extends DBTypeList { }
 }
+export type allType = wordSaveData | Record<string, string> | Record<string, Record<string, number>>;
 
 export type DBTypeList = {
   wordUserData: wordUserData;
@@ -22,12 +23,12 @@ export interface wordSaveData {
 
 export interface wordUserConfig {
   id: string;
-  data: Record<string, string>;
+  data: Record<string, string[]>;
 }
 
 export interface wordUserData {
   id: string;
-  data: Record<string, string>;
+  data: Record<string, Record<string, number>>;
 }
 
 export interface wordData {

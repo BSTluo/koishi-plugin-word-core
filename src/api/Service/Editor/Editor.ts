@@ -16,7 +16,7 @@ export class Editor {
 
   // 读取词库
   private async readWord(name: string): Promise<wordSaveData> {
-    return await this.readDB('wordData', name);
+    return await this.readDB('wordData', name) as wordSaveData;
   }
 
   // 更新词库
@@ -31,7 +31,7 @@ export class Editor {
 
   // 读一个回收站词库内容
   private async readRecycleBin(name: string): Promise<wordSaveData> {
-    return await this.readDB('recycleBinList', name);
+    return await this.readDB('recycleBinList', name) as wordSaveData;
   }
 
   /**

@@ -3,7 +3,7 @@ import { readDBType, writeDBType } from "..";
 // 编辑用户数据
 export const getData = async (readDBTools: readDBType, uid: string): Promise<Record<string, Record<string, number>>> => {
   const data = await readDBTools('wordUserData', uid);
-  return data;
+  return data as Record<string, Record<string, number>>;
 };
 
 export const updateData = async (writeDBTools: writeDBType, uid: string, data: Record<string, Record<string, number>>): Promise<boolean> => {
