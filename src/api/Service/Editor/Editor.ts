@@ -1,6 +1,6 @@
 // 编辑词库
 import * as wordTools from '..';
-import { wordData } from '../..';
+import { wordSaveData } from '../..';
 
 export class Editor {
   readDB: wordTools.readDBType;
@@ -15,22 +15,22 @@ export class Editor {
   }
 
   // 读取词库
-  private async readWord(name: string): Promise<wordData> {
+  private async readWord(name: string): Promise<wordSaveData> {
     return await this.readDB('wordData', name);
   }
 
   // 更新词库
-  private async updateWord(name: string, data: wordData) {
+  private async updateWord(name: string, data: wordSaveData) {
     return await this.writeDB('wordData', name, data);
   }
 
   // 写入数据到回收站
-  private async writeRecycleBin(name: string, data: wordData) {
+  private async writeRecycleBin(name: string, data: wordSaveData) {
     return await this.writeDB('recycleBinList', name, data);
   }
 
   // 读一个回收站词库内容
-  private async readRecycleBin(name: string): Promise<wordData> {
+  private async readRecycleBin(name: string): Promise<wordSaveData> {
     return await this.readDB('recycleBinList', name);
   }
 
@@ -84,6 +84,18 @@ export class Editor {
     return 'ok';
   }
 
+  // 设置属性
+  async setWordKeyValue(name: string, key: keyof wordSaveData, value: wordSaveData[typeof key]) {
+    if (!(await this.getWordList()).includes(name)) { return '无此词库'; }
+    const wordData = await this.readWord(name);
+
+    if (key == "author") { wordData.author = value as wordSaveData["author"]; }
+    if (key == "data") { wordData.data = value as wordSaveData["data"]; }
+    if (key == "saveDB") { wordData.saveDB = value as wordSaveData["saveDB"]; }
+
+    this.updateWord(name, wordData);
+  }
+
   /**
    * 设置存储格
    * @param name 被修改的词库名
@@ -91,7 +103,7 @@ export class Editor {
    */
   async setSaveCell(name: string, cell: string) {
     const wordData = await this.readWord(name);
-    wordData.data.saveDB = cell;
+
     this.updateWord(name, wordData);
   }
 
