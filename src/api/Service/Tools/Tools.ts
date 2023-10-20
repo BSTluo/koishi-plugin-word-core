@@ -24,9 +24,16 @@ export const writeDBFunction = async (ctx: Context, dbName: 'wordUserData' | 'wo
 
 export const getDBFunction = async (ctx: Context, dbName: 'wordUserData' | 'wordData' | 'recycleBinList' | 'wordUserConfig') => {
 
+  const idListOrigin = await ctx.database.get(dbName, { id: { $regex: /^[\s\S]+$/ } }, ['id']);
+  const dataListOrigin = await ctx.database.get(dbName, { id: { $regex: /^[\s\S]+$/ } }, ['data']);
+
   const data/*: dbCache*/ = {
-    idList: await ctx.database.get(dbName, { id: { $regex: /^[\s\S]+$/ } }, ['id']),
-    dataList: await ctx.database.get(dbName, { id: { $regex: /^[\s\S]+$/ } }, ['data'])
+    idList: idListOrigin.map(v => {
+      return v.id;
+    }),
+    dataList: dataListOrigin.map(v => {
+      return v.data;
+    })
   };
 
   return data;
@@ -38,7 +45,7 @@ export const removeDBFunction = async (ctx: Context, dbName: 'wordUserData' | 'w
 
 export type readDBType = (dbName: 'wordUserData' | 'wordData' | 'recycleBinList' | 'wordUserConfig', key: string) => Promise<any>;
 export type writeDBType = (dbName: 'wordUserData' | 'wordData' | 'recycleBinList' | 'wordUserConfig', key: string, data: any) => Promise<boolean>;
-export type getDBType = (dbName: 'wordUserData' | 'wordData' | 'recycleBinList' | 'wordUserConfig') => Promise<{ idList: any, dataList: any; }>;
+export type getDBType = (dbName: 'wordUserData' | 'wordData' | 'recycleBinList' | 'wordUserConfig') => Promise<{ idList: string[], dataList: any; }>;
 export type removeDBType = (dbName: 'wordUserData' | 'wordData' | 'recycleBinList' | 'wordUserConfig', key: string) => Promise<void>;
 
 export interface ToolsFunction {

@@ -15,7 +15,7 @@ export class word extends Service {
   Tools: Tools.ToolsFunction = {
     async readDB(dbName, key) { },
     async writeDB(dbName, key, data) { return true; },
-    async getDB(dbName) { return { idList: '', dataList: '' }; },
+    async getDB(dbName) { return { idList: [''], dataList: '' }; },
     async removeDB(dbName, key) { }
   };
 
