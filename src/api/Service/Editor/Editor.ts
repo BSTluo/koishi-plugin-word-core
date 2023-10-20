@@ -85,7 +85,7 @@ export class Editor {
   }
 
   // 设置属性
-  async setWordKeyValue(name: string, key: keyof wordSaveData, value: wordSaveData[typeof key]) {
+  private async setWordKeyValue(name: string, key: keyof wordSaveData, value: wordSaveData[typeof key]) {
     if (!(await this.getWordList()).includes(name)) { return '无此词库'; }
     const wordData = await this.readWord(name);
 
@@ -96,30 +96,53 @@ export class Editor {
     this.updateWord(name, wordData);
   }
 
+  // 查询属性
+  private async readWordKeyValue(name: string, key: keyof wordSaveData): Promise<wordSaveData[typeof key]> {
+    if (!(await this.getWordList()).includes(name)) { return '无此词库'; }
+    const wordData = await this.readWord(name);
+
+    return wordData[key];
+  }
+
+
   /**
    * 设置存储格
-   * @param name 被修改的词库名
+   * @param name 目标词库名
    * @param cell 存储格名
    */
   async setSaveCell(name: string, cell: string) {
-    const wordData = await this.readWord(name);
-
-    this.updateWord(name, wordData);
+    await this.setWordKeyValue(name, 'saveDB', cell);
   }
 
   /**
    * 重置存储格
-   * @param name 被修改的词库名
+   * @param name 目标词库名
    */
   async resetSaveCell(name: string) {
-    this.setSaveCell(name, '默认');
+    await this.setWordKeyValue(name, 'saveDB', "default");
+  }
+
+  /**
+   * 读取存储格子
+   * @param name 目标词库名
+   */
+  async readSaveCell(name: string) {
+    return await this.readWordKeyValue(name, 'saveDB');
+  }
+
+  // 更新作者
+  private async updateAuthor(name: string, authorList: string[]) {
+    await this.setWordKeyValue(name, 'author', authorList);
   }
 
   // 读取作者
-  // 更新作者
+  async setAuthor(name: string) {
+    return await this.readWordKeyValue(name, 'author');
+  }
 
-  // 添加作者
-
+  // 增加作者
+  // 减少作者
+  
   // 添加词条
   // 删除词条
 
