@@ -34,20 +34,30 @@ export class Editor {
     return await this.readDB('recycleBinList', name);
   }
 
-  // 读取回收站列表
-  async getRecycleBinList() {
+  /**
+   * 读取回收站列表
+   * @returns idList
+   */
+  async getRecycleBinList(): Promise<string[]> {
     const list = await this.getDB('recycleBinList');
     return list.idList;
   }
 
-  // 读取普通词库列表
-  async getWordList() {
+  /**
+   * 读取普通词库列表
+   * @returns idList
+   */
+  async getWordList(): Promise<string[]> {
     const list = await this.getDB('wordData');
     return list.idList;
   }
 
-  // 删除词库
-  async removeWord(name: string) {
+  /**
+   *  删除词库
+   * @param name 需要删除的词库名
+   * @returns 结果
+   */
+  async removeWord(name: string): Promise<"词库列表不存在此词库" | "ok"> {
     const wordList = await this.getWordList();
     if (!wordList.includes(name)) { return '词库列表不存在此词库'; }
 
@@ -58,8 +68,12 @@ export class Editor {
     return 'ok';
   }
 
-  // 恢复词库
-  async restoreWord(name: string) {
+  /**
+   * 恢复词库
+   * @param name 被恢复的词库名
+   * @returns 返回结果
+   */
+  async restoreWord(name: string): Promise<"回收站不存在此词库" | "ok"> {
     const recycleBinList = await this.getRecycleBinList();
     if (!recycleBinList.includes(name)) { return '回收站不存在此词库'; }
 
@@ -70,8 +84,24 @@ export class Editor {
     return 'ok';
   }
 
-  // 设置存储格 
-  // 重置存储格
+  /**
+   * 设置存储格
+   * @param name 被修改的词库名
+   * @param cell 存储格名
+   */
+  async setSaveCell(name: string, cell: string) {
+    const wordData = await this.readWord(name);
+    wordData.data.saveDB = cell;
+    this.updateWord(name, wordData);
+  }
+
+  /**
+   * 重置存储格
+   * @param name 被修改的词库名
+   */
+  async resetSaveCell(name: string) {
+    this.setSaveCell(name, '默认');
+  }
 
   // 读取作者
   // 更新作者
