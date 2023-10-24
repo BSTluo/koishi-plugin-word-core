@@ -14,12 +14,32 @@ export class Editor {
     this.removeDB = removeDB;
   }
 
-  // 读取词库
+  /**
+   * 读取词库
+   * @param name 目标词库
+   * @returns 结果
+   */
   private async readWord(name: string): Promise<wordSaveData> {
-    return await this.readDB('wordData', name) as wordSaveData;
+    const readData = await this.readDB('wordData', name);
+    let out: wordSaveData;
+    if (Object.keys(readData).length === 0) {
+      out = {
+        saveDB: 'default',
+        author: [],
+        data: {}
+      };
+    } else {
+      out = readData as wordSaveData;
+    }
+    return out;
   }
 
-  // 更新词库
+  /**
+   * 更新词库
+   * @param name 目标词库
+   * @param data 词库数据
+   * @returns 结果
+   */
   private async updateWord(name: string, data: wordSaveData) {
     return await this.writeDB('wordData', name, data);
   }
@@ -53,7 +73,7 @@ export class Editor {
   }
 
   /**
-   *  删除词库
+   * 删除词库
    * @param name 需要删除的词库名
    * @returns 结果
    */
@@ -136,18 +156,97 @@ export class Editor {
   }
 
   // 读取作者
-  async setAuthor(name: string) {
-    return await this.readWordKeyValue(name, 'author');
+  async getAuthor(name: string): Promise<string[]> {
+    return await this.readWordKeyValue(name, 'author') as string[];
   }
 
   // 增加作者
+  async addAuthor(name: string, uid: string, authorID: string) {
+    const author = await this.getAuthor(name);
+
+    if (!(await this.isAuthor(name, uid))) { return '您不是作者，无权操作'; }
+    if (!author.includes(authorID)) {
+      author.push(authorID);
+      await this.updateAuthor(name, author);
+      return '添加完成';
+    } else {
+      return '此作者已存在';
+    }
+  }
+
   // 减少作者
-  
+  async removeAuthor(name: string, uid: string, authorID: string) {
+    let author = await this.getAuthor(name);
+
+    if (!(await this.isAuthor(name, uid))) { return '您不是作者，无权操作'; }
+    if (!author.includes(authorID)) {
+      return '此作者不存在';
+    } else {
+      author = author.splice(author.indexOf(name), 1);
+      await this.updateAuthor(name, author);
+      return '已删除作者';
+    }
+  }
+
+  // 是否有作者权限
+  async isAuthor(name: string, authorID: string) {
+    let author = await this.getAuthor(name);
+    if (!author.includes(authorID)) {
+      return false;
+    } else {
+      return true;
+    }
+  }
+
   // 添加词条
+  async addWordItem(name: string, uid: string, q: string, a: string) {
+    const wordData = await this.readWord(name);
+    if (!(await this.isAuthor(name, uid))) { return '您不是作者，无权操作'; }
+
+    if (!Object.keys(wordData.data).includes(q)) {
+      wordData.data[q] = [a];
+      wordTools.addCache(q, name);
+    } else {
+      wordData.data[q].push(a);
+    }
+    const index = wordData.data[q].length;
+    await this.updateWord(name, wordData);
+    return index;
+  }
+
   // 删除词条
+  async rmWordItem(name: string, uid: string, q: string, a: "all" | number) {
+    const wordData = await this.readWord(name);
+    if (!(await this.isAuthor(name, uid))) { return '您不是作者，无权操作'; }
+
+    if (!Object.keys(wordData.data).includes(q)) {
+      return '此触发词不存在';
+    } else {
+      if (a == 'all') {
+        delete wordData.data[q];
+        wordTools.rmCache(q, name);
+      } else {
+        if (a > wordData.data[q].length) { return '超过触发词的回答上限'; }
+        wordData.data[q].splice(a - 1, 1);
+        if (wordData.data[q].length == 0) {
+          delete wordData.data[q];
+          wordTools.rmCache(q, name);
+        }
+      }
+    }
+    await this.updateWord(name, wordData);
+    return "over";
+  }
 
   // 查找词条
-
+  async getQuestion(q: string) {
+    if (Object.keys(wordTools.wordCache.hasKey).includes(q)) {
+      return wordTools.wordCache.hasKey[q];
+    } else {
+      return [];
+    }
+  }
+  
   // 云端下载
   // 云端上传
 }

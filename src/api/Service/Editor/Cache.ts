@@ -1,11 +1,11 @@
 import { getDBType } from "..";
 import { wordSaveData } from "../..";
 
-export const wordCache: Cache = {
+export const wordCache: WordCache = {
   hasKey: {}
 };
 
-export interface Cache {
+export interface WordCache {
   hasKey: Record<string, string[]>;
 }
 
@@ -25,7 +25,30 @@ export const getCache = async (getDBTools: getDBType) => {
   return wordCache;
 };
 
-export type getCacheType = () => Promise<Cache>;
+// 标识某问题属于某词库
+export const addCache = (q: string, wordName: string) => {
+  if (Object.keys(wordCache.hasKey).includes(q)) {
+    wordCache.hasKey[q].push(wordName);
+  } else {
+    wordCache.hasKey[q] = [wordName];
+  }
+};
+
+// 取消标识某问题属于某词库
+export const rmCache = (q: string, wordName: string) => {
+  if (Object.keys(wordCache.hasKey).includes(q)) {
+    const index = wordCache.hasKey[q].indexOf(wordName);
+    wordCache.hasKey[q].splice(index, 1);
+  }
+};
+
+export type getCacheType = () => Promise<WordCache>;
+export type rmCacheType = (q:string,wordName:string) => void;
+export type addCacheType = (q:string,wordName:string) => void;
+
 export interface CacheFunction {
   getCache: getCacheType;
+  nowCache: WordCache;
+  rmCache: rmCacheType;
+  addCache: addCacheType;
 }

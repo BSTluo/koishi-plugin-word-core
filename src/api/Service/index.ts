@@ -4,12 +4,15 @@ import * as User from './User/User';
 import * as Cache from "./Editor/Cache";
 
 export * from './Tools/Tools';
+export * from './Editor/Cache';
 
 declare module 'koishi' {
   interface Context {
     word: word;
   }
 }
+
+export * from './Editor/Cache';
 
 export class word extends Service {
   Tools: Tools.ToolsFunction = {} as Tools.ToolsFunction;
@@ -33,5 +36,8 @@ export class word extends Service {
     this.User.updateItem = (uid, cell, itemName, amount) => { return User.updateItem(this.Tools.readDB, this.Tools.writeDB, uid, cell, itemName, amount); };
 
     this.Cache.getCache = () => { return Cache.getCache(this.Tools.getDB); };
+    this.Cache.nowCache = Cache.wordCache;
+    this.Cache.rmCache = Cache.rmCache;
+    this.Cache.addCache = Cache.addCache;
   }
 }
