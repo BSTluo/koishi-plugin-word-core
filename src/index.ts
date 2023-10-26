@@ -1,7 +1,10 @@
 import { Context, Logger, Schema } from 'koishi';
 import * as core from './api/index';
+import { word } from './api/word';
 
 export const name = 'word-core';
+
+export * from './api/word';
 
 export interface Config { }
 
@@ -13,4 +16,6 @@ export const logger = new Logger('Word-core');
 
 export const apply = (ctx: Context) => {
   ctx.plugin(core);
+  ctx.plugin(word);
+  
 };

@@ -9,13 +9,13 @@ export * from './Editor/Cache';
 export * from './Editor/Cache';
 
 export class wordService {
-  ctx: Context;
-  
-  Tools: Tools.ToolsFunction = {} as Tools.ToolsFunction;
+  public ctx: Context;
 
-  User: User.UserFunction = {} as User.UserFunction;
+  public Tools: Tools.ToolsFunction = {} as Tools.ToolsFunction;
 
-  Cache: Cache.CacheFunction = {} as Cache.CacheFunction;
+  public User: User.UserFunction = {} as User.UserFunction;
+
+  public Cache: Cache.CacheFunction = {} as Cache.CacheFunction;
 
   constructor(ctx: Context) {
     // 这样写你就不需要手动给 ctx 赋值了
