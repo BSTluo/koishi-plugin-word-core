@@ -13,5 +13,4 @@ export const logger = new Logger('Word-core');
 
 export const apply = (ctx: Context) => {
   ctx.plugin(core);
-  
 };

@@ -8,7 +8,9 @@ export * from './Editor/Cache';
 
 export * from './Editor/Cache';
 
-export class wordService extends Service {
+export class wordService {
+  ctx: Context;
+  
   Tools: Tools.ToolsFunction = {} as Tools.ToolsFunction;
 
   User: User.UserFunction = {} as User.UserFunction;
@@ -17,7 +19,7 @@ export class wordService extends Service {
 
   constructor(ctx: Context) {
     // 这样写你就不需要手动给 ctx 赋值了
-    super(ctx, 'word', true);
+    this.ctx = ctx;
 
     this.Tools.readDB = (dbName, key) => { return Tools.readDBFunction(this.ctx, dbName, key); };
     this.Tools.writeDB = (dbName, key, data) => { return Tools.writeDBFunction(this.ctx, dbName, key, data); };

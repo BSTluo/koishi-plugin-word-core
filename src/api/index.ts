@@ -1,4 +1,4 @@
-import { Context } from "koishi";
+import { Context, Service } from "koishi";
 import { wordService } from './Service/index';
 import { wordDriver } from "./Driver/Driver";
 
@@ -81,10 +81,17 @@ declare module 'koishi' {
   }
 }
 
-export type word = {
-  wordService: wordService,
+export class word extends Service {
+  wordService: wordService;
   wordDriver: wordDriver;
-};
+
+  constructor(ctx: Context) {
+    super(ctx, 'word', true);
+
+    this.wordDriver= new wordDriver(ctx)
+    this.wordService= new wordService(ctx)
+  }
+}
 
 export const apply = async (ctx: Context) => {
   dbInit(ctx);

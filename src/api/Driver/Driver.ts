@@ -1,7 +1,8 @@
-import { Context, Service } from 'koishi';
+import { Context } from 'koishi';
 
-export class wordDriver extends Service {
+export class wordDriver {
+    ctx:Context
     constructor(ctx:Context){
-        super(ctx, 'word', true);
+        this.ctx = ctx
     }
 }
