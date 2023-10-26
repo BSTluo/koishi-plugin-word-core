@@ -6,15 +6,9 @@ import * as Cache from "./Editor/Cache";
 export * from './Tools/Tools';
 export * from './Editor/Cache';
 
-declare module 'koishi' {
-  interface Context {
-    word: word;
-  }
-}
-
 export * from './Editor/Cache';
 
-export class word extends Service {
+export class wordService extends Service {
   Tools: Tools.ToolsFunction = {} as Tools.ToolsFunction;
 
   User: User.UserFunction = {} as User.UserFunction;

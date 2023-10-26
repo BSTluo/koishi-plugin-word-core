@@ -1,5 +1,8 @@
 import { Context } from "koishi";
-import { word } from './Service/index';
+import { wordService } from './Service/index';
+import { wordDriver } from "./Driver/Driver";
+
+import * as driver from './Driver/Driver';
 
 export const using = ['database'];
 
@@ -72,7 +75,17 @@ const dbInit = (ctx: Context) => {
   });
 };
 
+declare module 'koishi' {
+  interface Context {
+    word: word;
+  }
+}
+
+export type word = {
+  wordService: wordService,
+  wordDriver: wordDriver;
+};
+
 export const apply = async (ctx: Context) => {
   dbInit(ctx);
-  ctx.plugin(word);
 };
