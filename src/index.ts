@@ -14,8 +14,7 @@ export const logger = new Logger('Word-core');
 
 // TypeScript 用户需要进行类型合并
 
-export const apply = (ctx: Context) => {
+export const apply = async (ctx: Context) => {
   ctx.plugin(core);
   ctx.plugin(word);
-  
 };

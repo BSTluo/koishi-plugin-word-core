@@ -3,15 +3,20 @@ import * as wordTools from '..';
 import { wordSaveData } from '../..';
 
 export class Editor {
-  readDB: wordTools.readDBType;
-  writeDB: wordTools.writeDBType;
-  getDB: wordTools.getDBType;
-  removeDB: wordTools.removeDBType;
-  constructor(readDB: wordTools.readDBType, writeDB: wordTools.writeDBType, getDB: wordTools.getDBType, removeDB: wordTools.removeDBType) {
+  private readDB: wordTools.readDBType;
+  private writeDB: wordTools.writeDBType;
+  private getDB: wordTools.getDBType;
+  private removeDB: wordTools.removeDBType;
+  private addCache: wordTools.addCacheType;
+  private rmCache: wordTools.rmCacheType;
+
+  constructor(readDB: wordTools.readDBType, writeDB: wordTools.writeDBType, getDB: wordTools.getDBType, removeDB: wordTools.removeDBType, addCache:wordTools.addCacheType, rmCache:wordTools.rmCacheType) {
     this.readDB = readDB;
     this.writeDB = writeDB;
     this.getDB = getDB;
     this.removeDB = removeDB;
+    this.addCache = addCache;
+    this.rmCache = rmCache;
   }
 
   /**
@@ -21,6 +26,7 @@ export class Editor {
    */
   private async readWord(name: string): Promise<wordSaveData> {
     const readData = await this.readDB('wordData', name);
+
     let out: wordSaveData;
     if (Object.keys(readData).length === 0) {
       out = {
@@ -29,6 +35,7 @@ export class Editor {
         data: {}
       };
     } else {
+      
       out = readData as wordSaveData;
     }
     return out;
@@ -104,7 +111,13 @@ export class Editor {
     return 'ok';
   }
 
-  // 设置属性
+  /**
+   * 设置属性
+   * @param name 目标词库
+   * @param key author|data|saveDB之一
+   * @param value 设置为的值
+   * @returns 结果
+   */
   private async setWordKeyValue(name: string, key: keyof wordSaveData, value: wordSaveData[typeof key]) {
     if (!(await this.getWordList()).includes(name)) { return '无此词库'; }
     const wordData = await this.readWord(name);
@@ -116,11 +129,15 @@ export class Editor {
     this.updateWord(name, wordData);
   }
 
-  // 查询属性
+  /**
+   * 查询属性
+   * @param name 目标词库 
+   * @param key author|data|saveDB之一
+   * @returns 结果
+   */
   private async readWordKeyValue(name: string, key: keyof wordSaveData): Promise<wordSaveData[typeof key]> {
     if (!(await this.getWordList()).includes(name)) { return '无此词库'; }
     const wordData = await this.readWord(name);
-
     return wordData[key];
   }
 
@@ -191,6 +208,7 @@ export class Editor {
   // 是否有作者权限
   async isAuthor(name: string, authorID: string) {
     let author = await this.getAuthor(name);
+
     if (!author.includes(authorID)) {
       return false;
     } else {
@@ -200,12 +218,24 @@ export class Editor {
 
   // 添加词条
   async addWordItem(name: string, uid: string, q: string, a: string) {
+    const list = await this.getWordList();
+    if (!list.includes(name)) {
+      const dataTemp:Record<string, string[]> = {}
+      dataTemp[q] = [a]
+
+      return this.updateWord(name, {
+        author: [uid],
+        data: dataTemp,
+        saveDB: 'default'
+      });
+    }
+
     const wordData = await this.readWord(name);
     if (!(await this.isAuthor(name, uid))) { return '您不是作者，无权操作'; }
 
     if (!Object.keys(wordData.data).includes(q)) {
       wordData.data[q] = [a];
-      wordTools.addCache(q, name);
+      this.addCache(q, name);
     } else {
       wordData.data[q].push(a);
     }
@@ -224,13 +254,13 @@ export class Editor {
     } else {
       if (a == 'all') {
         delete wordData.data[q];
-        wordTools.rmCache(q, name);
+        this.rmCache(q, name);
       } else {
         if (a > wordData.data[q].length) { return '超过触发词的回答上限'; }
         wordData.data[q].splice(a - 1, 1);
         if (wordData.data[q].length == 0) {
           delete wordData.data[q];
-          wordTools.rmCache(q, name);
+          this.rmCache(q, name);
         }
       }
     }
@@ -246,7 +276,7 @@ export class Editor {
       return [];
     }
   }
-  
+
   // 云端下载
   // 云端上传
 }

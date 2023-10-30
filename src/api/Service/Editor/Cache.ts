@@ -39,12 +39,13 @@ export const rmCache = (q: string, wordName: string) => {
   if (Object.keys(wordCache.hasKey).includes(q)) {
     const index = wordCache.hasKey[q].indexOf(wordName);
     wordCache.hasKey[q].splice(index, 1);
+    if (wordCache.hasKey[q].length <= 0) { delete wordCache.hasKey[q]; }
   }
 };
 
 export type getCacheType = () => Promise<WordCache>;
-export type rmCacheType = (q:string,wordName:string) => void;
-export type addCacheType = (q:string,wordName:string) => void;
+export type rmCacheType = (q: string, wordName: string) => void;
+export type addCacheType = (q: string, wordName: string) => void;
 
 export interface CacheFunction {
   getCache: getCacheType;

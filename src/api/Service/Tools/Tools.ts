@@ -5,17 +5,18 @@ import { DBTypeList, allType, recycleBinList, wordData, wordSaveData, wordUserCo
 export const readDBFunction = async (ctx: Context, dbName: 'wordUserData' | 'wordData' | 'recycleBinList' | 'wordUserConfig', key: string): Promise<allType> => {
   const readObjTemp = await ctx.database.get(dbName, key);
   if (readObjTemp.length <= 0) { return {}; }
-  return readObjTemp[0] as unknown as allType;
+  return readObjTemp[0].data as allType;
 };
 
 // 保存库
 export const writeDBFunction = async (ctx: Context, dbName: 'wordUserData' | 'wordData' | 'recycleBinList' | 'wordUserConfig', key: string, newData: allType): Promise<boolean> => {
   const readObjTemp = await ctx.database.get(dbName, key);
   if (readObjTemp.length <= 0) {
-    await ctx.database.create(dbName, newData as unknown as wordUserData | wordData | recycleBinList | wordUserConfig);
+
+    await ctx.database.create(dbName, { id: key, data: newData } as unknown as wordUserData | wordData | recycleBinList | wordUserConfig);
     return true;
   } else {
-    await ctx.database.set(dbName, key, newData);
+    await ctx.database.set(dbName, key, { data: newData });
     return true;
   }
 };
