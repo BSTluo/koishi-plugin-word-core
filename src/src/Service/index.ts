@@ -1,4 +1,4 @@
-import { Context, Service } from "koishi";
+import { Context } from "koishi";
 import * as Tools from './Tools/Tools';
 import * as User from './User/User';
 import * as Cache from "./Editor/Cache";
