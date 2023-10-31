@@ -167,17 +167,31 @@ export class Editor {
     return await this.readWordKeyValue(name, 'saveDB');
   }
 
-  // 更新作者
+  /**
+   * 更新作者
+   * @param name 目标词库名
+   * @param authorList 更新作者列表
+   */
   private async updateAuthor(name: string, authorList: string[]) {
     await this.setWordKeyValue(name, 'author', authorList);
   }
 
-  // 读取作者
+  /**
+   * 读取作者
+   * @param name 目标词库名
+   * @returns 
+   */
   async getAuthor(name: string): Promise<string[]> {
     return await this.readWordKeyValue(name, 'author') as string[];
   }
 
-  // 增加作者
+  /**
+   * 增加作者
+   * @param name 目标词库名
+   * @param uid 操作者uid
+   * @param authorID 新增uid
+   * @returns 
+   */
   async addAuthor(name: string, uid: string, authorID: string) {
     const author = await this.getAuthor(name);
 
@@ -191,7 +205,13 @@ export class Editor {
     }
   }
 
-  // 减少作者
+  /**
+   * 减少作者
+   * @param name 目标词库名
+   * @param uid 操作者uid
+   * @param authorID 去除uid
+   * @returns 
+   */
   async removeAuthor(name: string, uid: string, authorID: string) {
     let author = await this.getAuthor(name);
 
@@ -205,7 +225,12 @@ export class Editor {
     }
   }
 
-  // 是否有作者权限
+  /**
+   * 是否有作者权限
+   * @param name 目标词库名
+   * @param authorID 是否含有此uid
+   * @returns 
+   */
   async isAuthor(name: string, authorID: string) {
     let author = await this.getAuthor(name);
 
@@ -216,7 +241,14 @@ export class Editor {
     }
   }
 
-  // 添加词条
+  /**
+   * 添加词条
+   * @param name 目标词库
+   * @param uid 操作者uid
+   * @param q 触发词
+   * @param a 回答
+   * @returns 
+   */
   async addWordItem(name: string, uid: string, q: string, a: string) {
     const list = await this.getWordList();
     if (!list.includes(name)) {
@@ -244,7 +276,14 @@ export class Editor {
     return index;
   }
 
-  // 删除词条
+  /**
+   * 删除词条
+   * @param name 目标词库
+   * @param uid 操作者uid
+   * @param q 触发词
+   * @param a 删除序号(从1开始，为'all'时删除此触发)
+   * @returns 
+   */
   async rmWordItem(name: string, uid: string, q: string, a: "all" | number) {
     const wordData = await this.readWord(name);
     if (!(await this.isAuthor(name, uid))) { return '您不是作者，无权操作'; }
@@ -268,7 +307,11 @@ export class Editor {
     return "over";
   }
 
-  // 查找词条
+  /**
+   * 查找词条（查询某触发词所在的词库）
+   * @param q 触发词 
+   * @returns 
+   */
   async getQuestion(q: string) {
     if (Object.keys(wordTools.wordCache.hasKey).includes(q)) {
       return wordTools.wordCache.hasKey[q];
