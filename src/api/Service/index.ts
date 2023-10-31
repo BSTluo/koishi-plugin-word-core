@@ -3,6 +3,7 @@ import * as Tools from './Tools/Tools';
 import * as User from './User/User';
 import * as Cache from "./Editor/Cache";
 import * as Editor from './Editor/Editor';
+import * as trigger from "../extend/trigger";
 
 export * from './Tools/Tools';
 export * from './Editor/Cache';
@@ -20,6 +21,8 @@ export class wordService {
 
   public Editor: Editor.Editor;
 
+  public trigger: trigger.triggerType = trigger.trigger;
+  
   constructor(ctx: Context) {
     // 这样写你就不需要手动给 ctx 赋值了
     this.ctx = ctx;

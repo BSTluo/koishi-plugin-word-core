@@ -8,6 +8,6 @@ export class wordDriver {
     }
 
     async start(q: string) {
-        console.log(wordCache.hasKey[q]);
+        
     }
 }
