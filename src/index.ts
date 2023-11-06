@@ -1,10 +1,10 @@
 import { Context, Logger, Schema } from 'koishi';
-import * as core from './api/index';
-import { word } from './api/word';
+import * as core from './src/index';
+import { word } from './src/word';
 
 export const name = 'word-core';
 
-export * from './api/word';
+export * from './src/word';
 
 export interface Config { }
 
