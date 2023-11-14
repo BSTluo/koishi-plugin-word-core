@@ -71,8 +71,6 @@ const dbInit = (ctx: Context) => {
   });
 };
 
-
-
 export const apply = async (ctx: Context) => {
   dbInit(ctx);
 };

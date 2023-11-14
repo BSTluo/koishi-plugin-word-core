@@ -1,6 +1,9 @@
 import { Service, Context } from "koishi";
-import { wordService } from './Service/index';
+import { CacheFunction, ToolsFunction, wordService } from './Service/index';
 import { wordDriver } from "./Driver/Driver";
+import { Editor } from "./Service/Editor/Editor";
+import { UserFunction } from "./Service/User/User";
+import { triggerType } from "./extend/trigger";
 
 declare module 'koishi' {
     interface Context {
@@ -9,13 +12,22 @@ declare module 'koishi' {
 }
 
 export class word extends Service {
-    wordService: wordService;
     wordDriver: wordDriver;
+    cache: CacheFunction;
+    editor: Editor;
+    tools: ToolsFunction;
+    user: UserFunction;
+    trigger: triggerType;
 
     constructor(ctx: Context) {
         super(ctx, 'word', true);
 
         this.wordDriver = new wordDriver(ctx);
-        this.wordService = new wordService(ctx);
+        const wordServiceTemp = new wordService(ctx);
+        this.cache = wordServiceTemp.Cache;
+        this.editor = wordServiceTemp.Editor;
+        this.tools = wordServiceTemp.Tools;
+        this.user = wordServiceTemp.User;
+        this.trigger = wordServiceTemp.trigger;
     }
 }

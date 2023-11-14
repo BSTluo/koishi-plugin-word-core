@@ -24,7 +24,7 @@ export class Editor {
    * @param name 目标词库
    * @returns 结果
    */
-  private async readWord(name: string): Promise<wordSaveData> {
+  public async readWord(name: string): Promise<wordSaveData> {
     const readData = await this.readDB('wordData', name);
 
     let out: wordSaveData;
@@ -313,10 +313,15 @@ export class Editor {
    * @returns 
    */
   async getQuestion(q: string) {
-    if (Object.keys(wordTools.wordCache.hasKey).includes(q)) {
-      return wordTools.wordCache.hasKey[q];
-    } else {
+    const questionList = Object.keys(wordTools.wordCache.hasKey);
+    const matchedString = questionList.find(regText => {
+      const reg = new RegExp(`^${regText}$`);
+      return reg.test(q);
+    });
+    if (!matchedString) {
       return [];
+    } else {
+      return wordTools.wordCache.hasKey[q];
     }
   }
 

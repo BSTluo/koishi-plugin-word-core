@@ -22,7 +22,7 @@ export class wordService {
   public Editor: Editor.Editor;
 
   public trigger: trigger.triggerType = trigger.trigger;
-  
+
   constructor(ctx: Context) {
     // 这样写你就不需要手动给 ctx 赋值了
     this.ctx = ctx;
@@ -31,6 +31,7 @@ export class wordService {
     this.Tools.writeDB = (dbName, key, data) => { return Tools.writeDBFunction(this.ctx, dbName, key, data); };
     this.Tools.getDB = (dbName) => { return Tools.getDBFunction(ctx, dbName); };
     this.Tools.removeDB = async (dbName, key) => { return Tools.removeDBFunction(ctx, dbName, key); };
+    this.Tools.randomNumber = Tools.randomNumber
 
     this.User.getData = (uid) => { return User.getData(this.Tools.readDB, uid); };
     this.User.updateData = (uid, data) => { return User.updateData(this.Tools.writeDB, uid, data); };

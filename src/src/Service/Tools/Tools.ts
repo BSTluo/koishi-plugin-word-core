@@ -43,14 +43,20 @@ export const removeDBFunction = async (ctx: Context, dbName: 'wordUserData' | 'w
   ctx.database.remove(dbName, key);
 };
 
+export const randomNumber = (minNumber: number, maxNumber: number): number => {
+  return Math.floor((Math.random() * (maxNumber - minNumber + 1)) + minNumber);
+};
+
 export type readDBType = (dbName: 'wordUserData' | 'wordData' | 'recycleBinList' | 'wordUserConfig', key: string) => Promise<allType>;
 export type writeDBType = (dbName: 'wordUserData' | 'wordData' | 'recycleBinList' | 'wordUserConfig', key: string, data: allType) => Promise<boolean>;
 export type getDBType = (dbName: 'wordUserData' | 'wordData' | 'recycleBinList' | 'wordUserConfig') => Promise<{ idList: string[], dataList: allType[]; }>;
 export type removeDBType = (dbName: 'wordUserData' | 'wordData' | 'recycleBinList' | 'wordUserConfig', key: string) => Promise<void>;
+export type randomNumberType = (minNumber: number, maxNumber: number) => number;
 
 export interface ToolsFunction {
   readDB: readDBType;
   writeDB: writeDBType;
   getDB: getDBType;
   removeDB: removeDBType;
+  randomNumber: randomNumberType;
 }
