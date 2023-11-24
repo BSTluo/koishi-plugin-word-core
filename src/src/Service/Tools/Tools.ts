@@ -44,7 +44,7 @@ export const removeDBFunction = async (ctx: Context, dbName: 'wordUserData' | 'w
 };
 
 export const randomNumber = (minNumber: number, maxNumber: number): number => {
-  return Math.floor((Math.random() * (maxNumber - minNumber + 1)) + minNumber);
+  return Math.floor(Math.random() * (maxNumber - minNumber + 1)) + minNumber;
 };
 
 export type readDBType = (dbName: 'wordUserData' | 'wordData' | 'recycleBinList' | 'wordUserConfig', key: string) => Promise<allType>;

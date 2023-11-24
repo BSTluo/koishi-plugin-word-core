@@ -1,41 +1,57 @@
 import { randomNumber } from "../../Service";
 
 export const parsStart = (questionList: string[]) => {
+
   const getRandQuestion = (questionList: string[]) => {
-    return questionList[randomNumber(0, randomNumber.length - 1)];
+    const num = randomNumber(0, questionList.length - 1);
+
+    return questionList[num];
   };
 
   let temp = getRandQuestion(questionList);
-
   // 先将文本拆解为树
   // 你(+:xx:xx)好
   // [你,[+,xx,xx],好]
-  const msg = parse(temp);
+  const tree = getTree(temp);
 
   // 再进行树的解析
-  console.log(msg)
+  const msg = paresTress(tree);
 };
 
-const parse = (str: string): any[] => {
-  const tempArr: any[] = [];
-  let index = 0;
+const getTree = (str: string): any[] => {
+  let parseStr = str;
 
-  for (let i = 0; i < str.length; i++) {
-    const v = str[i];
+  const par = () => {
+    const tempArr: any[] = [];
+    let index = 0;
 
-    if (v === '(') {
-      index++;
-      const strTemp = str.substring(i);
-      tempArr[index] = parse(strTemp);
-    } else if (v === ')') {
-      index++;
-      return tempArr;
-    } else {
-      if (!tempArr[index]) { tempArr[index] = ''; }
-      tempArr[index] += v;
+    while (parseStr.length > 0) {
+      const v = parseStr[0];
+      parseStr = parseStr.slice(1);
+
+      if (v === '(') {
+        index++;
+        // parseStr = parseStr.slice(0);
+        tempArr[index] = par();
+        index++;
+      } else if (v === ')') {
+        return tempArr;
+        // } else if (v === ':') {
+        //   index++;
+        // } else {
+      } else {
+        if (!tempArr[index]) { tempArr[index] = ''; }
+        tempArr[index] += v;
+      }
     }
-  }
 
-  return tempArr;
+    return tempArr;
+  };
+
+  const a = par();
+  return a;
 };
 
+const paresTress = (inData: any[]) => {
+  // 遍历数组，如果是数组，则递归自己，如果不是，则以:分割，分割后进行解析，完成后将自身所在数组合并为一个字符串，并且return回去
+};

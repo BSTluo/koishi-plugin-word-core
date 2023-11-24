@@ -14,7 +14,6 @@ export class wordDriver {
   }
 
   async start(q: string) {
-
     this.ctx.inject(['word'], async ctx => {
 
       // 找到这个触发词对应的词库，并开始解析
@@ -32,9 +31,9 @@ export class wordDriver {
         }
 
       });
-
+      
       let list = (matchedString) ? wordCache.hasKey[q] : [];
-
+      
       if (list.length <= 0) { return; }
 
       // 挑选一个词库
