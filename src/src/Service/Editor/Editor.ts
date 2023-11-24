@@ -10,7 +10,7 @@ export class Editor {
   private addCache: wordTools.addCacheType;
   private rmCache: wordTools.rmCacheType;
 
-  constructor(readDB: wordTools.readDBType, writeDB: wordTools.writeDBType, getDB: wordTools.getDBType, removeDB: wordTools.removeDBType, addCache:wordTools.addCacheType, rmCache:wordTools.rmCacheType) {
+  constructor(readDB: wordTools.readDBType, writeDB: wordTools.writeDBType, getDB: wordTools.getDBType, removeDB: wordTools.removeDBType, addCache: wordTools.addCacheType, rmCache: wordTools.rmCacheType) {
     this.readDB = readDB;
     this.writeDB = writeDB;
     this.getDB = getDB;
@@ -35,7 +35,7 @@ export class Editor {
         data: {}
       };
     } else {
-      
+
       out = readData as wordSaveData;
     }
     return out;
@@ -252,9 +252,10 @@ export class Editor {
   async addWordItem(name: string, uid: string, q: string, a: string) {
     const list = await this.getWordList();
     if (!list.includes(name)) {
-      const dataTemp:Record<string, string[]> = {}
-      dataTemp[q] = [a]
-
+      const dataTemp: Record<string, string[]> = {};
+      dataTemp[q] = [a];
+      
+      this.addCache(q, name);
       return this.updateWord(name, {
         author: [uid],
         data: dataTemp,
@@ -266,6 +267,7 @@ export class Editor {
     if (!(await this.isAuthor(name, uid))) { return '您不是作者，无权操作'; }
 
     if (!Object.keys(wordData.data).includes(q)) {
+
       wordData.data[q] = [a];
       this.addCache(q, name);
     } else {
@@ -273,6 +275,7 @@ export class Editor {
     }
     const index = wordData.data[q].length;
     await this.updateWord(name, wordData);
+
     return index;
   }
 

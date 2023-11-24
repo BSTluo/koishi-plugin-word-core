@@ -17,4 +17,8 @@ export const logger = new Logger('Word-core');
 export const apply = async (ctx: Context) => {
   ctx.plugin(core);
   ctx.plugin(word);
+  ctx.inject(['word'], async ctx=>{
+    // ctx.word.editor.addWordItem('test', '5b0fe8a3b1ff2', '你好', '你也好')
+    ctx.word.wordDriver.start('你好')
+  })
 };
