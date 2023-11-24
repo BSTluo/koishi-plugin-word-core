@@ -1,10 +1,11 @@
 import { Context } from 'koishi';
 import { wordCache } from '../Service';
 import { wordSaveData } from '..';
+import { parsStart } from './src';
 
 export const inject = {
   require: ['word']
-}
+};
 
 export class wordDriver {
   ctx: Context;
@@ -13,7 +14,7 @@ export class wordDriver {
   }
 
   async start(q: string) {
-    
+
     this.ctx.inject(['word'], async ctx => {
 
       // 找到这个触发词对应的词库，并开始解析
@@ -45,7 +46,8 @@ export class wordDriver {
       // 获取那个词条对应的全部回答
       const questionList = wordData.data[q];
 
-      console.log(questionList);
+      const message = parsStart(questionList);
+      
     });
   }
 }
