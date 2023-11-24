@@ -13,6 +13,7 @@ export const parsStart = (questionList: string[]) => {
   const msg = parse(temp);
 
   // 再进行树的解析
+  console.log(msg)
 };
 
 const parse = (str: string): any[] => {
