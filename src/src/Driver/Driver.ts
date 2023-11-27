@@ -1,6 +1,4 @@
 import { Context } from 'koishi';
-import { wordCache } from '../Service';
-import { wordSaveData } from '..';
 import { parsStart } from './src';
 
 export const inject = {
@@ -15,25 +13,40 @@ export class wordDriver {
 
   async start(q: string) {
     this.ctx.inject(['word'], async ctx => {
+      const wordCache = await ctx.word.cache.getCache();
+      const matchList: Record<string, string[]> = {};
 
-      // 找到这个触发词对应的词库，并开始解析
-      const matchedString = Object.keys(wordCache.hasKey).find(regText => {
-        // 获取输入替换列表
-        let list = Object.keys(ctx.word.trigger);
+      let matchedString: string | undefined;
+      let list = wordCache.hasKey[q];
 
-        // 遍历获取被替换的词
-        for (let repKey of list) {
-          for (let repReg of ctx.word.trigger[repKey]) {
-            regText = regText.replace(repKey, repReg);
-            const reg = new RegExp(`^${regText}$`);
-            if (reg.test(q)) { return true; }
+      if (!wordCache.hasKey[q]) {
+        // 找到这个触发词对应的词库，并开始解析
+        matchedString = Object.keys(wordCache.hasKey).find(regText => {
+
+          // 获取输入替换列表
+          let list = Object.keys(ctx.word.trigger);
+
+          // 遍历获取被替换的词
+          for (let repKey of list) {
+            const thisTemp = ctx.word.trigger[repKey];
+            for (let repReg of thisTemp.reg) {
+              regText = regText.replace(repKey, repReg);
+              const reg = new RegExp(`^${regText}$`, 'g');
+              if (reg.test(q)) {
+                if (!matchList[thisTemp.id]) { matchList[thisTemp.id] = []; }
+                const matchString: string[] = q.match(reg) as string[];
+
+                matchList[thisTemp.id].concat(matchString);
+                return true;
+              }
+            }
           }
-        }
 
-      });
-      
-      let list = (matchedString) ? wordCache.hasKey[q] : [];
-      
+        });
+
+        list = (matchedString) ? wordCache.hasKey[q] : [];
+      }
+      if (!list) { return; }
       if (list.length <= 0) { return; }
 
       // 挑选一个词库
@@ -45,8 +58,8 @@ export class wordDriver {
       // 获取那个词条对应的全部回答
       const questionList = wordData.data[q];
 
-      const message = parsStart(questionList);
-      
+      const message = parsStart(questionList, ctx);
+
     });
   }
 }

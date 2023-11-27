@@ -1,7 +1,12 @@
-import { randomNumber } from "../../Service";
+import { Context } from "koishi";
+import { statement } from "../../extend/statement";
 
-export const parsStart = (questionList: string[]) => {
+let funcPackKeys = Object.keys(statement);
 
+export const parsStart = (questionList: string[], ctx: Context) => {
+  const randomNumber = ctx.word.tools.randomNumber;
+
+  funcPackKeys = Object.keys(statement);
   const getRandQuestion = (questionList: string[]) => {
     const num = randomNumber(0, questionList.length - 1);
 
@@ -13,9 +18,10 @@ export const parsStart = (questionList: string[]) => {
   // 你(+:xx:xx)好
   // [你,[+,xx,xx],好]
   const tree = getTree(temp);
-
+  console.log(tree);
   // 再进行树的解析
-  const msg = paresTress(tree);
+  const msg = parseTrees(tree, ctx);
+  console.log(msg);
 };
 
 const getTree = (str: string): any[] => {
@@ -52,6 +58,26 @@ const getTree = (str: string): any[] => {
   return a;
 };
 
-const paresTress = (inData: any[]) => {
-  // 遍历数组，如果是数组，则递归自己，如果不是，则以:分割，分割后进行解析，完成后将自身所在数组合并为一个字符串，并且return回去
+const parseTrees = (inData: any[], ctx: Context): string => {
+  // 遍历最深层字符串，解析后返回结果，重复运行
+  for (let i = 0; i < inData.length; i++) {
+    if (Array.isArray(inData[i])) {
+      inData[i] = parseTrees(inData[i], ctx); // 递归调用处理嵌套数组
+    }
+  }
+  const reload = inData.join('');
+  const newFunArr = reload.split(':');
+
+  // newFunArr 是解析得到的语法字符串
+  if (funcPackKeys.includes(newFunArr[0])) {
+    const which = newFunArr[0];
+    const inData = {
+      args: newFunArr.slice(1)
+    }
+    const str: string = statement[which](newFunArr, ctx);
+
+    return str;
+  } else {
+    return newFunArr.join('');
+  }
 };
