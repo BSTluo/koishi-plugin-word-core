@@ -5,6 +5,8 @@ export const inject = {
   require: ['word']
 };
 
+export type matchType = Record<string, string[]>;
+
 export class wordDriver {
   ctx: Context;
   constructor(ctx: Context) {
@@ -14,7 +16,7 @@ export class wordDriver {
   async start(q: string) {
     this.ctx.inject(['word'], async ctx => {
       const wordCache = await ctx.word.cache.getCache();
-      const matchList: Record<string, string[]> = {};
+      const matchList: matchType = {};
 
       let matchedString: string | undefined;
       let list = wordCache.hasKey[q];
@@ -58,7 +60,7 @@ export class wordDriver {
       // 获取那个词条对应的全部回答
       const questionList = wordData.data[q];
 
-      const message = parsStart(questionList, ctx);
+      const message = parsStart(questionList, ctx, matchList);
 
     });
   }

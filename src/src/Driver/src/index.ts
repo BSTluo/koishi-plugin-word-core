@@ -1,9 +1,15 @@
 import { Context } from "koishi";
 import { statement } from "../../extend/statement";
+import { matchType } from "../Driver";
+
+export interface chatFunctionType {
+  args:string[],
+  matchs: matchType
+}
 
 let funcPackKeys = Object.keys(statement);
 
-export const parsStart = (questionList: string[], ctx: Context) => {
+export const parsStart = (questionList: string[], ctx: Context, matchList: matchType) => {
   const randomNumber = ctx.word.tools.randomNumber;
 
   funcPackKeys = Object.keys(statement);
@@ -20,7 +26,7 @@ export const parsStart = (questionList: string[], ctx: Context) => {
   const tree = getTree(temp);
   console.log(tree);
   // 再进行树的解析
-  const msg = parseTrees(tree, ctx);
+  const msg = parseTrees(tree, ctx, matchList);
   console.log(msg);
 };
 
@@ -58,11 +64,11 @@ const getTree = (str: string): any[] => {
   return a;
 };
 
-const parseTrees = (inData: any[], ctx: Context): string => {
+const parseTrees = (inData: any[], ctx: Context, matchList: matchType): string => {
   // 遍历最深层字符串，解析后返回结果，重复运行
   for (let i = 0; i < inData.length; i++) {
     if (Array.isArray(inData[i])) {
-      inData[i] = parseTrees(inData[i], ctx); // 递归调用处理嵌套数组
+      inData[i] = parseTrees(inData[i], ctx, matchList); // 递归调用处理嵌套数组
     }
   }
   const reload = inData.join('');
@@ -71,10 +77,12 @@ const parseTrees = (inData: any[], ctx: Context): string => {
   // newFunArr 是解析得到的语法字符串
   if (funcPackKeys.includes(newFunArr[0])) {
     const which = newFunArr[0];
-    const inData = {
-      args: newFunArr.slice(1)
-    }
-    const str: string = statement[which](newFunArr, ctx);
+    const inData:chatFunctionType = {
+      args: newFunArr.slice(1),
+      matchs: matchList
+    };
+
+    const str: string = statement[which](inData, ctx);
 
     return str;
   } else {

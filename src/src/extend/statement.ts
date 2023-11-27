@@ -1,11 +1,12 @@
 import { Context } from "koishi";
+import { chatFunctionType } from '../Driver/src';
 
 export const statement: statementType = {
-    '+': (inData: string[], ctx: Context): string => {
-        return inData[1];
-    }
+  '+': (inData: chatFunctionType, ctx: Context): string => {
+    return inData.args[1];
+  }
 };
 
 export type statementType = {
-    [key: string]: (inData: string[], ctx: Context) => string;
+  [key: string]: (inData: chatFunctionType, ctx: Context) => string;
 };
