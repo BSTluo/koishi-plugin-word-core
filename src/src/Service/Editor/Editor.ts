@@ -264,11 +264,13 @@ export class Editor {
       dataTemp[q] = [a];
 
       this.addCache(q, name);
-      return this.updateWord(name, {
+      if (await this.updateWord(name, {
         author: [uid],
         data: dataTemp,
         saveDB: 'default'
-      });
+      })) {
+        return 0;
+      };
     }
 
     const wordData = await this.readWord(name);

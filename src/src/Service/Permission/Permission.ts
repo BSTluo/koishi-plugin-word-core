@@ -4,14 +4,10 @@ import { allType } from '../..';
 export class Permission {
   private readDB: wordTools.readDBType;
   private writeDB: wordTools.writeDBType;
-  private getDB: wordTools.getDBType;
-  private removeDB: wordTools.removeDBType;
 
-  constructor(readDB: wordTools.readDBType, writeDB: wordTools.writeDBType, getDB: wordTools.getDBType, removeDB: wordTools.removeDBType) {
+  constructor(readDB: wordTools.readDBType, writeDB: wordTools.writeDBType) {
     this.readDB = readDB;
     this.writeDB = writeDB;
-    this.getDB = getDB;
-    this.removeDB = removeDB;
   }
 
   // 获取权限表

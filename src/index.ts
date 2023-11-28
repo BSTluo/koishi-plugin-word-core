@@ -25,16 +25,25 @@ export const apply = async (ctx: Context) => {
       .option('answer', '-a [answer:text]')
       .action(async ({ options, session }) => {
         if (!options || !session) { return; }
-        if (!options.question) { return `<at id="${session.username}" />你没有设置问题`; }
-        if (!options.answer) { return `<at id="${session.username}" />你没有设置回答`; }
+        if (!options.question) { return `<at id="${session.username}" /> 你没有设置问题`; }
+        if (!options.answer) { return `<at id="${session.username}" /> 你没有设置回答`; }
 
         const question = options.question;
         const answer = options.answer;
         const uid = session.uid;
 
         const nowWordDB = await ctx.word.user.getEditWord(uid);
+        const hasPermission = await ctx.word.permission.isHave(uid, `word.edit.${nowWordDB}`);
 
-        await ctx.word.editor.addWordItem(nowWordDB, uid, question, answer);
+        if (!hasPermission) { return `<at id="${session.username}" /> 你没有词库【${nowWordDB}】的编辑权限`; }
+        
+        const a = await ctx.word.editor.addWordItem(nowWordDB, uid, question, answer);
+
+        if (typeof a === 'number') {
+          return `<at id="${session.username}" /> 添加到【${nowWordDB}】词库成功，序号为【${a}】`;
+        } else {
+          return a;
+        }
       });
   });
 };
