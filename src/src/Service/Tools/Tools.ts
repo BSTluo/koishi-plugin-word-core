@@ -1,19 +1,19 @@
 import { Context } from "koishi";
-import { DBTypeList, allType, recycleBinList, wordData, wordSaveData, wordUserConfig, wordUserData } from "../..";
+import { DBTypeList, allType, recycleBinList, wordData, wordSaveData, wordUserConfig, wordUserPackData } from "../..";
 
 // 读取库
-export const readDBFunction = async (ctx: Context, dbName: 'wordUserData' | 'wordData' | 'recycleBinList' | 'wordUserConfig', key: string): Promise<allType> => {
+export const readDBFunction = async (ctx: Context, dbName: 'wordUserPackData' | 'wordData' | 'recycleBinList' | 'wordUserConfig', key: string): Promise<allType> => {
   const readObjTemp = await ctx.database.get(dbName, key);
   if (readObjTemp.length <= 0) { return {}; }
   return readObjTemp[0].data as allType;
 };
 
 // 保存库
-export const writeDBFunction = async (ctx: Context, dbName: 'wordUserData' | 'wordData' | 'recycleBinList' | 'wordUserConfig', key: string, newData: allType): Promise<boolean> => {
+export const writeDBFunction = async (ctx: Context, dbName: 'wordUserPackData' | 'wordData' | 'recycleBinList' | 'wordUserConfig', key: string, newData: allType): Promise<boolean> => {
   const readObjTemp = await ctx.database.get(dbName, key);
   if (readObjTemp.length <= 0) {
 
-    await ctx.database.create(dbName, { id: key, data: newData } as unknown as wordUserData | wordData | recycleBinList | wordUserConfig);
+    await ctx.database.create(dbName, { id: key, data: newData } as unknown as wordUserPackData | wordData | recycleBinList | wordUserConfig);
     return true;
   } else {
     await ctx.database.set(dbName, key, { data: newData });
@@ -21,7 +21,7 @@ export const writeDBFunction = async (ctx: Context, dbName: 'wordUserData' | 'wo
   }
 };
 
-export const getDBFunction = async (ctx: Context, dbName: 'wordUserData' | 'wordData' | 'recycleBinList' | 'wordUserConfig') => {
+export const getDBFunction = async (ctx: Context, dbName: 'wordUserPackData' | 'wordData' | 'recycleBinList' | 'wordUserConfig') => {
 
   const idListOrigin = await ctx.database.get(dbName, { id: { $regex: /^[\s\S]+$/ } }, ['id']);
   const dataListOrigin = await ctx.database.get(dbName, { id: { $regex: /^[\s\S]+$/ } }, ['data']);
@@ -39,7 +39,7 @@ export const getDBFunction = async (ctx: Context, dbName: 'wordUserData' | 'word
   return data;
 };
 
-export const removeDBFunction = async (ctx: Context, dbName: 'wordUserData' | 'wordData' | 'recycleBinList' | 'wordUserConfig', key: string) => {
+export const removeDBFunction = async (ctx: Context, dbName: 'wordUserPackData' | 'wordData' | 'recycleBinList' | 'wordUserConfig', key: string) => {
   ctx.database.remove(dbName, key);
 };
 
@@ -47,10 +47,10 @@ export const randomNumber = (minNumber: number, maxNumber: number): number => {
   return Math.floor(Math.random() * (maxNumber - minNumber + 1)) + minNumber;
 };
 
-export type readDBType = (dbName: 'wordUserData' | 'wordData' | 'recycleBinList' | 'wordUserConfig', key: string) => Promise<allType>;
-export type writeDBType = (dbName: 'wordUserData' | 'wordData' | 'recycleBinList' | 'wordUserConfig', key: string, data: allType) => Promise<boolean>;
-export type getDBType = (dbName: 'wordUserData' | 'wordData' | 'recycleBinList' | 'wordUserConfig') => Promise<{ idList: string[], dataList: allType[]; }>;
-export type removeDBType = (dbName: 'wordUserData' | 'wordData' | 'recycleBinList' | 'wordUserConfig', key: string) => Promise<void>;
+export type readDBType = (dbName: 'wordUserPackData' | 'wordData' | 'recycleBinList' | 'wordUserConfig', key: string) => Promise<allType>;
+export type writeDBType = (dbName: 'wordUserPackData' | 'wordData' | 'recycleBinList' | 'wordUserConfig', key: string, data: allType) => Promise<boolean>;
+export type getDBType = (dbName: 'wordUserPackData' | 'wordData' | 'recycleBinList' | 'wordUserConfig') => Promise<{ idList: string[], dataList: allType[]; }>;
+export type removeDBType = (dbName: 'wordUserPackData' | 'wordData' | 'recycleBinList' | 'wordUserConfig', key: string) => Promise<void>;
 export type randomNumberType = (minNumber: number, maxNumber: number) => number;
 
 export interface ToolsFunction {

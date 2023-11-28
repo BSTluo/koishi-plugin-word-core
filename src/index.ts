@@ -18,8 +18,24 @@ export const apply = async (ctx: Context) => {
   ctx.plugin(core);
   ctx.plugin(word);
   ctx.inject(['word'], async ctx => {
-    // ctx.word.editor.addWordItem('test', '5b0fe8a3b1ff2', '你好', '你也(+:xxx:xx你也(+:xxx:xxxxx)好xxx)好(好)')
-    // ctx.word.wordDriver.start('你好')
+    ctx.command('word', '词库核心！');
+
+    ctx.command('word').subcommand('add')
+      .option('question', '-q [question:text]')
+      .option('answer', '-a [answer:text]')
+      .action(async ({ options, session }) => {
+        if (!options || !session) { return; }
+        if (!options.question) { return `<at id="${session.username}" />你没有设置问题`; }
+        if (!options.answer) { return `<at id="${session.username}" />你没有设置回答`; }
+
+        const question = options.question;
+        const answer = options.answer;
+        const uid = session.uid;
+
+        const nowWordDB = await ctx.word.user.getEditWord(uid);
+
+        await ctx.word.editor.addWordItem(nowWordDB, uid, question, answer);
+      });
   });
 };
 

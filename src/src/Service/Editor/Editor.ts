@@ -141,29 +141,37 @@ export class Editor {
     return wordData[key];
   }
 
-
   /**
    * 设置存储格
    * @param name 目标词库名
    * @param cell 存储格名
+   * @param uid 操作者uid
    */
-  async setSaveCell(name: string, cell: string) {
-    await this.setWordKeyValue(name, 'saveDB', cell);
+  async setSaveCell(name: string, cell: string, uid: string) {
+    const author = await this.isAuthor(name, uid);
+    if (!author) { return '你不是作者'; }
+    return await this.setWordKeyValue(name, 'saveDB', cell);
   }
 
   /**
    * 重置存储格
    * @param name 目标词库名
+   * @param uid 操作者uid
    */
-  async resetSaveCell(name: string) {
-    await this.setWordKeyValue(name, 'saveDB', "default");
+  async resetSaveCell(name: string, uid: string) {
+    const author = await this.isAuthor(name, uid);
+    if (!author) { return '你不是作者'; }
+    return await this.setWordKeyValue(name, 'saveDB', "default");
   }
 
   /**
    * 读取存储格子
    * @param name 目标词库名
+   * @param uid 操作者uid
    */
-  async readSaveCell(name: string) {
+  async readSaveCell(name: string, uid: string) {
+    const author = await this.isAuthor(name, uid);
+    if (!author) { return '你不是作者'; }
     return await this.readWordKeyValue(name, 'saveDB');
   }
 
@@ -254,7 +262,7 @@ export class Editor {
     if (!list.includes(name)) {
       const dataTemp: Record<string, string[]> = {};
       dataTemp[q] = [a];
-      
+
       this.addCache(q, name);
       return this.updateWord(name, {
         author: [uid],

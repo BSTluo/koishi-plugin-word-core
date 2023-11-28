@@ -8,7 +8,7 @@ declare module 'koishi' {
 export type allType = wordSaveData | Record<string, string> | Record<string, Record<string, number>>;
 
 export type DBTypeList = {
-  wordUserData: wordUserData;
+  wordUserPackData: wordUserPackData;
   wordData: wordData;
   recycleBinList: recycleBinList;
   wordUserConfig: wordUserConfig;
@@ -25,7 +25,7 @@ export interface wordUserConfig {
   data: Record<string, string[]>;
 }
 
-export interface wordUserData {
+export interface wordUserPackData {
   id: string;
   data: Record<string, Record<string, number>>;
 }
@@ -42,7 +42,7 @@ export interface recycleBinList {
 
 const dbInit = (ctx: Context) => {
 
-  ctx.model.extend('wordUserData', {
+  ctx.model.extend('wordUserPackData', {
     id: 'string',
     data: 'json'
   }, {
