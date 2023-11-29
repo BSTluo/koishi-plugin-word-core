@@ -1,16 +1,17 @@
 import { Context } from "koishi";
 import { statement } from "../../extend/statement";
 import { matchType } from "../Driver";
+import { word } from "../../word";
 
 export interface chatFunctionType {
-  args:string[],
-  matchs: matchType
+  args: string[],
+  matchs: matchType;
 }
 
 let funcPackKeys = Object.keys(statement);
 
-export const parsStart = (questionList: string[], ctx: Context, matchList: matchType) => {
-  const randomNumber = ctx.word.tools.randomNumber;
+export const parsStart = (questionList: string[], word: word, ctx: Context, matchList: matchType) => {
+  const randomNumber = word.tools.randomNumber;
 
   funcPackKeys = Object.keys(statement);
   const getRandQuestion = (questionList: string[]) => {
@@ -27,7 +28,7 @@ export const parsStart = (questionList: string[], ctx: Context, matchList: match
   console.log(tree);
   // 再进行树的解析
   const msg = parseTrees(tree, ctx, matchList);
-  console.log(msg);
+  return msg;
 };
 
 const getTree = (str: string): any[] => {
@@ -77,7 +78,7 @@ const parseTrees = (inData: any[], ctx: Context, matchList: matchType): string =
   // newFunArr 是解析得到的语法字符串
   if (funcPackKeys.includes(newFunArr[0])) {
     const which = newFunArr[0];
-    const inData:chatFunctionType = {
+    const inData: chatFunctionType = {
       args: newFunArr.slice(1),
       matchs: matchList
     };

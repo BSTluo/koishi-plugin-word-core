@@ -24,7 +24,7 @@ export class Permission {
     if (permissionData.permission.includes(newPermission)) { return '已存在此权限'; }
     permissionData.permission.push(newPermission);
 
-    await this.writeDB('wordUserConfig', uid, permissionData as unknown as allType);
+    return await this.writeDB('wordUserConfig', uid, permissionData as unknown as allType);
   }
 
   // 减少权限
@@ -38,7 +38,7 @@ export class Permission {
 
     permissionData.permission.splice(index, 1);
 
-    await this.writeDB('wordUserConfig', uid, permissionData as unknown as allType);
+    return await this.writeDB('wordUserConfig', uid, permissionData as unknown as allType);
   }
 
   // 判断是否拥有某权限
@@ -64,9 +64,9 @@ export class Permission {
   async all(uid: string) {
     const permissionData = await this.readDB('wordUserConfig', uid) as unknown as Record<string, string[]>;
     if (!permissionData.permission) { permissionData.permission = []; }
-    return permissionData.permission
+    return permissionData.permission;
   }
-  
+
   // 增加权限组？
 
   // 减少权限组？

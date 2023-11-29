@@ -126,7 +126,7 @@ export class Editor {
     if (key == "data") { wordData.data = value as wordSaveData["data"]; }
     if (key == "saveDB") { wordData.saveDB = value as wordSaveData["saveDB"]; }
 
-    this.updateWord(name, wordData);
+    return await this.updateWord(name, wordData);
   }
 
   /**
@@ -170,9 +170,9 @@ export class Editor {
    * @param uid 操作者uid
    */
   async readSaveCell(name: string, uid: string) {
-    const author = await this.isAuthor(name, uid);
-    if (!author) { return '你不是作者'; }
-    return await this.readWordKeyValue(name, 'saveDB');
+    // const author = await this.isAuthor(name, uid);
+    // if (!author) { return '你不是作者'; }
+    return await this.readWordKeyValue(name, 'saveDB') as string;
   }
 
   /**
