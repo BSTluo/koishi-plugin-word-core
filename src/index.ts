@@ -25,7 +25,7 @@ export const apply = async (ctx: Context, config: Config) => {
     ctx.command('word', '词库核心！');
 
     ctx.command('word').subcommand('add <question:text> <answer:text>', '为一个触发词添加回复').usage('添加一个词库')
-      .example('word.add 你好 你也好')
+      .example('add 你好 你也好')
       .action(async ({ session }, question, answer) => {
         if (!session) { return; }
         if (!question) { return `<at id="${session.username}" /> 你没有设置触发词`; }
@@ -48,8 +48,8 @@ export const apply = async (ctx: Context, config: Config) => {
       });
 
     ctx.command('word').subcommand('rm <question:text> <listNumber:text>', '删除触发词的回复').usage('序号为数字或者all')
-      .example('word.rm 你好 all')
-      .example('word.rm 你好 1')
+      .example('rm 你好 all')
+      .example('rm 你好 1')
       .action(async ({ session }, question, whichTemp) => {
         if (!session) { return; }
         if (question) { return `<at id="${session.username}" /> 你没有设置触发词`; }
@@ -73,6 +73,7 @@ export const apply = async (ctx: Context, config: Config) => {
       });
 
     ctx.command('word').subcommand('setedit <dbname:text>', '选择库进行编辑').usage('当setedit后不加参数则代表选择为默认库')
+      .example('setedit 测试')
       .action(async ({ session }, test) => {
         if (!session) { return; }
         let newDB = test;
@@ -88,6 +89,7 @@ export const apply = async (ctx: Context, config: Config) => {
       });
 
     ctx.command('word').subcommand('readedit', '查看当前正在编辑的词库')
+      .example('readedit')
       .action(async ({ session }) => {
         if (!session) { return; }
         const uid = session.uid;
@@ -98,6 +100,7 @@ export const apply = async (ctx: Context, config: Config) => {
       });
 
     ctx.command('word').subcommand('find <question:text>', '寻找某个触发词所在的词库')
+      .example('find 你好')
       .action(async ({ session }, question) => {
         if (!session) { return; }
         const a = await ctx.word.editor.getQuestion(question);
@@ -111,6 +114,7 @@ export const apply = async (ctx: Context, config: Config) => {
       });
 
     ctx.command('word').subcommand('get <question:text>', '查看当前词库某触发词的所有回答')
+      .example('get 测试')
       .action(async ({ session }, question) => {
         if (!session) { return; }
         if (!question) { return `<at id="${session.username}" /> 你没有输入需要查询的关键词`; }
@@ -130,6 +134,7 @@ export const apply = async (ctx: Context, config: Config) => {
 
     // 设置存储格子
     ctx.command('word').subcommand('setsave <cell:text>', '设置当前词库的存储格子')
+      .example('setsave 存储格1')
       .action(async ({ session }, cell) => {
         if (!session) { return; }
         if (!cell) { return `<at id="${session.username}" /> 你没有输入存储格子名称`; }
@@ -152,6 +157,7 @@ export const apply = async (ctx: Context, config: Config) => {
 
     // 恢复默认存储格子
     ctx.command('word').subcommand('resetsave', '重置当前词库的存储格子')
+      .example('resetsave')
       .action(async ({ session }) => {
         if (!session) { return; }
 
@@ -172,6 +178,7 @@ export const apply = async (ctx: Context, config: Config) => {
       });
 
     ctx.command('word').subcommand('getsave', '查看当前词库的存储格子')
+      .example('getsave')
       .action(async ({ session }) => {
         if (!session) { return; }
 
@@ -187,6 +194,7 @@ export const apply = async (ctx: Context, config: Config) => {
 
     // 设置权限
     ctx.command('word').subcommand('addp <uid:string> <permission:text>', '增加权限')
+      .example('addp 6503fb7b50308 word.edit.*')
       .action(async ({ session }, uid, permission) => {
         if (!session) { return; }
 
@@ -204,7 +212,8 @@ export const apply = async (ctx: Context, config: Config) => {
       });
 
     // 取消权限
-    ctx.command('word').subcommand('addp <uid:string> <permission:text>', '增加权限')
+    ctx.command('word').subcommand('rmp <uid:string> <permission:text>', '增加权限')
+      .example('rmp 6503fb7b50308 word.edit.*')
       .action(async ({ session }, uid, permission) => {
         if (!session) { return; }
 
