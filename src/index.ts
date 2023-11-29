@@ -24,17 +24,13 @@ export const apply = async (ctx: Context, config: Config) => {
   ctx.inject(['word'], async ctx => {
     ctx.command('word', '词库核心！');
 
-    ctx.command('word').subcommand('add', '为一个触发词添加回复').usage('添加一个词库')
-      .example('word.add -q 你好 -a 你也好')
-      .option('question', '-q [question:text] 触发词')
-      .option('answer', '-a [answer:text] 回答')
-      .action(async ({ options, session }) => {
-        if (!options || !session) { return; }
-        if (!options.question) { return `<at id="${session.username}" /> 你没有设置触发词`; }
-        if (!options.answer) { return `<at id="${session.username}" /> 你没有设置回答`; }
+    ctx.command('word').subcommand('add <question:text> <answer:text>', '为一个触发词添加回复').usage('添加一个词库')
+      .example('word.add 你好 你也好')
+      .action(async ({ session }, question, answer) => {
+        if (!session) { return; }
+        if (!question) { return `<at id="${session.username}" /> 你没有设置触发词`; }
+        if (!answer) { return `<at id="${session.username}" /> 你没有设置回答`; }
 
-        const question = options.question;
-        const answer = options.answer;
         const uid = session.uid;
 
         const nowWordDB = await ctx.word.user.getEditWord(uid);
@@ -51,19 +47,16 @@ export const apply = async (ctx: Context, config: Config) => {
         }
       });
 
-    ctx.command('word').subcommand('rm', '删除触发词的回复').usage('序号为数字或者all')
-      .example('word.rm -q 你好 -w all')
-      .example('word.rm -q 你好 -w 1')
-      .option('question', '-q [question:text] 触发词')
-      .option('which', '-w [which] 删除序号', { type: /^\d+$|^all$/ })
-      .action(async ({ options, session }) => {
-        if (!options || !session) { return; }
-        if (!options.question) { return `<at id="${session.username}" /> 你没有设置触发词`; }
-        if (!options.which) { return `<at id="${session.username}" /> 你没有设置需要被删除的序号`; }
+    ctx.command('word').subcommand('rm <question:text> <listNumber:text>', '删除触发词的回复').usage('序号为数字或者all')
+      .example('word.rm 你好 all')
+      .example('word.rm 你好 1')
+      .action(async ({ session }, question, whichTemp) => {
+        if (!session) { return; }
+        if (question) { return `<at id="${session.username}" /> 你没有设置触发词`; }
+        if (!/^\d+$|^all$/.test(whichTemp)) { return `<at id="${session.username}" /> 你没有设置需要被删除的序号或序号不正确`; }
 
-        const question = options.question;
-        const which: number | 'all' = options.which as (number | 'all');
         const uid = session.uid;
+        const which = (whichTemp === 'all') ? 'all' : Number(whichTemp);
 
         const nowWordDB = await ctx.word.user.getEditWord(uid);
         const hasPermission = await ctx.word.permission.isHave(uid, `word.edit.${nowWordDB}`);
