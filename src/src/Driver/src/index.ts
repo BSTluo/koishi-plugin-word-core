@@ -10,7 +10,7 @@ export interface chatFunctionType {
 
 let funcPackKeys = Object.keys(statement);
 
-export const parsStart = (questionList: string[], word: word, ctx: Context, matchList: matchType) => {
+export const parsStart = async (questionList: string[], word: word, ctx: Context, matchList: matchType) => {
   const randomNumber = word.tools.randomNumber;
 
   funcPackKeys = Object.keys(statement);
@@ -27,7 +27,7 @@ export const parsStart = (questionList: string[], word: word, ctx: Context, matc
   const tree = getTree(temp);
   console.log(tree);
   // 再进行树的解析
-  const msg = parseTrees(tree, ctx, matchList);
+  const msg = await parseTrees(tree, ctx, matchList);
   return msg;
 };
 
@@ -65,11 +65,11 @@ const getTree = (str: string): any[] => {
   return a;
 };
 
-const parseTrees = (inData: any[], ctx: Context, matchList: matchType): string => {
+const parseTrees = async (inData: any[], ctx: Context, matchList: matchType): Promise<string> => {
   // 遍历最深层字符串，解析后返回结果，重复运行
   for (let i = 0; i < inData.length; i++) {
     if (Array.isArray(inData[i])) {
-      inData[i] = parseTrees(inData[i], ctx, matchList); // 递归调用处理嵌套数组
+      inData[i] = await parseTrees(inData[i], ctx, matchList); // 递归调用处理嵌套数组
     }
   }
   const reload = inData.join('');
@@ -83,9 +83,8 @@ const parseTrees = (inData: any[], ctx: Context, matchList: matchType): string =
       matchs: matchList
     };
 
-    const str: string = statement[which](inData, ctx);
-
-    return str;
+    const str: string | void = await statement[which](inData, ctx);
+    return (str) ? str : '';
   } else {
     return newFunArr.join('');
   }

@@ -4,7 +4,8 @@ import { wordDriver } from "./Driver/Driver";
 import { Editor } from "./Service/Editor/Editor";
 import { Permission } from "./Service/Permission/Permission";
 import { UserFunction } from "./Service/User/User";
-import { triggerType } from "./extend/trigger";
+import { triggerFunction, triggerType } from "./extend/trigger";
+import { statementFunction } from "./extend/statement";
 
 declare module 'koishi' {
   interface Context {
@@ -18,8 +19,9 @@ export class word extends Service {
   editor: Editor;
   tools: ToolsFunction;
   user: UserFunction;
-  trigger: triggerType;
+  trigger: triggerFunction;
   permission: Permission;
+  statement: statementFunction;
 
   constructor(ctx: Context) {
     super(ctx, 'word', true);
@@ -33,5 +35,6 @@ export class word extends Service {
     this.user = wordServiceTemp.User;
     this.permission = wordServiceTemp.Permission;
     this.trigger = wordServiceTemp.trigger;
+    this.statement = wordServiceTemp.statement;
   }
 }

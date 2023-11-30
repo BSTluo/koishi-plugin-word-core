@@ -35,7 +35,7 @@ export class wordDriver {
 
         // 遍历获取被替换的词
         for (let repKey of list) {
-          const thisTemp = this.word.trigger[repKey];
+          const thisTemp = this.word.trigger.trigger[repKey];
           for (let repReg of thisTemp.reg) {
             regText = regText.replace(repKey, repReg);
             const reg = new RegExp(`^${regText}$`, 'g');
@@ -65,7 +65,7 @@ export class wordDriver {
     // 获取那个词条对应的全部回答
     const questionList = wordData.data[q];
 
-    const message = parsStart(questionList, this.word, this.ctx, matchList);
+    const message = await parsStart(questionList, this.word, this.ctx, matchList);
 
     return message;
     // });

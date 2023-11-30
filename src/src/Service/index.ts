@@ -6,6 +6,7 @@ import * as Editor from './Editor/Editor';
 import * as Permission from './Permission/Permission';
 import * as trigger from "../extend/trigger";
 import { wordSaveData } from "..";
+import * as statement from "../extend/statement";
 
 export * from './Tools/Tools';
 export * from './Editor/Cache';
@@ -29,7 +30,9 @@ export class wordService {
 
   public Permission: Permission.Permission = {} as Permission.Permission;
 
-  public trigger: trigger.triggerType = trigger.trigger;
+  public trigger: trigger.triggerFunction = {} as trigger.triggerFunction;
+
+  public statement: statement.statementFunction = {} as statement.statementFunction;
 
   constructor(ctx: Context) {
     // 这样写你就不需要手动给 ctx 赋值了
@@ -56,155 +59,20 @@ export class wordService {
     this.Cache.rmCache = Cache.rmCache;
     this.Cache.addCache = Cache.addCache;
 
-    this.Permission = new Permission.Permission(this.Tools.readDB, this.Tools.writeDB)
+    this.Permission = new Permission.Permission(this.Tools.readDB, this.Tools.writeDB);
 
     this.Editor = new Editor.Editor(this.Tools.readDB, this.Tools.writeDB, this.Tools.getDB, this.Tools.removeDB, this.Cache.addCache, this.Cache.rmCache);
-    // this.Editor = {
 
-    //   /**
-    //   * 读取词库
-    //   * @param name 目标词库
-    //   * @returns 结果
-    //   */
-    //   readWord: async (name: string): Promise<wordSaveData> => {
-    //     return editor.readWord(name);
-    //   },
+    this.trigger = {
+      trigger: trigger.trigger,
+      addTrigger: trigger.addTrigger,
+      rmTrigger: trigger.rmTrigger
+    };
 
-    //   /**
-    //   * 读取回收站列表
-    //   * @returns idList
-    //   */
-    //   getRecycleBinList: async (): Promise<string[]> => {
-    //     return editor.getRecycleBinList();
-    //   },
-
-    //   /**
-    //   * 读取普通词库列表
-    //   * @returns idList
-    //   */
-    //   getWordList: async (): Promise<string[]> => {
-    //     return editor.getWordList();
-    //   },
-
-    //   /**
-    //   * 删除词库
-    //   * @param name 需要删除的词库名
-    //   * @returns 结果
-    //   */
-    //   removeWord: async (name: string): Promise<"词库列表不存在此词库" | "ok"> => {
-    //     return editor.removeWord(name);
-    //   },
-
-    //   /**
-    //   * 恢复词库
-    //   * @param name 被恢复的词库名
-    //   * @returns 返回结果
-    //   */
-    //   restoreWord: async (name: string): Promise<"回收站不存在此词库" | "ok"> => {
-    //     return editor.restoreWord(name);
-    //   },
-
-    //   /**
-    //    * 设置存储格
-    //    * @param name 目标词库名
-    //    * @param cell 存储格名
-    //    * @param uid 操作者uid
-    //    */
-    //   setSaveCell: async (name: string, cell: string, uid: string) => {
-    //     return editor.setSaveCell(name, cell, uid);
-    //   },
-
-    //   /**
-    //    * 重置存储格
-    //    * @param name 目标词库名
-    //    * @param uid 操作者uid
-    //    */
-    //   resetSaveCell: async (name: string, uid: string) => {
-    //     return editor.resetSaveCell(name, uid);
-    //   },
-
-    //   /**
-    //    * 读取存储格子
-    //    * @param name 目标词库名
-    //    * @param uid 操作者uid
-    //    */
-    //   readSaveCell: async (name: string, uid: string) => {
-    //     return editor.readSaveCell(name, uid);
-    //   },
-
-    //   /**
-    //    * 读取作者
-    //    * @param name 目标词库名
-    //    * @returns 
-    //    */
-    //   getAuthor: async (name: string): Promise<string[]> => {
-    //     return editor.getAuthor(name);
-    //   },
-
-    //   /**
-    //    * 增加作者
-    //    * @param name 目标词库名
-    //    * @param uid 操作者uid
-    //    * @param authorID 新增uid
-    //    * @returns 
-    //    */
-    //   addAuthor: async (name: string, uid: string, authorID: string) => {
-    //     return editor.addAuthor(name, uid, authorID);
-    //   },
-
-    //   /**
-    //    * 减少作者
-    //    * @param name 目标词库名
-    //    * @param uid 操作者uid
-    //    * @param authorID 去除uid
-    //    * @returns 
-    //    */
-    //   removeAuthor: async (name: string, uid: string, authorID: string) => {
-    //     return editor.removeAuthor(name, uid, authorID);
-    //   },
-
-    //   /**
-    //    * 是否有作者权限
-    //    * @param name 目标词库名
-    //    * @param authorID 是否含有此uid
-    //    * @returns 
-    //    */
-    //   isAuthor: async (name: string, authorID: string) => {
-    //     return editor.isAuthor(name, authorID);
-    //   },
-
-    //   /**
-    //    * 添加词条
-    //    * @param name 目标词库
-    //    * @param uid 操作者uid
-    //    * @param q 触发词
-    //    * @param a 回答
-    //    * @returns 
-    //    */
-    //   addWordItem: async (name: string, uid: string, q: string, a: string) => {
-    //     return editor.addWordItem(name, uid, q, a);
-    //   },
-
-    //   /**
-    //    * 删除词条
-    //    * @param name 目标词库
-    //    * @param uid 操作者uid
-    //    * @param q 触发词
-    //    * @param a 删除序号(从1开始，为'all'时删除此触发)
-    //    * @returns 
-    //    */
-    //   rmWordItem: async (name: string, uid: string, q: string, a: "all" | number) => {
-    //     return editor.rmWordItem(name, uid, q, a);
-    //   },
-
-    //   /**
-    //    * 查找词条（查询某触发词所在的词库）
-    //    * @param q 触发词 
-    //    * @returns 
-    //    */
-    //   getQuestion: async (q: string) => {
-    //     return editor.getQuestion(q);
-    //   }
-    // };
+    this.statement = {
+      statement: statement.statement,
+      rmStatement: statement.rmStatement,
+      addStatement: statement.addStatement
+    };
   }
 }
