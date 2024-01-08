@@ -2,15 +2,17 @@ import { Context, Session } from "koishi";
 import { statement } from "../../extend/statement";
 import { matchType } from "..";
 import { word } from "../../word";
+import { wordSaveData } from "../..";
 
 export interface chatFunctionType {
   args: string[],
   matchs: matchType;
+  wordData: wordSaveData;
 }
 
 let funcPackKeys = Object.keys(statement);
 
-export const parsStart = async (questionList: string[], word: word, ctx: Context, session: Session, matchList: matchType) => {
+export const parsStart = async (questionList: string[], wordData: wordSaveData, word: word, session: Session, matchList?: matchType) => {
   const randomNumber = word.tools.randomNumber;
 
   funcPackKeys = Object.keys(statement);
@@ -28,7 +30,8 @@ export const parsStart = async (questionList: string[], word: word, ctx: Context
   // console.log(tree);
 
   // 再进行树的解析
-  const msg = await parseTrees(tree, ctx, session, matchList);
+
+  const msg = await parseTrees(tree, session, wordData, !matchList ? {} : matchList);
   return msg;
 };
 
@@ -70,13 +73,13 @@ const getTree = (str: string): any[] => {
   return a;
 };
 
-const parseTrees = async (inData: any[], ctx: Context, session: Session, matchList: matchType): Promise<string> => {
+const parseTrees = async (inData: any[], session: Session, wordData: wordSaveData, matchList: matchType): Promise<string> => {
   // 遍历最深层字符串，解析后返回结果，重复运行
   for (let i = 0; i < inData.length; i++)
   {
     if (Array.isArray(inData[i]))
     {
-      inData[i] = await parseTrees(inData[i], ctx, session, matchList); // 递归调用处理嵌套数组
+      inData[i] = await parseTrees(inData[i], session, wordData, matchList); // 递归调用处理嵌套数组
     }
   }
   const reload = inData.join('');
@@ -88,10 +91,11 @@ const parseTrees = async (inData: any[], ctx: Context, session: Session, matchLi
     const which = newFunArr[0];
     const inData: chatFunctionType = {
       args: newFunArr.slice(1),
-      matchs: matchList
+      matchs: matchList,
+      wordData: wordData
     };
 
-    const str: string | void = await statement[which](inData, ctx, session);
+    const str: string | void = await statement[which](inData, session);
     return (str) ? str : '';
   } else
   {

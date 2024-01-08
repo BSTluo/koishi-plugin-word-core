@@ -72,7 +72,7 @@ export class wordDriver {
     // 获取那个词条对应的全部回答
     const questionList = wordData.data[q];
 
-    const message = await parsStart(questionList, this.word, this.ctx,session, matchList);
+    const message = await parsStart(questionList, wordData, this.word, session, matchList);
 
     return message;
     // });
