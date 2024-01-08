@@ -1,6 +1,6 @@
-import { Context } from "koishi";
+import { Context, Session } from "koishi";
 import { statement } from "../../extend/statement";
-import { matchType } from "../Driver";
+import { matchType } from "..";
 import { word } from "../../word";
 
 export interface chatFunctionType {
@@ -10,7 +10,7 @@ export interface chatFunctionType {
 
 let funcPackKeys = Object.keys(statement);
 
-export const parsStart = async (questionList: string[], word: word, ctx: Context, matchList: matchType) => {
+export const parsStart = async (questionList: string[], word: word, ctx: Context, session: Session, matchList: matchType) => {
   const randomNumber = word.tools.randomNumber;
 
   funcPackKeys = Object.keys(statement);
@@ -25,9 +25,10 @@ export const parsStart = async (questionList: string[], word: word, ctx: Context
   // 你(+:xx:xx)好
   // [你,[+,xx,xx],好]
   const tree = getTree(temp);
-  console.log(tree);
+  // console.log(tree);
+
   // 再进行树的解析
-  const msg = await parseTrees(tree, ctx, matchList);
+  const msg = await parseTrees(tree, ctx, session, matchList);
   return msg;
 };
 
@@ -38,21 +39,25 @@ const getTree = (str: string): any[] => {
     const tempArr: any[] = [];
     let index = 0;
 
-    while (parseStr.length > 0) {
+    while (parseStr.length > 0)
+    {
       const v = parseStr[0];
       parseStr = parseStr.slice(1);
 
-      if (v === '(') {
+      if (v === '(')
+      {
         index++;
         // parseStr = parseStr.slice(0);
         tempArr[index] = par();
         index++;
-      } else if (v === ')') {
+      } else if (v === ')')
+      {
         return tempArr;
         // } else if (v === ':') {
         //   index++;
         // } else {
-      } else {
+      } else
+      {
         if (!tempArr[index]) { tempArr[index] = ''; }
         tempArr[index] += v;
       }
@@ -65,27 +70,31 @@ const getTree = (str: string): any[] => {
   return a;
 };
 
-const parseTrees = async (inData: any[], ctx: Context, matchList: matchType): Promise<string> => {
+const parseTrees = async (inData: any[], ctx: Context, session: Session, matchList: matchType): Promise<string> => {
   // 遍历最深层字符串，解析后返回结果，重复运行
-  for (let i = 0; i < inData.length; i++) {
-    if (Array.isArray(inData[i])) {
-      inData[i] = await parseTrees(inData[i], ctx, matchList); // 递归调用处理嵌套数组
+  for (let i = 0; i < inData.length; i++)
+  {
+    if (Array.isArray(inData[i]))
+    {
+      inData[i] = await parseTrees(inData[i], ctx, session, matchList); // 递归调用处理嵌套数组
     }
   }
   const reload = inData.join('');
   const newFunArr = reload.split(':');
 
   // newFunArr 是解析得到的语法字符串
-  if (funcPackKeys.includes(newFunArr[0])) {
+  if (funcPackKeys.includes(newFunArr[0]))
+  {
     const which = newFunArr[0];
     const inData: chatFunctionType = {
       args: newFunArr.slice(1),
       matchs: matchList
     };
 
-    const str: string | void = await statement[which](inData, ctx);
+    const str: string | void = await statement[which](inData, ctx, session);
     return (str) ? str : '';
-  } else {
+  } else
+  {
     return newFunArr.join('');
   }
 };

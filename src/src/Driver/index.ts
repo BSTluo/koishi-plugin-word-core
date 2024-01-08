@@ -1,6 +1,7 @@
 import { Context } from 'koishi';
 import { parsStart } from './src';
 import { word } from '../word';
+import { Session } from 'koishi';
 
 export const inject = {
   require: ['word']
@@ -11,22 +12,25 @@ export type matchType = Record<string, string[]>;
 export class wordDriver {
   private ctx: Context;
   private word: word;
-  
+
   constructor(word: word, ctx: Context) {
     this.ctx = ctx;
     this.word = word;
   }
 
-  async start(q: string) {
+  async start(session: Session) {
     // this.ctx.inject(['word'], async ctx => {
-    
+    if (!session.content) { return; }
+    const q: string = session.content;
+
     const wordCache = await this.word.cache.getCache();
     const matchList: matchType = {};
 
     let matchedString: string | undefined;
     let list = wordCache.hasKey[q];
 
-    if (!wordCache.hasKey[q]) {
+    if (!wordCache.hasKey[q])
+    {
       // 找到这个触发词对应的词库，并开始解析
       matchedString = Object.keys(wordCache.hasKey).find(regText => {
 
@@ -34,12 +38,15 @@ export class wordDriver {
         let list = Object.keys(this.word.trigger);
 
         // 遍历获取被替换的词
-        for (let repKey of list) {
+        for (let repKey of list)
+        {
           const thisTemp = this.word.trigger.trigger[repKey];
-          for (let repReg of thisTemp.reg) {
+          for (let repReg of thisTemp.reg)
+          {
             regText = regText.replace(repKey, repReg);
             const reg = new RegExp(`^${regText}$`, 'g');
-            if (reg.test(q)) {
+            if (reg.test(q))
+            {
               if (!matchList[thisTemp.id]) { matchList[thisTemp.id] = []; }
               const matchString: string[] = q.match(reg) as string[];
 
@@ -65,7 +72,7 @@ export class wordDriver {
     // 获取那个词条对应的全部回答
     const questionList = wordData.data[q];
 
-    const message = await parsStart(questionList, this.word, this.ctx, matchList);
+    const message = await parsStart(questionList, this.word, this.ctx,session, matchList);
 
     return message;
     // });

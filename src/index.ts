@@ -24,7 +24,7 @@ export const apply = async (ctx: Context, config: Config) => {
   ctx.inject(['word'], async ctx => {
     ctx.command('word', '词库核心！');
 
-    ctx.command('word').subcommand('add <question:text> <answer:text>', '为一个触发词添加回复').usage('添加一个词库')
+    ctx.command('word').subcommand('add <question:string> <answer:text>', '为一个触发词添加回复').usage('添加一个词库')
       .example('add 你好 你也好')
       .action(async ({ session }, question, answer) => {
         if (!session) { return; }
@@ -36,7 +36,7 @@ export const apply = async (ctx: Context, config: Config) => {
         const nowWordDB = await ctx.word.user.getEditWord(uid);
         const hasPermission = await ctx.word.permission.isHave(uid, `word.edit.${nowWordDB}`);
 
-        if (!hasPermission || !config.masterID.includes(uid)) { return `<at id="${session.username}" /> 你没有词库【${nowWordDB}】的编辑权限`; }
+        if (!hasPermission && !config.masterID.includes(uid)) { return `<at id="${session.username}" /> 你没有词库【${nowWordDB}】的编辑权限`; }
 
         const a = await ctx.word.editor.addWordItem(nowWordDB, uid, question, answer);
 
@@ -47,7 +47,7 @@ export const apply = async (ctx: Context, config: Config) => {
         }
       });
 
-    ctx.command('word').subcommand('rm <question:text> <listNumber:text>', '删除触发词的回复').usage('序号为数字或者all')
+    ctx.command('word').subcommand('rm <question:string> <listNumber:text>', '删除触发词的回复').usage('序号为数字或者all')
       .example('rm 你好 all')
       .example('rm 你好 1')
       .action(async ({ session }, question, whichTemp) => {
@@ -61,7 +61,7 @@ export const apply = async (ctx: Context, config: Config) => {
         const nowWordDB = await ctx.word.user.getEditWord(uid);
         const hasPermission = await ctx.word.permission.isHave(uid, `word.edit.${nowWordDB}`);
 
-        if (!hasPermission || !config.masterID.includes(uid)) { return `<at id="${session.username}" /> 你没有词库【${nowWordDB}】的编辑权限`; }
+        if (!hasPermission && !config.masterID.includes(uid)) { return `<at id="${session.username}" /> 你没有词库【${nowWordDB}】的编辑权限`; }
 
         const a = await ctx.word.editor.rmWordItem(nowWordDB, uid, question, which);
 
@@ -144,7 +144,7 @@ export const apply = async (ctx: Context, config: Config) => {
         const nowWordDB = await ctx.word.user.getEditWord(uid);
         const hasPermission = await ctx.word.permission.isHave(uid, `word.edit.${nowWordDB}`);
 
-        if (!hasPermission || !config.masterID.includes(uid)) { return `<at id="${session.username}" /> 你没有词库【${nowWordDB}】的编辑权限`; }
+        if (!hasPermission && !config.masterID.includes(uid)) { return `<at id="${session.username}" /> 你没有词库【${nowWordDB}】的编辑权限`; }
 
         const a = await ctx.word.editor.setSaveCell(nowWordDB, cell, uid);
 
@@ -166,7 +166,7 @@ export const apply = async (ctx: Context, config: Config) => {
         const nowWordDB = await ctx.word.user.getEditWord(uid);
         const hasPermission = await ctx.word.permission.isHave(uid, `word.edit.${nowWordDB}`);
 
-        if (!hasPermission || !config.masterID.includes(uid)) { return `<at id="${session.username}" /> 你没有词库【${nowWordDB}】的编辑权限`; }
+        if (!hasPermission && !config.masterID.includes(uid)) { return `<at id="${session.username}" /> 你没有词库【${nowWordDB}】的编辑权限`; }
 
         const a = await ctx.word.editor.setSaveCell(nowWordDB, 'default', uid);
 
@@ -287,7 +287,7 @@ export const apply = async (ctx: Context, config: Config) => {
 
     ctx.on('message', async (session) => {
       if (!session.content) { return; }
-      const msg = await ctx.word.driver.start(session.content);
+      const msg = await ctx.word.driver.start(session);
       if (!msg) { return; }
       session.send(msg);
     });

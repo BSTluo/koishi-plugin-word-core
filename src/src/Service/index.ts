@@ -1,17 +1,17 @@
 import { Context } from "koishi";
-import * as Tools from './Tools/Tools';
-import * as User from './User/User';
-import * as Cache from "./Editor/Cache";
-import * as Editor from './Editor/Editor';
-import * as Permission from './Permission/Permission';
+import * as Tools from './tools/Tools';
+import * as User from './user/User';
+import * as Cache from "./editor/cache";
+import * as Editor from './editor/editor';
+import * as Permission from './permission/Permission';
 import * as trigger from "../extend/trigger";
 import { wordSaveData } from "..";
 import * as statement from "../extend/statement";
 
-export * from './Tools/Tools';
-export * from './Editor/Cache';
+export * from './tools/Tools';
+export * from './editor/cache';
 
-export * from './Editor/Cache';
+export * from './editor/cache';
 
 export const inject = {
   require: ['database']

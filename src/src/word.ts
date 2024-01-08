@@ -1,9 +1,9 @@
 import { Service, Context } from "koishi";
-import { CacheFunction, ToolsFunction, wordService } from './Service/index';
-import { wordDriver } from "./Driver/Driver";
-import { Editor } from "./Service/Editor/Editor";
-import { Permission } from "./Service/Permission/Permission";
-import { UserFunction } from "./Service/User/User";
+import { CacheFunction, ToolsFunction, wordService } from './service/index';
+import { wordDriver } from "./driver";
+import { Editor } from "./service/editor/editor";
+import { Permission } from "./service/permission/Permission";
+import { UserFunction } from "./service/user/User";
 import { triggerFunction, triggerType } from "./extend/trigger";
 import { statementFunction } from "./extend/statement";
 
