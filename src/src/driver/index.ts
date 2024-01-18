@@ -35,12 +35,13 @@ export class wordDriver {
       matchedString = Object.keys(wordCache.hasKey).find(regText => {
 
         // 获取输入替换列表
-        let list = Object.keys(this.word.trigger);
+        let list = Object.keys(this.word.trigger.trigger);
 
         // 遍历获取被替换的词
         for (let repKey of list)
         {
           const thisTemp = this.word.trigger.trigger[repKey];
+          
           for (let repReg of thisTemp.reg)
           {
             regText = regText.replace(repKey, repReg);
