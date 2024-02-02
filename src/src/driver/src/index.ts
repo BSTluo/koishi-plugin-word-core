@@ -32,7 +32,14 @@ export const parsStart = async (questionList: string[], wordData: wordSaveData, 
   // 再进行树的解析
 
   const msg = await parseTrees(tree, session, wordData, !matchList ? {} : matchList);
-  return msg;
+  const ok = await word.user.saveTemp();
+  if (ok)
+  {
+    return msg;
+  } else
+  {
+    return ' [word-core] 数据保存失败';
+  }
 };
 
 const getTree = (str: string): any[] => {
