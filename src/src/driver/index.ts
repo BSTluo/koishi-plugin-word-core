@@ -41,7 +41,7 @@ export class wordDriver {
         for (let repKey of list)
         {
           const thisTemp = this.word.trigger.trigger[repKey];
-          
+
           for (let repReg of thisTemp.reg)
           {
             regText = regText.replace(repKey, repReg);
@@ -64,18 +64,75 @@ export class wordDriver {
     if (!list) { return; }
     if (list.length <= 0) { return; }
 
-    // 挑选一个词库
-    const item = list[this.word.tools.randomNumber(0, list.length)];
+    let parsedList: number[] = [];
+    let witchWord = 0;
 
-    // 读取那个词库
-    const wordData = await this.word.editor.readWord(item);
+    // 挑选一个词库，且不重复  
+    const parOne = async () => {
+      do
+      {
+        witchWord = this.word.tools.randomNumber(0, list.length);
+      } while (parsedList.includes(witchWord));
+      parsedList.push(witchWord);
+      const item = list[witchWord];
 
-    // 获取那个词条对应的全部回答
-    const questionList = wordData.data[q];
+      // 读取那个词库
+      const wordData = await this.word.editor.readWord(item);
 
-    const message = await parsStart(questionList, wordData, this.word, session, matchList);
+      // 获取那个词条对应的全部回答
+      const questionList = wordData.data[q];
+      const message = await parsStart(questionList, wordData, this.word, session, matchList);
+      return message;
+    };
 
-    return message;
-    // });
+    try
+    {
+      const a = await parOne();
+      const ok = await this.word.user.saveTemp();
+      if (ok)
+      {
+        return a;
+      } else
+      {
+        return ' [word-core] 数据保存失败';
+      }
+
+    } catch (err: any)
+    {
+      const errorType = err.message;
+      // 执行后立刻终止，并且不保存数据
+      if (errorType == 'kill')
+      {
+        return;
+      }
+
+      // 执行后立即终止，但是保存数据
+      if (errorType == 'end')
+      {
+        const ok = await this.word.user.saveTemp();
+        if (ok)
+        {
+          return;
+        } else
+        {
+          return ' [word-core] 数据保存失败';
+        }
+      }
+
+      // 执行后立即终止，不保存数据，并且进入下次解析
+      if (errorType == 'next')
+      {
+        const a = await parOne();
+        const ok = await this.word.user.saveTemp();
+        if (ok)
+        {
+          return a;
+        } else
+        {
+          return ' [word-core] 数据保存失败';
+        }
+      }
+    }
+
   }
 }

@@ -1,14 +1,61 @@
 import { Context, Session } from "koishi";
-import { statement } from "../../extend/statement";
+import { statement, statusMsg } from "../../extend/statement";
 import { matchType } from "..";
 import { word } from "../../word";
 import { wordSaveData } from "../..";
+import { error } from "console";
 
 export interface chatFunctionType {
   args: string[],
   matchs: matchType;
   wordData: wordSaveData;
+  parPack: typeParPack;
 }
+
+// 切换一个词条进行解释（不会切换到已解析的词条）
+// data为返回的值
+type typeNext = (data?:string) => {
+  status: 'next';
+  data: string;
+};
+
+const next: typeNext = (data:string = 'next') => {
+  return { status: 'next', data: data };
+};
+
+// 杀死此回复词
+// data为返回的值
+type typeEnd = (data?:string) => {
+  status: 'end';
+  data: string;
+};
+
+const end: typeEnd = (data:string = 'end') => {
+  return { status: 'end', data: data };
+};
+
+// 结束此回复词
+// data为返回的值
+type typeKill = (data?:string) => {
+  status: 'kill';
+  data: string;
+};
+const kill: typeKill = (data:string = 'kill') => {
+  return { status: 'kill', data: data };
+};
+
+// 词库切换函数
+type typeParPack = {
+  next: typeNext;
+  end: typeEnd;
+  kill: typeKill;
+};
+
+const parPack: typeParPack = {
+  next: next,
+  end: end,
+  kill: kill
+};
 
 let funcPackKeys = Object.keys(statement);
 
@@ -30,16 +77,9 @@ export const parsStart = async (questionList: string[], wordData: wordSaveData, 
   // console.log(tree);
 
   // 再进行树的解析
-
   const msg = await parseTrees(tree, session, wordData, !matchList ? {} : matchList);
-  const ok = await word.user.saveTemp();
-  if (ok)
-  {
-    return msg;
-  } else
-  {
-    return ' [word-core] 数据保存失败';
-  }
+
+  return msg;
 };
 
 const getTree = (str: string): any[] => {
@@ -99,11 +139,20 @@ const parseTrees = async (inData: any[], session: Session, wordData: wordSaveDat
     const inData: chatFunctionType = {
       args: newFunArr.slice(1),
       matchs: matchList,
-      wordData: wordData
+      wordData: wordData,
+      parPack: parPack
     };
 
-    const str: string | void = await statement[which](inData, session);
-    return (str) ? str : '';
+    const str: string | void | statusMsg = await statement[which](inData, session);
+    if (typeof str == "object")
+    {
+      const status = str.status;
+      if (status == 'kill' || status == 'end' || status == 'next') { throw new Error(status); }
+    } else
+    {
+      return (str) ? str : '';
+    }
+    return '';
   } else
   {
     return newFunArr.join('');

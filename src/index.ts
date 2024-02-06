@@ -52,7 +52,7 @@ export const apply = async (ctx: Context, config: Config) => {
       .example('rm 你好 1')
       .action(async ({ session }, question, whichTemp) => {
         if (!session) { return; }
-        if (question) { return `<at id="${session.username}" /> 你没有设置触发词`; }
+        if (!question) { return `<at id="${session.username}" /> 你没有设置触发词`; }
         if (!/^\d+$|^all$/.test(whichTemp)) { return `<at id="${session.username}" /> 你没有设置需要被删除的序号或序号不正确`; }
 
         const uid = session.uid;
