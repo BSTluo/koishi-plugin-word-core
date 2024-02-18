@@ -1,7 +1,7 @@
 {
   "name": "koishi-plugin-word-core",
   "description": "多功能文字对话引擎！（开发ing）",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",
   "files": [
@@ -15,6 +15,6 @@
     "plugin"
   ],
   "peerDependencies": {
-    "koishi": "^4.13.6"
+    "koishi": "^4.16.8"
   }
 }
