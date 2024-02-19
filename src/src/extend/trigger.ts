@@ -2,8 +2,8 @@
 // 将某些输入替换为xx符号
 // 获取trigger
 export const trigger: triggerType = {
-  '(@)': { reg: ['\s*[\*([\s\S]+?)\*]\s*'], id: 'at' },
-  '(id)': { reg: ['\s*[@([\s\S]+?)@]\s*'], id: 'id' }
+  '(@)': { reg: ['\\s\*<at name=\\"([\\s\\S]+)\\"\\/>\\s\*'], id: 'name' },
+  '(#)': { reg: ['\\s\*<at id=\\"([\\s\\S]+)\\"\\/>\\s\*'], id: 'id' }
 };
 
 /**

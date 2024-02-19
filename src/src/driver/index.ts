@@ -21,9 +21,10 @@ export class wordDriver {
   async start(session: Session) {
     // this.ctx.inject(['word'], async ctx => {
     if (!session.content) { return; }
-    const q: string = session.content;
+    let q: string = session.content;
 
     const wordCache = await this.word.cache.getCache();
+
     const matchList: matchType = {};
 
     let matchedString: string | undefined;
@@ -35,32 +36,44 @@ export class wordDriver {
       matchedString = Object.keys(wordCache.hasKey).find(regText => {
 
         // 获取输入替换列表
-        let list = Object.keys(this.word.trigger.trigger);
+        let triggerList = Object.keys(this.word.trigger.trigger);
+        
 
         // 遍历获取被替换的词
-        for (let repKey of list)
+        for (const repKey of triggerList)
         {
           const thisTemp = this.word.trigger.trigger[repKey];
 
+          let regTextTemp = regText;
+
           for (let repReg of thisTemp.reg)
           {
-            regText = regText.replace(repKey, repReg);
-            const reg = new RegExp(`^${regText}$`, 'g');
-            if (reg.test(q))
-            {
-              if (!matchList[thisTemp.id]) { matchList[thisTemp.id] = []; }
-              const matchString: string[] = q.match(reg) as string[];
+            regTextTemp = regTextTemp.replace(repKey, repReg);
 
-              matchList[thisTemp.id].concat(matchString);
-              return true;
-            }
+            const reg = new RegExp(`^${regTextTemp}$`, 'g');
+            const regTemp = q.match(reg);
+
+            if (!regTemp) { continue; }
+            
+            regTemp.forEach(element => {
+              const reg2 = new RegExp(`^${regTextTemp}$`);
+              if (!matchList[thisTemp.id]) { matchList[thisTemp.id] = []; }
+              const matchString: string[] = element.match(reg2) as string[];
+              matchList[thisTemp.id].push(matchString[1]);
+            });
+
+            return true;
           }
         }
-
       });
 
-      list = (matchedString) ? wordCache.hasKey[q] : [];
+      if (matchedString)
+      {
+        q = matchedString;
+        list = wordCache.hasKey[q];
+      }
     }
+
     if (!list) { return; }
     if (list.length <= 0) { return; }
 
@@ -71,8 +84,9 @@ export class wordDriver {
     const parOne = async () => {
       do
       {
-        witchWord = this.word.tools.randomNumber(0, list.length);
+        witchWord = this.word.tools.randomNumber(0, list.length - 1);
       } while (parsedList.includes(witchWord));
+
       parsedList.push(witchWord);
       const item = list[witchWord];
 
@@ -81,6 +95,8 @@ export class wordDriver {
 
       // 获取那个词条对应的全部回答
       const questionList = wordData.data[q];
+      if (!questionList) { return; }
+
       const message = await parsStart(questionList, wordData, this.word, session, matchList);
       return message;
     };

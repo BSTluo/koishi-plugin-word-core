@@ -24,25 +24,28 @@ export const apply = async (ctx: Context, config: Config) => {
   ctx.inject(['word'], async ctx => {
     ctx.command('word', '词库核心！');
 
-    ctx.command('word', '词库核心！').subcommand('.add <question:string> <answer:text>', '为一个触发词添加回复').usage('添加一个词库')
+    ctx.command('word', '词库核心！').subcommand('.add <question:string> <answer:string>', '为一个触发词添加回复').usage('添加一个词库')
       .example('add 你好 你也好')
       .action(async ({ session }, question, answer) => {
         if (!session) { return; }
         if (!question) { return `<at name="${session.username}" /> 你没有设置触发词`; }
         if (!answer) { return `<at name="${session.username}" /> 你没有设置回答`; }
 
-        const uid = session.uid;
+        const uid = session.userId;
 
         const nowWordDB = await ctx.word.user.getEditWord(uid);
+
         const hasPermission = await ctx.word.permission.isHave(uid, `word.edit.${nowWordDB}`);
 
         if (!hasPermission && !config.masterID.includes(uid)) { return `<at name="${session.username}" /> 你没有词库【${nowWordDB}】的编辑权限`; }
 
         const a = await ctx.word.editor.addWordItem(nowWordDB, uid, question, answer);
 
-        if (typeof a === 'number') {
+        if (typeof a === 'number')
+        {
           return `<at name="${session.username}" /> 添加到【${nowWordDB}】词库成功，序号为【${a}】`;
-        } else {
+        } else
+        {
           return a;
         }
       });
@@ -55,7 +58,7 @@ export const apply = async (ctx: Context, config: Config) => {
         if (!question) { return `<at name="${session.username}" /> 你没有设置触发词`; }
         if (!/^\d+$|^all$/.test(whichTemp)) { return `<at name="${session.username}" /> 你没有设置需要被删除的序号或序号不正确`; }
 
-        const uid = session.uid;
+        const uid = session.userId;
         const which = (whichTemp === 'all') ? 'all' : Number(whichTemp);
 
         const nowWordDB = await ctx.word.user.getEditWord(uid);
@@ -65,9 +68,11 @@ export const apply = async (ctx: Context, config: Config) => {
 
         const a = await ctx.word.editor.rmWordItem(nowWordDB, uid, question, which);
 
-        if (a === 'over') {
+        if (a === 'over')
+        {
           return `<at name="${session.username}" /> 删除触发词成功`;
-        } else {
+        } else
+        {
           return `<at name="${session.username}" /> ${a}`;
         }
       });
@@ -78,12 +83,14 @@ export const apply = async (ctx: Context, config: Config) => {
         if (!session) { return; }
         let newDB = test;
         if (!test) { newDB = 'default'; }
-        const uid = session.uid;
+        const uid = session.userId;
 
         const a = await ctx.word.user.setEditWord(uid, newDB);
-        if (a) {
+        if (a)
+        {
           return `<at name="${session.username}" /> 设置成功`;
-        } else {
+        } else
+        {
           return `<at name="${session.username}" /> 设置失败`;
         }
       });
@@ -92,7 +99,7 @@ export const apply = async (ctx: Context, config: Config) => {
       .example('readedit')
       .action(async ({ session }) => {
         if (!session) { return; }
-        const uid = session.uid;
+        const uid = session.userId;
 
         const a = await ctx.word.user.getEditWord(uid);
 
@@ -118,7 +125,7 @@ export const apply = async (ctx: Context, config: Config) => {
       .action(async ({ session }, question) => {
         if (!session) { return; }
         if (!question) { return `<at name="${session.username}" /> 你没有输入需要查询的关键词`; }
-        const nowDB = await ctx.word.user.getEditWord(session.uid);
+        const nowDB = await ctx.word.user.getEditWord(session.userId);
 
         const a = await ctx.word.editor.readWord(nowDB);
 
@@ -139,7 +146,7 @@ export const apply = async (ctx: Context, config: Config) => {
         if (!session) { return; }
         if (!cell) { return `<at name="${session.username}" /> 你没有输入存储格子名称`; }
 
-        const uid = session.uid;
+        const uid = session.userId;
 
         const nowWordDB = await ctx.word.user.getEditWord(uid);
         const hasPermission = await ctx.word.permission.isHave(uid, `word.edit.${nowWordDB}`);
@@ -148,9 +155,11 @@ export const apply = async (ctx: Context, config: Config) => {
 
         const a = await ctx.word.editor.setSaveCell(nowWordDB, cell, uid);
 
-        if (typeof a === 'boolean') {
+        if (typeof a === 'boolean')
+        {
           return `<at name="${session.username}" /> 修改成功`;
-        } else {
+        } else
+        {
           return `<at name="${session.username}" /> ${a}`;
         }
       });
@@ -161,7 +170,7 @@ export const apply = async (ctx: Context, config: Config) => {
       .action(async ({ session }) => {
         if (!session) { return; }
 
-        const uid = session.uid;
+        const uid = session.userId;
 
         const nowWordDB = await ctx.word.user.getEditWord(uid);
         const hasPermission = await ctx.word.permission.isHave(uid, `word.edit.${nowWordDB}`);
@@ -170,9 +179,11 @@ export const apply = async (ctx: Context, config: Config) => {
 
         const a = await ctx.word.editor.setSaveCell(nowWordDB, 'default', uid);
 
-        if (typeof a === 'boolean') {
+        if (typeof a === 'boolean')
+        {
           return `<at name="${session.username}" /> 修改成功`;
-        } else {
+        } else
+        {
           return `<at name="${session.username}" /> ${a}`;
         }
       });
@@ -182,7 +193,7 @@ export const apply = async (ctx: Context, config: Config) => {
       .action(async ({ session }) => {
         if (!session) { return; }
 
-        const uid = session.uid;
+        const uid = session.userId;
 
         const nowWordDB = await ctx.word.user.getEditWord(uid);
 
@@ -206,15 +217,18 @@ export const apply = async (ctx: Context, config: Config) => {
       .action(async ({ session }, uid, permission) => {
         if (!session) { return; }
 
-        const mid = session.uid;
+        const mid = session.userId;
 
         const hasPermission = await ctx.word.permission.isHave(mid, 'word.admin.add');
-        if (!hasPermission || !config.masterID.includes(mid)) { return `<at name="${session.username}" /> 你没有词库的【添加权限】权限`; }
+
+        if (!hasPermission && !config.masterID.includes(mid)) { return `<at name="${session.username}" /> 你没有词库的【添加权限】权限`; }
 
         const a = await ctx.word.permission.add(uid, permission);
-        if (typeof a === 'boolean') {
+        if (typeof a === 'boolean')
+        {
           return (a) ? `<at name="${session.username}" /> 添加成功` : `<at name="${session.username}" /> 添加失败`;
-        } else {
+        } else
+        {
           return `<at name="${session.username}" /> ${a}`;
         }
       });
@@ -233,15 +247,17 @@ export const apply = async (ctx: Context, config: Config) => {
       .action(async ({ session }, uid, permission) => {
         if (!session) { return; }
 
-        const mid = session.uid;
+        const mid = session.userId;
 
         const hasPermission = await ctx.word.permission.isHave(mid, 'word.admin.rm');
-        if (!hasPermission || !config.masterID.includes(mid)) { return `<at name="${session.username}" /> 你没有词库的【删除权限】权限`; }
+        if (!hasPermission && !config.masterID.includes(mid)) { return `<at name="${session.username}" /> 你没有词库的【删除权限】权限`; }
 
         const a = await ctx.word.permission.rm(uid, permission);
-        if (typeof a === 'boolean') {
+        if (typeof a === 'boolean')
+        {
           return (a) ? `<at name="${session.username}" /> 添加成功` : `<at name="${session.username}" /> 添加失败`;
-        } else {
+        } else
+        {
           return `<at name="${session.username}" /> ${a}`;
         }
       });
@@ -251,12 +267,13 @@ export const apply = async (ctx: Context, config: Config) => {
       .example('addauthor 6503fb7b50308')
       .action(async ({ session }, uid) => {
         if (!session) { return; }
-        const mid = session.uid;
+        const mid = session.userId;
 
         const nowWordDB = await ctx.word.user.getEditWord(mid);
+
         const hasPermission = await ctx.word.permission.isHave(uid, `word.edit.${nowWordDB}`);
 
-        if (!hasPermission || !config.masterID.includes(mid)) { return `<at name="${session.username}" /> 你没有词库【${nowWordDB}】的编辑权限`; }
+        if (!hasPermission && !config.masterID.includes(mid)) { return `<at name="${session.username}" /> 你没有词库【${nowWordDB}】的编辑权限`; }
 
         const a = await ctx.word.editor.addAuthor(nowWordDB, mid, uid);
 
@@ -264,16 +281,15 @@ export const apply = async (ctx: Context, config: Config) => {
       });
 
     // 减少作者
-    ctx.command('word', '词库核心！').subcommand('.rmauthor <uid:string>', '设置某uid为作者')
-    
+    ctx.command('word', '词库核心！').subcommand('.rmauthor <uid:string>', '删除某uid的作者权限')
       .action(async ({ session }, uid) => {
         if (!session) { return; }
-        const mid = session.uid;
+        const mid = session.userId;
 
         const nowWordDB = await ctx.word.user.getEditWord(mid);
         const hasPermission = await ctx.word.permission.isHave(uid, `word.edit.${nowWordDB}`);
 
-        if (!hasPermission || !config.masterID.includes(mid)) { return `<at name="${session.username}" /> 你没有词库【${nowWordDB}】的编辑权限`; }
+        if (!hasPermission && !config.masterID.includes(mid)) { return `<at name="${session.username}" /> 你没有词库【${nowWordDB}】的编辑权限`; }
 
         const a = await ctx.word.editor.removeAuthor(nowWordDB, mid, uid);
 
@@ -282,7 +298,8 @@ export const apply = async (ctx: Context, config: Config) => {
 
     ctx.command('word', '词库核心！').subcommand('.id', '查看自己的id及名字').action(({ session }) => {
       if (!session) { return '发生异常'; }
-      return `您的名字是：【${session.username}】，您的id是：【${session.uid}】`;
+
+      return `您的名字是：【${session.username}】，您的id是：【${session.userId}】`;
     });
 
     ctx.on('message', async (session) => {

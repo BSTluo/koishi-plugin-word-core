@@ -15,6 +15,7 @@ export type DBTypeList = {
 };
 
 export interface wordSaveData {
+  name: string;
   saveDB: string;
   author: string[];
   data: Record<string, string[]>;

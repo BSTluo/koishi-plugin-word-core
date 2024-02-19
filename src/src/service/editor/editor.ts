@@ -30,6 +30,7 @@ export class Editor {
     let out: wordSaveData;
     if (Object.keys(readData).length === 0) {
       out = {
+        name: name,
         saveDB: 'default',
         author: [],
         data: {}
@@ -265,6 +266,7 @@ export class Editor {
 
       this.addCache(q, name);
       if (await this.updateWord(name, {
+        name:name,
         author: [uid],
         data: dataTemp,
         saveDB: 'default'
