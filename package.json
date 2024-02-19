@@ -23,5 +23,9 @@
         "database"
       ]
     }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/BSTluo/koishi-plugin-word-core.git"
   }
 }
