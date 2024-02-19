@@ -75,19 +75,21 @@ export class User {
     return data[cell][itemName];
   };
 
-  async updateItem(uid: string, cell: string, itemName: string, amount: number): Promise<boolean> {
+  async updateItemForce(uid: string, cell: string, itemName: string, amount: number): Promise<boolean> {
     const data = await this.getData(uid);
     if (!data[cell]) { data[cell] = {}; }
     if (!data[cell][itemName]) { data[cell][itemName] = amount; }
     return await this.updateData(uid, data);
   };
 
-  async updateItemTemp(uid: string, cell: string, itemName: string, amount: number): Promise<boolean> {
+  async updateItem(uid: string, cell: string, itemName: string, amount: number): Promise<boolean> {
     try
     {
       const data = await this.getData(uid);
+
       if (!data[cell]) { data[cell] = {}; }
-      if (!data[cell][itemName]) { data[cell][itemName] = amount; }
+      data[cell][itemName] = amount;
+
       this.tempData[uid] = data;
       return true;
     } catch (err)
@@ -114,21 +116,21 @@ export class User {
 export type getDataType = (uid: string) => Promise<Record<string, Record<string, number>>>;
 export type updateDataType = (uid: string, data: Record<string, Record<string, number>>) => Promise<boolean>;
 export type getItemType = (uid: string, cell: string, itemName: string) => Promise<null | number>;
-export type updateItemType = (uid: string, cell: string, itemName: string, amount: number) => Promise<boolean>;
+export type updateItemForceType = (uid: string, cell: string, itemName: string, amount: number) => Promise<boolean>;
 export type getEditWordType = (uid: string) => Promise<string>;
 export type setEditWordType = (uid: string, newDB: string) => Promise<boolean>;
 export type saveTempType = () => Promise<boolean>;
 export type updateTempType = (uid: string, data: Record<string, Record<string, number>>) => boolean;
-export type updateItemTempType = (uid: string, cell: string, itemName: string, amount: number) => Promise<boolean>;
+export type updateItemType = (uid: string, cell: string, itemName: string, amount: number) => Promise<boolean>;
 
 export interface UserFunction {
   getData: getDataType;
   updateData: updateDataType;
   getItem: getItemType;
-  updateItem: updateItemType;
+  updateItemForce: updateItemForceType;
   getEditWord: getEditWordType;
   setEditWord: setEditWordType;
   saveTemp: saveTempType;
   updateTemp: updateTempType;
-  updateItemTemp: updateItemTempType;
+  updateItem: updateItemType;
 }

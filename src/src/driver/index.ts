@@ -98,6 +98,7 @@ export class wordDriver {
       if (!questionList) { return; }
 
       const message = await parsStart(questionList, wordData, this.word, session, matchList);
+
       return message;
     };
 
