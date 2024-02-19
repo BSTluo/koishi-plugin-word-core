@@ -10,6 +10,10 @@ export interface Config {
   masterID: string[];
 }
 
+export const inject = {
+  required: ['database']
+}
+
 export const Config: Schema<Config> = Schema.object({
   masterID: Schema.array(String).description('管理员的唯一标识')
 });
