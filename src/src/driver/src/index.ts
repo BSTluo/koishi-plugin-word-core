@@ -14,33 +14,33 @@ export interface chatFunctionType {
 
 // 切换一个词条进行解释（不会切换到已解析的词条）
 // data为返回的值
-type typeNext = (data?:string) => {
+type typeNext = (data?: string) => {
   status: 'next';
   data: string;
 };
 
-const next: typeNext = (data:string = 'next') => {
+const next: typeNext = (data: string = 'next') => {
   return { status: 'next', data: data };
 };
 
 // 杀死此回复词
 // data为返回的值
-type typeEnd = (data?:string) => {
+type typeEnd = (data?: string) => {
   status: 'end';
   data: string;
 };
 
-const end: typeEnd = (data:string = 'end') => {
+const end: typeEnd = (data: string = 'end') => {
   return { status: 'end', data: data };
 };
 
 // 结束此回复词
 // data为返回的值
-type typeKill = (data?:string) => {
+type typeKill = (data?: string) => {
   status: 'kill';
   data: string;
 };
-const kill: typeKill = (data:string = 'kill') => {
+const kill: typeKill = (data: string = 'kill') => {
   return { status: 'kill', data: data };
 };
 
@@ -103,9 +103,6 @@ const getTree = (str: string): any[] => {
       } else if (v === ')')
       {
         return tempArr;
-        // } else if (v === ':') {
-        //   index++;
-        // } else {
       } else
       {
         if (!tempArr[index]) { tempArr[index] = ''; }
@@ -131,30 +128,38 @@ const parseTrees = async (inData: any[], session: Session, wordData: wordSaveDat
   }
   const reload = inData.join('');
   const newFunArr = reload.split(':');
+  // which是语法包的头
+  const which = newFunArr[0];
+
+  const toInData: chatFunctionType = {
+    args: newFunArr.slice(1),
+    matchs: matchList,
+    wordData: wordData,
+    parPack: parPack
+  };
 
   // newFunArr 是解析得到的语法字符串
-  if (funcPackKeys.includes(newFunArr[0]))
+  if (funcPackKeys.includes(which))
   {
-    const which = newFunArr[0];
-    const inData: chatFunctionType = {
-      args: newFunArr.slice(1),
-      matchs: matchList,
-      wordData: wordData,
-      parPack: parPack
-    };
 
-    const str: string | void | statusMsg = await statement[which](inData, session);
-    if (typeof str == "object")
-    {
-      const status = str.status;
-      if (status == 'kill' || status == 'end' || status == 'next') { throw new Error(status); }
-    } else
-    {
-      return (str) ? str : '';
-    }
-    return '';
+    const overPar = await parStatement(which, toInData, session);
+    return overPar;
   } else
   {
     return newFunArr.join('');
   }
+};
+
+// 调用词库语法
+const parStatement = async (which: string, toInData: chatFunctionType, session: Session<never, never, Context>) => {
+  const str: string | void | statusMsg = await statement[which](toInData, session);
+  if (typeof str == "object")
+  {
+    const status = str.status;
+    if (status == 'kill' || status == 'end' || status == 'next') { throw new Error(status); }
+  } else
+  {
+    return (str) ? str : '';
+  }
+  return '';
 };
