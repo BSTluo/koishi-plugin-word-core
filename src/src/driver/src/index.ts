@@ -69,7 +69,7 @@ export const parsStart = async (questionList: string[], wordData: wordSaveData, 
     return questionList[num];
   };
 
-  let temp = getRandQuestion(questionList);
+  const temp = getRandQuestion(questionList);
   // 先将文本拆解为树
   // 你(+:xx:xx)好
   // [你,[+,xx,xx],好]

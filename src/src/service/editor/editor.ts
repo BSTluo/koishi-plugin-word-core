@@ -241,7 +241,7 @@ export class Editor {
    * @returns 
    */
   async isAuthor(name: string, authorID: string) {
-    let author = await this.getAuthor(name);
+    const author = await this.getAuthor(name);
 
     if (!author.includes(authorID)) {
       return false;
@@ -272,7 +272,7 @@ export class Editor {
         saveDB: 'default'
       })) {
         return 0;
-      };
+      }
     }
 
     const wordData = await this.readWord(name);

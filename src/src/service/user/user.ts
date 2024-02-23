@@ -32,7 +32,7 @@ export class User {
   async updateData(uid: string, data: Record<string, Record<string, number>>): Promise<boolean> {
     const backData = await this.writeDBTools('wordUserPackData', uid, data);
     return backData;
-  };
+  }
 
   // 保存缓存
   async saveTemp(): Promise<boolean> {
@@ -73,14 +73,14 @@ export class User {
     if (!data[cell]) { return null; }
     if (!data[cell][itemName]) { return null; }
     return data[cell][itemName];
-  };
+  }
 
   async updateItemForce(uid: string, cell: string, itemName: string, amount: number): Promise<boolean> {
     const data = await this.getData(uid);
     if (!data[cell]) { data[cell] = {}; }
     if (!data[cell][itemName]) { data[cell][itemName] = amount; }
     return await this.updateData(uid, data);
-  };
+  }
 
   async updateItem(uid: string, cell: string, itemName: string, amount: number): Promise<boolean> {
     try
@@ -96,21 +96,21 @@ export class User {
     {
       return false;
     }
-  };
+  }
 
   // 获取用户编辑指针
   async getEditWord(uid: string) {
     const userConfig = await this.readDBTools('wordUserConfig', uid) as unknown as Record<string, string[]>;
     if (!userConfig.nowEdit) { userConfig.nowEdit = ['default']; }
     return userConfig.nowEdit[0];
-  };
+  }
 
   // 修改编辑指针
   async setEditWord(uid: string, newDB: string) {
     const userConfig = await this.readDBTools('wordUserConfig', uid) as unknown as Record<string, string[]>;
     userConfig.nowEdit = [newDB];
     return await this.writeDBTools('wordUserConfig', uid, userConfig as unknown as allType);
-  };
+  }
 }
 
 export type getDataType = (uid: string) => Promise<Record<string, Record<string, number>>>;
