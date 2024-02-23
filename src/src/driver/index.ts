@@ -36,7 +36,7 @@ export class wordDriver {
       matchedString = Object.keys(wordCache.hasKey).find(regText => {
 
         // 获取输入替换列表
-        let triggerList = Object.keys(this.word.trigger.trigger);
+        const triggerList = Object.keys(this.word.trigger.trigger);
         
 
         // 遍历获取被替换的词
@@ -46,7 +46,7 @@ export class wordDriver {
 
           let regTextTemp = regText;
 
-          for (let repReg of thisTemp.reg)
+          for (const repReg of thisTemp.reg)
           {
             regTextTemp = regTextTemp.replace(repKey, repReg);
 
@@ -77,7 +77,7 @@ export class wordDriver {
     if (!list) { return; }
     if (list.length <= 0) { return; }
 
-    let parsedList: number[] = [];
+    const parsedList: number[] = [];
     let witchWord = 0;
 
     // 挑选一个词库，且不重复  
