@@ -45,15 +45,20 @@ export class wordService {
 
     const user = new User.User(this.Tools.readDB, this.Tools.writeDB);
 
-    this.User.getData = (uid) => { return user.getData(uid); };
-    this.User.updateData = (uid, data) => { return user.updateData(uid, data); };
-    this.User.getItem = (uid, cell, item) => { return user.getItem(uid, cell, item); };
-    this.User.updateItemForce = (uid, cell, itemName, amount) => { return user.updateItemForce(uid, cell, itemName, amount); };
-    this.User.getEditWord = (uid) => { return user.getEditWord(uid); };
-    this.User.setEditWord = (uid, newDB) => { return user.setEditWord(uid, newDB); };
-    this.User.saveTemp = () => { return user.saveTemp(); };
-    this.User.updateTemp = (uid, data) => { return user.updateTemp(uid, data); };
-    this.User.updateItem = (uid, cell, itemName, amount) => { return user.updateItem(uid, cell, itemName, amount); };
+    this.User.getData =  user.getData ;
+    this.User.updateData = user.updateData;
+    this.User.getItem = user.getItem;
+    this.User.updateItemForce = user.updateItemForce;
+    this.User.getEditWord = user.getEditWord;
+    this.User.setEditWord = user.setEditWord;
+    this.User.saveTemp = user.saveTemp;
+    this.User.updateTemp = user.updateTemp;
+    this.User.updateItem = user.updateItem;
+    this.User.getConfig = user.getConfig
+    this.User.setConfig = user.setConfig
+    this.User.setConfigForce = user.setConfigForce
+    this.User.saveConfig = user.saveConfig
+    
 
     this.Cache.getCache = () => { return Cache.getCache(this.Tools.getDB); };
     this.Cache.nowCache = Cache.wordCache;

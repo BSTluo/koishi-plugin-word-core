@@ -1,5 +1,5 @@
 import { readDBType, writeDBType } from "../index";
-import { allType } from "../../index";
+import { allType, settingType, settingTypeValue, wordUserConfig, wordUserTemp } from "../../index";
 
 export class User {
   readDBTools: readDBType;
@@ -9,7 +9,7 @@ export class User {
     this.writeDBTools = writeDBTools;
   }
 
-  tempData: Record<string, Record<string, Record<string, number>>> = {};
+  private tempData: Record<string, Record<string, Record<string, number>>> = {};
 
   /**
    * 获取用户背包数据
@@ -154,11 +154,84 @@ export class User {
    * @param uid 用户id
    * @param newDB 编辑目标
    * @returns 
-   */ 
+   */
   async setEditWord(uid: string, newDB: string) {
     const userConfig = await this.readDBTools('wordUserConfig', uid) as unknown as Record<string, string[]>;
     userConfig.nowEdit = [newDB];
     return await this.writeDBTools('wordUserConfig', uid, userConfig as unknown as allType);
+  }
+
+  private configTempData: Record<string, settingType> = {};
+
+  /**
+   * 在配置中读取设置
+   * @param uid 
+   * @returns 
+   */
+  async getConfig(uid: string): Promise<settingType> {
+    let data: settingType;
+    // 如果有缓存则输出缓存
+    if (this.configTempData.hasOwnProperty(uid))
+    {
+      data = this.configTempData[uid];
+    } else
+    {
+      data = await this.readDBTools('wordUserTemp', uid) as settingType;
+    }
+
+    const a = data;
+    this.configTempData[uid] = a;
+    return this.configTempData[uid];
+  }
+
+  // 对某一项进行键值对设置
+  async setConfig(uid: string, key: string, value: settingTypeValue): Promise<void> {
+    const configData = await this.getConfig(uid);
+    configData[key] = value;
+    this.configTempData[uid] = configData;
+  }
+
+  // 强制对某一项进行键值对设置
+  async setConfigForce(uid: string, key: string, value: settingTypeValue): Promise<void> {
+    const configData = await this.getConfig(uid);
+    configData[key] = value;
+    this.configTempData[uid] = configData;
+    const ok = await this.saveUserConfig(uid, configData);
+    if (ok)
+    {
+      delete this.configTempData[uid];
+    } else
+    {
+      return;
+    }
+  }
+
+  // 保存设置
+  async saveConfig(): Promise<boolean> {
+    const errList: Record<string, settingType> = {};
+
+    for (const data in this.configTempData)
+    {
+      const bl = await this.saveUserConfig(data, this.configTempData[data]);
+      if (!bl)
+      {
+        errList[data] = this.configTempData[data];
+      }
+    }
+    this.configTempData = errList;
+    if (JSON.stringify(this.configTempData) == "{}")
+    {
+      return true;
+    } else
+    {
+      return false;
+    }
+  }
+
+  // 存储某用户的数据
+  private async saveUserConfig(uid: string, data: settingType): Promise<boolean> {
+    const backData = await this.writeDBTools('wordUserTemp', uid, data);
+    return backData;
   }
 }
 
@@ -171,6 +244,11 @@ export type setEditWordType = (uid: string, newDB: string) => Promise<boolean>;
 export type saveTempType = () => Promise<boolean>;
 export type updateTempType = (uid: string, data: Record<string, Record<string, number>>) => boolean;
 export type updateItemType = (uid: string, cell: string, itemName: string, amount: number) => Promise<boolean>;
+export type getConfigType = (uid: string) => Promise<settingType>;
+export type setConfigType = (uid: string, key: string, value: settingTypeValue) => Promise<void>;
+export type setConfigForceType = (uid: string, key: string, value: settingTypeValue) => Promise<void>;
+export type saveConfigType = () => Promise<boolean>;
+
 
 export interface UserFunction {
   getData: getDataType;
@@ -182,4 +260,8 @@ export interface UserFunction {
   saveTemp: saveTempType;
   updateTemp: updateTempType;
   updateItem: updateItemType;
+  getConfig: getConfigType;
+  setConfig: setConfigType;
+  setConfigForce: setConfigForceType;
+  saveConfig: saveConfigType;
 }

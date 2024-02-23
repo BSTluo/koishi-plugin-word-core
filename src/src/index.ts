@@ -5,13 +5,16 @@ export const using = ['database'];
 declare module 'koishi' {
   interface Tables extends DBTypeList { }
 }
-export type allType = wordSaveData | Record<string, string> | Record<string, Record<string, number>>;
+export type allType = wordSaveData | Record<string, string> | Record<string, Record<string, number>> | settingType;
+export type settingType = Record<string, settingTypeValue>;
+export type settingTypeValue = string | number | string[] | number[] | Record<string, string>;
 
 export type DBTypeList = {
   wordUserPackData: wordUserPackData;
   wordData: wordData;
   recycleBinList: recycleBinList;
   wordUserConfig: wordUserConfig;
+  wordUserTemp: wordUserTemp;
 };
 
 export interface wordSaveData {
@@ -41,6 +44,11 @@ export interface recycleBinList {
   data: wordSaveData;
 }
 
+export interface wordUserTemp {
+  id: string;
+  data: settingType;
+}
+
 const dbInit = (ctx: Context) => {
 
   ctx.model.extend('wordUserPackData', {
@@ -65,6 +73,13 @@ const dbInit = (ctx: Context) => {
   });
 
   ctx.model.extend('recycleBinList', {
+    id: 'string',
+    data: 'json'
+  }, {
+    primary: 'id'
+  });
+
+  ctx.model.extend('wordUserTemp', {
     id: 'string',
     data: 'json'
   }, {

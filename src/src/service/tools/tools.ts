@@ -1,27 +1,29 @@
 import { Context } from "koishi";
-import { allType, recycleBinList, wordData, wordUserConfig, wordUserPackData } from "../..";
+import { allType, recycleBinList, wordData, wordUserConfig, wordUserPackData, wordUserTemp } from "../..";
 
 // 读取库
-export const readDBFunction = async (ctx: Context, dbName: 'wordUserPackData' | 'wordData' | 'recycleBinList' | 'wordUserConfig', key: string): Promise<allType> => {
+export const readDBFunction = async (ctx: Context, dbName: dbNameList, key: string): Promise<allType> => {
   const readObjTemp = await ctx.database.get(dbName, key);
   if (readObjTemp.length <= 0) { return {}; }
   return readObjTemp[0].data as allType;
 };
 
 // 保存库
-export const writeDBFunction = async (ctx: Context, dbName: 'wordUserPackData' | 'wordData' | 'recycleBinList' | 'wordUserConfig', key: string, newData: allType): Promise<boolean> => {
+export const writeDBFunction = async (ctx: Context, dbName: dbNameList, key: string, newData: allType): Promise<boolean> => {
   const readObjTemp = await ctx.database.get(dbName, key);
-  if (readObjTemp.length <= 0) {
+  if (readObjTemp.length <= 0)
+  {
 
-    await ctx.database.create(dbName, { id: key, data: newData } as unknown as wordUserPackData | wordData | recycleBinList | wordUserConfig);
+    await ctx.database.create(dbName, { id: key, data: newData } as unknown as wordUserPackData | wordData | recycleBinList | wordUserConfig | wordUserTemp);
     return true;
-  } else {
+  } else
+  {
     await ctx.database.set(dbName, key, { data: newData });
     return true;
   }
 };
 
-export const getDBFunction = async (ctx: Context, dbName: 'wordUserPackData' | 'wordData' | 'recycleBinList' | 'wordUserConfig') => {
+export const getDBFunction = async (ctx: Context, dbName: dbNameList) => {
 
   const idListOrigin = await ctx.database.get(dbName, { id: { $regex: /^[\s\S]+$/ } }, ['id']);
   const dataListOrigin = await ctx.database.get(dbName, { id: { $regex: /^[\s\S]+$/ } }, ['data']);
@@ -39,7 +41,7 @@ export const getDBFunction = async (ctx: Context, dbName: 'wordUserPackData' | '
   return data;
 };
 
-export const removeDBFunction = async (ctx: Context, dbName: 'wordUserPackData' | 'wordData' | 'recycleBinList' | 'wordUserConfig', key: string) => {
+export const removeDBFunction = async (ctx: Context, dbName: dbNameList, key: string) => {
   ctx.database.remove(dbName, key);
 };
 
@@ -53,10 +55,12 @@ export const randomNumber = (minNumber: number, maxNumber: number): number => {
   return Math.floor(Math.random() * (maxNumber - minNumber + 1)) + minNumber;
 };
 
-export type readDBType = (dbName: 'wordUserPackData' | 'wordData' | 'recycleBinList' | 'wordUserConfig', key: string) => Promise<allType>;
-export type writeDBType = (dbName: 'wordUserPackData' | 'wordData' | 'recycleBinList' | 'wordUserConfig', key: string, data: allType) => Promise<boolean>;
-export type getDBType = (dbName: 'wordUserPackData' | 'wordData' | 'recycleBinList' | 'wordUserConfig') => Promise<{ idList: string[], dataList: allType[]; }>;
-export type removeDBType = (dbName: 'wordUserPackData' | 'wordData' | 'recycleBinList' | 'wordUserConfig', key: string) => Promise<void>;
+type dbNameList = 'wordUserPackData' | 'wordData' | 'recycleBinList' | 'wordUserConfig' | 'wordUserTemp';
+
+export type readDBType = (dbName: dbNameList, key: string) => Promise<allType>;
+export type writeDBType = (dbName: dbNameList, key: string, data: allType) => Promise<boolean>;
+export type getDBType = (dbName: dbNameList) => Promise<{ idList: string[], dataList: allType[]; }>;
+export type removeDBType = (dbName: dbNameList, key: string) => Promise<void>;
 export type randomNumberType = (minNumber: number, maxNumber: number) => number;
 
 export interface ToolsFunction {
