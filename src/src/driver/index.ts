@@ -18,6 +18,11 @@ export class wordDriver {
     this.word = word;
   }
 
+  /**
+   * 开始解析当前的对话对象
+   * @param session 当前对话对象
+   * @returns 
+   */
   async start(session: Session) {
     // this.ctx.inject(['word'], async ctx => {
     if (!session.content) { return; }

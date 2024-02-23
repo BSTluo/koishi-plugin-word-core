@@ -1,10 +1,10 @@
 import { Service, Context } from "koishi";
-import { CacheFunction, ToolsFunction, wordService } from './service/index';
+import { CacheFunction, ToolsFunction, WordCache, wordService } from './service/index';
 import { wordDriver } from "./driver";
 import { Editor } from "./service/editor/editor";
 import { Permission } from "./service/permission/permission";
 import { UserFunction } from "./service/user/user";
-import { triggerFunction, triggerType } from "./extend/trigger";
+import { triggerFunction } from "./extend/trigger";
 import { statementFunction } from "./extend/statement";
 
 declare module 'koishi' {
@@ -28,6 +28,7 @@ export class word extends Service {
 
     const WordDriver = new wordDriver(this, ctx);
     this.driver = WordDriver;
+
     const wordServiceTemp = new wordService(ctx);
     this.cache = wordServiceTemp.Cache;
     this.editor = wordServiceTemp.Editor;

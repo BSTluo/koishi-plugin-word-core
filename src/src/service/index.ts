@@ -9,7 +9,6 @@ import * as statement from "../extend/statement";
 
 export * from './tools/tools';
 export * from './editor/cache';
-
 export * from './editor/cache';
 
 export const inject = {
@@ -34,7 +33,6 @@ export class wordService {
   public statement: statement.statementFunction = {} as statement.statementFunction;
 
   constructor(ctx: Context) {
-    // 这样写你就不需要手动给 ctx 赋值了
     this.ctx = ctx;
 
     this.ctx.inject(['database'], async ctx => {

@@ -11,7 +11,11 @@ export class User {
 
   tempData: Record<string, Record<string, Record<string, number>>> = {};
 
-  // 编辑用户背包数据
+  /**
+   * 获取用户背包数据
+   * @param uid 
+   * @returns 背包数据
+   */
   async getData(uid: string): Promise<Record<string, Record<string, number>>> {
     let data;
     // 如果有缓存则输出缓存
@@ -28,13 +32,21 @@ export class User {
     return this.tempData[uid];
   }
 
-  // 保存数据为用户数据
+  /**
+   * 保存数据为用户数据
+   * @param uid 用户id
+   * @param data 完整用户数据
+   * @returns 
+   */
   async updateData(uid: string, data: Record<string, Record<string, number>>): Promise<boolean> {
     const backData = await this.writeDBTools('wordUserPackData', uid, data);
     return backData;
   }
 
-  // 保存缓存
+  /**
+   * 保存缓存
+   * @returns 
+   */
   async saveTemp(): Promise<boolean> {
     const errList: Record<string, Record<string, Record<string, number>>> = {};
 
@@ -56,7 +68,12 @@ export class User {
     }
   }
 
-  // 保存数据到缓存
+  /**
+   * 保存数据到缓存
+   * @param uid 用户数据
+   * @param data 完整背包数据
+   * @returns 
+   */
   updateTemp(uid: string, data: Record<string, Record<string, number>>): boolean {
     try
     {
@@ -68,6 +85,13 @@ export class User {
     }
   }
 
+  /**
+   * 获取用户背包数据
+   * @param uid 用户id
+   * @param cell 存储格
+   * @param itemName 物品名称
+   * @returns 数量
+   */
   async getItem(uid: string, cell: string, itemName: string): Promise<null | number> {
     const data = await this.getData(uid);
     if (!data[cell]) { return null; }
@@ -75,6 +99,14 @@ export class User {
     return data[cell][itemName];
   }
 
+  /**
+   * 强制保存物品数量(一般不使用)
+   * @param uid 用户id
+   * @param cell 存储格
+   * @param itemName 物品名称
+   * @param amount 数量
+   * @returns 
+   */
   async updateItemForce(uid: string, cell: string, itemName: string, amount: number): Promise<boolean> {
     const data = await this.getData(uid);
     if (!data[cell]) { data[cell] = {}; }
@@ -82,6 +114,14 @@ export class User {
     return await this.updateData(uid, data);
   }
 
+  /**
+   * 保存物品数量到缓存
+   * @param uid 用户id
+   * @param cell 存储格
+   * @param itemName 物品名称
+   * @param amount 当前物品数量
+   * @returns 
+   */
   async updateItem(uid: string, cell: string, itemName: string, amount: number): Promise<boolean> {
     try
     {
@@ -98,14 +138,23 @@ export class User {
     }
   }
 
-  // 获取用户编辑指针
+  /**
+   * 获取用户编辑指针
+   * @param uid 用户id
+   * @returns 
+   */
   async getEditWord(uid: string) {
     const userConfig = await this.readDBTools('wordUserConfig', uid) as unknown as Record<string, string[]>;
     if (!userConfig.nowEdit) { userConfig.nowEdit = ['default']; }
     return userConfig.nowEdit[0];
   }
 
-  // 修改编辑指针
+  /**
+   * 修改编辑目标
+   * @param uid 用户id
+   * @param newDB 编辑目标
+   * @returns 
+   */ 
   async setEditWord(uid: string, newDB: string) {
     const userConfig = await this.readDBTools('wordUserConfig', uid) as unknown as Record<string, string[]>;
     userConfig.nowEdit = [newDB];

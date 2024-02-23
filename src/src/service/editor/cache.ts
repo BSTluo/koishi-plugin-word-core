@@ -30,7 +30,11 @@ export const getCache = async (getDBTools: getDBType) => {
   return wordCache;
 };
 
-// 标识某问题属于某词库
+/**
+ * 标识某触发词属于某词库
+ * @param q 触发词
+ * @param wordName 属于的词库
+ */
 export const addCache = (q: string, wordName: string) => {
   if (Object.keys(wordCache.hasKey).includes(q))
   {

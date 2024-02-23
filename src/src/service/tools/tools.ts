@@ -43,6 +43,12 @@ export const removeDBFunction = async (ctx: Context, dbName: 'wordUserPackData' 
   ctx.database.remove(dbName, key);
 };
 
+/**
+ * 获取一个随机数
+ * @param minNumber 随机数下限
+ * @param maxNumber 随机数上限
+ * @returns 
+ */
 export const randomNumber = (minNumber: number, maxNumber: number): number => {
   return Math.floor(Math.random() * (maxNumber - minNumber + 1)) + minNumber;
 };
