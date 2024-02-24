@@ -15,7 +15,7 @@
     "plugin"
   ],
   "peerDependencies": {
-    "koishi": "^4.17.0-beta.4"
+    "koishi": "^4.17.1"
   },
   "koishi": {
     "service": {
