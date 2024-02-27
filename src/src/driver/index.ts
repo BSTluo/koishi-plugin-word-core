@@ -27,12 +27,14 @@ export class wordDriver {
     // this.ctx.inject(['word'], async ctx => {
     if (!session.content) { return; }
     let q: string = session.content;
-
+    await this.word.cache.cacheRefresh()
     const wordCache = await this.word.cache.getCache();
 
     const matchList: matchType = {};
 
     let matchedString: string | undefined;
+
+    // 过滤过群组的群组列表
     let list = wordCache.hasKey[q];
 
     if (!wordCache.hasKey[q])
@@ -42,7 +44,6 @@ export class wordDriver {
 
         // 获取输入替换列表
         const triggerList = Object.keys(this.word.trigger.trigger);
-        
 
         // 遍历获取被替换的词
         for (const repKey of triggerList)
@@ -59,7 +60,7 @@ export class wordDriver {
             const regTemp = q.match(reg);
 
             if (!regTemp) { continue; }
-            
+
             regTemp.forEach(element => {
               const reg2 = new RegExp(`^${regTextTemp}$`);
               if (!matchList[thisTemp.id]) { matchList[thisTemp.id] = []; }
@@ -121,6 +122,7 @@ export class wordDriver {
 
     } catch (err: any)
     {
+      // console.log(err);
       const errorType = err.message;
       // 执行后立刻终止，并且不保存数据
       if (errorType == 'kill')

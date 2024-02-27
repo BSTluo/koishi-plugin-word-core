@@ -15,6 +15,7 @@ export type DBTypeList = {
   recycleBinList: recycleBinList;
   wordUserConfig: wordUserConfig;
   wordUserTemp: wordUserTemp;
+  wordCoreConfig: wordCoreConfig;
 };
 
 export interface wordSaveData {
@@ -45,6 +46,11 @@ export interface recycleBinList {
 }
 
 export interface wordUserTemp {
+  id: string;
+  data: settingType;
+}
+
+export interface wordCoreConfig {
   id: string;
   data: settingType;
 }
@@ -80,6 +86,20 @@ const dbInit = (ctx: Context) => {
   });
 
   ctx.model.extend('wordUserTemp', {
+    id: 'string',
+    data: 'json'
+  }, {
+    primary: 'id'
+  });
+
+  ctx.model.extend('wordUserTemp', {
+    id: 'string',
+    data: 'json'
+  }, {
+    primary: 'id'
+  });
+  
+  ctx.model.extend('wordCoreConfig', {
     id: 'string',
     data: 'json'
   }, {

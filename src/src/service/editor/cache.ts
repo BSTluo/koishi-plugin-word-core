@@ -9,12 +9,16 @@ export interface WordCache {
   hasKey: Record<string, string[]>;
 }
 
-export const getCache = async (getDBTools: getDBType) => {
+export function getCache() {
+  return wordCache;
+};
+
+export const cacheRefresh = async (getDBTools: getDBType) => {
   wordCache = {
     hasKey: {}
   };
 
-  const { idList, dataList } = await getDBTools('wordData');
+  const { dataList } = await getDBTools('wordData');
   const dataListTemp = dataList as wordSaveData[];
 
   dataListTemp.forEach((item: wordSaveData) => {
@@ -55,13 +59,15 @@ export const rmCache = (q: string, wordName: string) => {
   }
 };
 
-export type getCacheType = () => Promise<WordCache>;
+export type getCacheType = () => WordCache;
 export type rmCacheType = (q: string, wordName: string) => void;
 export type addCacheType = (q: string, wordName: string) => void;
+export type cacheRefreshType = () => Promise<WordCache>;
 
 export interface CacheFunction {
   getCache: getCacheType;
   nowCache: WordCache;
   rmCache: rmCacheType;
   addCache: addCacheType;
+  cacheRefresh: cacheRefreshType;
 }

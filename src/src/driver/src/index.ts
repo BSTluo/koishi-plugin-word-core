@@ -74,11 +74,10 @@ export const parsStart = async (questionList: string[], wordData: wordSaveData, 
   // 你(+:xx:xx)好
   // [你,[+,xx,xx],好]
   const tree = getTree(temp);
-  // console.log(tree);
 
   // 再进行树的解析
-  const msg = await parseTrees(tree, session, wordData, !matchList ? {} : matchList);
-
+  const msg = await parseTrees(tree, session, wordData, !matchList ? {} : matchList, false);
+  // console.log(msg)
   return msg;
 };
 
@@ -117,36 +116,46 @@ const getTree = (str: string): any[] => {
   return a;
 };
 
-const parseTrees = async (inData: any[], session: Session, wordData: wordSaveData, matchList: matchType): Promise<string> => {
+const parseTrees = async (inData: any[], session: Session, wordData: wordSaveData, matchList: matchType, isFunction: boolean): Promise<string> => {
   // 遍历最深层字符串，解析后返回结果，重复运行
   for (let i = 0; i < inData.length; i++)
   {
+
     if (Array.isArray(inData[i]))
     {
-      inData[i] = await parseTrees(inData[i], session, wordData, matchList); // 递归调用处理嵌套数组
+      inData[i] = await parseTrees(inData[i], session, wordData, matchList, true); // 递归调用处理嵌套数组
     }
   }
-  const reload = inData.join('');
-  const newFunArr = reload.split(':');
-  // which是语法包的头
-  const which = newFunArr[0];
 
-  const toInData: chatFunctionType = {
-    args: newFunArr.slice(1),
-    matchs: matchList,
-    wordData: wordData,
-    parPack: parPack
-  };
-
-  // newFunArr 是解析得到的语法字符串
-  if (funcPackKeys.includes(which))
+  if (!isFunction)
   {
-
-    const overPar = await parStatement(which, toInData, session);
-    return overPar;
+    return inData.join('');
   } else
   {
-    return newFunArr.join('');
+    
+    const reload = inData.join('');
+    const newFunArr = reload.split(':');
+    // which是语法包的头
+    const which = newFunArr[0];
+
+    const toInData: chatFunctionType = {
+      args: newFunArr.slice(1),
+      matchs: matchList,
+      wordData: wordData,
+      parPack: parPack
+    };
+
+    // newFunArr 是解析得到的语法字符串
+    // overPar 运行完成语法包后的的字符串
+    if (funcPackKeys.includes(which))
+    {
+      const overPar = await parStatement(which, toInData, session);
+
+      return overPar;
+    } else
+    {
+      return newFunArr.join('');
+    }
   }
 };
 

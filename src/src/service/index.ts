@@ -11,10 +11,6 @@ export * from './tools/tools';
 export * from './editor/cache';
 export * from './editor/cache';
 
-export const inject = {
-  require: ['database']
-};
-
 export class wordService {
   private ctx: Context;
 
@@ -35,7 +31,7 @@ export class wordService {
   constructor(ctx: Context) {
     this.ctx = ctx;
 
-    this.ctx.inject(['database'], async ctx => {
+    this.ctx.inject(['database'], async (ctx) => {
       this.Tools.readDB = (dbName, key) => { return Tools.readDBFunction(ctx, dbName, key); };
       this.Tools.writeDB = (dbName, key, data) => { return Tools.writeDBFunction(ctx, dbName, key, data); };
       this.Tools.getDB = (dbName) => { return Tools.getDBFunction(ctx, dbName); };
@@ -43,24 +39,28 @@ export class wordService {
       this.Tools.randomNumber = Tools.randomNumber;
     });
 
+    while (!this.Tools.readDB) { }
+
     const user = new User.User(this.Tools.readDB, this.Tools.writeDB);
 
-    this.User.getData =  user.getData ;
-    this.User.updateData = user.updateData;
-    this.User.getItem = user.getItem;
-    this.User.updateItemForce = user.updateItemForce;
-    this.User.getEditWord = user.getEditWord;
-    this.User.setEditWord = user.setEditWord;
-    this.User.saveTemp = user.saveTemp;
-    this.User.updateTemp = user.updateTemp;
-    this.User.updateItem = user.updateItem;
-    this.User.getConfig = user.getConfig
-    this.User.setConfig = user.setConfig
-    this.User.setConfigForce = user.setConfigForce
-    this.User.saveConfig = user.saveConfig
-    
+    // 直接等于会导致this指针错误的问题
+    this.User.getData = (uid) => { return user.getData(uid); };
+    this.User.updateData = (uid, data) => { return user.updateData(uid, data); };
+    this.User.getItem = (uid, cell, item) => { return user.getItem(uid, cell, item); };
+    this.User.updateItemForce = (uid, cell, itemName, amount) => { return user.updateItemForce(uid, cell, itemName, amount); };
+    this.User.getEditWord = (uid) => { return user.getEditWord(uid); };
+    this.User.setEditWord = (uid, newDB) => { return user.setEditWord(uid, newDB); };
+    this.User.saveTemp = () => { return user.saveTemp(); };
+    this.User.updateTemp = (uid, data) => { return user.updateTemp(uid, data); };
+    this.User.updateItem = (uid, cell, itemName, amount) => { return user.updateItem(uid, cell, itemName, amount); };
 
-    this.Cache.getCache = () => { return Cache.getCache(this.Tools.getDB); };
+    this.User.getConfig = (uid) => { return user.getConfig(uid); };
+    this.User.setConfig = (uid, key, value) => { return user.setConfig(uid, key, value); };
+    this.User.setConfigForce = (uid, key, value) => { return user.setConfigForce(uid, key, value); };
+    this.User.saveConfig = () => { return user.saveConfig(); };
+
+    this.Cache.getCache = Cache.getCache;
+    this.Cache.cacheRefresh = () => { return Cache.cacheRefresh(this.Tools.getDB); };
     this.Cache.nowCache = Cache.wordCache;
     this.Cache.rmCache = Cache.rmCache;
     this.Cache.addCache = Cache.addCache;
@@ -80,5 +80,6 @@ export class wordService {
       rmStatement: statement.rmStatement,
       addStatement: statement.addStatement
     };
+
   }
 }

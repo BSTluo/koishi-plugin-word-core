@@ -1,6 +1,8 @@
-import { Context, Logger, Random, Schema } from 'koishi';
-import * as core from './src/index';
+import { Context, Logger, Schema } from 'koishi';
 import { word } from './src/word';
+import { resolve } from 'path';
+import { } from '@koishijs/plugin-console';
+import * as core from './src/index';
 
 export const name = 'word-core';
 
@@ -12,7 +14,7 @@ export interface Config {
 
 export const inject = {
   required: ['database']
-}
+};
 
 export const Config: Schema<Config> = Schema.object({
   masterID: Schema.array(String).description('管理员的唯一标识')
@@ -25,6 +27,14 @@ export const logger = new Logger('Word-core');
 export const apply = async (ctx: Context, config: Config) => {
   ctx.plugin(core);
   ctx.plugin(word);
+
+  ctx.inject(['console'], (ctx) => {
+    ctx.console.addEntry({
+      dev: resolve(__dirname, '../client/index.ts'),
+      prod: resolve(__dirname, '../dist'),
+    });
+  });
+
   ctx.inject(['word'], async ctx => {
     ctx.command('word', '词库核心！');
 
@@ -308,6 +318,7 @@ export const apply = async (ctx: Context, config: Config) => {
 
     ctx.on('message', async (session) => {
       if (!session.content) { return; }
+      if (session.userId == session.bot.user.id) { return; }
       const msg = await ctx.word.driver.start(session);
       if (!msg) { return; }
       session.send(msg);
@@ -316,11 +327,7 @@ export const apply = async (ctx: Context, config: Config) => {
     // 上传
     // 下载
   });
-
-
 };
-
-// 编辑词库要权限
 
 // ..........................................................................................=@@^..,OOOOO@OOOOOOOOOOOOO@@O`**..................\@@O`.........................................................................................,o....,O^.........=OO`........*/OOOOO[,[[[[oOOO@@OOOooooOOOOO@@@@@@@@OOOOO@@@@@OO@@@@@@@OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO@@@@@OOOOOOOOooo**,**=O/..................................................................................................................................................................................................
 // ...........................................................................................@O^*\ooOOOOOOOOOOOOOOOOOOO@@O\***..................,\@@O]........................................................................................o.....\\.......OO`......../O/*.......*]]**]`**\OO@OOOooOOOOOO@@@@OOOOOOOOOO@@@@@@@@OOOOOOOOOOOOOO@@@OOOOOOOOOOOOOOOOOOOOOO@@@@OOooooooooo\OO`...................................................................................................................................................................................................
