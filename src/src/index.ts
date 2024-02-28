@@ -5,6 +5,7 @@ export const using = ['database'];
 declare module 'koishi' {
   interface Tables extends DBTypeList { }
 }
+
 export type allType = wordSaveData | Record<string, string> | Record<string, Record<string, number>> | settingType;
 export type settingType = Record<string, settingTypeValue>;
 export type settingTypeValue = string | number | string[] | number[] | Record<string, string>;
