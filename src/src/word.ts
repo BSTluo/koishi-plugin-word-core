@@ -6,6 +6,7 @@ import { Permission } from "./service/permission/permission";
 import { UserFunction } from "./service/user/user";
 import { triggerFunction } from "./extend/trigger";
 import { statementFunction } from "./extend/statement";
+import { configFunction } from "./service/config/config";
 
 declare module 'koishi' {
   interface Context {
@@ -22,6 +23,7 @@ export class word extends Service {
   trigger: triggerFunction;
   permission: Permission;
   statement: statementFunction;
+  config: configFunction;
 
   constructor(ctx: Context) {
     super(ctx, 'word', true);
@@ -37,5 +39,7 @@ export class word extends Service {
     this.permission = wordServiceTemp.Permission;
     this.trigger = wordServiceTemp.trigger;
     this.statement = wordServiceTemp.statement;
+    this.cache.cacheRefresh();
+    this.config = wordServiceTemp.config;
   }
 }

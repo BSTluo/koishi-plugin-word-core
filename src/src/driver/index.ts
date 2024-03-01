@@ -27,12 +27,30 @@ export class wordDriver {
     // this.ctx.inject(['word'], async ctx => {
     if (!session.content) { return; }
     let q: string = session.content;
-    await this.word.cache.cacheRefresh()
     const wordCache = await this.word.cache.getCache();
 
     const matchList: matchType = {};
 
     let matchedString: string | undefined;
+
+    // // 获取过滤当前群组过滤的库
+    // let primitiveList = wordCache.hasKey[q];
+    // const killWordListTemp = (await this.word.config.getConfig('filtration')) as unknown as Record<string, string[]>;
+
+    // const guildId = session.guildId;
+    // const killWordList = (killWordListTemp[guildId]) ? killWordListTemp[guildId] : [];
+
+    // let overPrimitiveList: string[] = [];
+
+    // primitiveList.forEach(e => {
+    //   if (killWordList.includes(e))
+    //   {
+    //     return;
+    //   } else
+    //   {
+    //     overPrimitiveList.push(e);
+    //   }
+    // });
 
     // 过滤过群组的群组列表
     let list = wordCache.hasKey[q];
@@ -82,6 +100,25 @@ export class wordDriver {
 
     if (!list) { return; }
     if (list.length <= 0) { return; }
+
+    // 获取过滤当前群组过滤的库
+    let primitiveList: string[] = list;
+    const killWordListTemp = (await this.word.config.getConfig('filtration')) as unknown as Record<string, string[]>;
+
+    const guildId = session.guildId;
+    const killWordList = (killWordListTemp[guildId]) ? killWordListTemp[guildId] : [];
+
+    let overPrimitiveList: string[] = [];
+
+    primitiveList.forEach(e => {
+      if (killWordList.includes(e))
+      {
+        return;
+      } else
+      {
+        overPrimitiveList.push(e);
+      }
+    });
 
     const parsedList: number[] = [];
     let witchWord = 0;

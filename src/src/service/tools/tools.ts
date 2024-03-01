@@ -55,7 +55,7 @@ export const randomNumber = (minNumber: number, maxNumber: number): number => {
   return Math.floor(Math.random() * (maxNumber - minNumber + 1)) + minNumber;
 };
 
-type dbNameList = 'wordUserPackData' | 'wordData' | 'recycleBinList' | 'wordUserConfig' | 'wordUserTemp';
+type dbNameList = 'wordUserPackData' | 'wordData' | 'recycleBinList' | 'wordUserConfig' | 'wordUserTemp' | 'wordCoreConfig';
 
 export type readDBType = (dbName: dbNameList, key: string) => Promise<allType>;
 export type writeDBType = (dbName: dbNameList, key: string, data: allType) => Promise<boolean>;

@@ -6,6 +6,8 @@ import * as Editor from './editor/editor';
 import * as Permission from './permission/permission';
 import * as trigger from "../extend/trigger";
 import * as statement from "../extend/statement";
+import * as Config from "./config/config";
+
 
 export * from './tools/tools';
 export * from './editor/cache';
@@ -27,6 +29,8 @@ export class wordService {
   public trigger: trigger.triggerFunction = {} as trigger.triggerFunction;
 
   public statement: statement.statementFunction = {} as statement.statementFunction;
+
+  public config: Config.configFunction = {} as Config.configFunction;
 
   constructor(ctx: Context) {
     this.ctx = ctx;
@@ -67,7 +71,7 @@ export class wordService {
 
     this.Permission = new Permission.Permission(this.Tools.readDB, this.Tools.writeDB);
 
-    this.Editor = new Editor.Editor(this.Tools.readDB, this.Tools.writeDB, this.Tools.getDB, this.Tools.removeDB, this.Cache.addCache, this.Cache.rmCache);
+    this.Editor = new Editor.Editor(this.Tools, this.Cache);
 
     this.trigger = {
       trigger: trigger.trigger,
@@ -81,5 +85,8 @@ export class wordService {
       addStatement: statement.addStatement
     };
 
+    let config = new Config.Config(this.Tools, this.Cache);
+    this.config.getConfig = (key) => { return config.getConfig(key); };
+    this.config.updateConfig = (key, value) => { return config.updateConfig(key, value); };
   }
 }

@@ -2,23 +2,23 @@
 import * as wordTools from '../index';
 import { wordSaveData } from '../../index';
 
-export class Editor
-{
+export class Editor {
   private readDB: wordTools.readDBType;
   private writeDB: wordTools.writeDBType;
   private getDB: wordTools.getDBType;
   private removeDB: wordTools.removeDBType;
   private addCache: wordTools.addCacheType;
   private rmCache: wordTools.rmCacheType;
+  private refreshCache: wordTools.cacheRefreshType;
 
-  constructor(readDB: wordTools.readDBType, writeDB: wordTools.writeDBType, getDB: wordTools.getDBType, removeDB: wordTools.removeDBType, addCache: wordTools.addCacheType, rmCache: wordTools.rmCacheType)
-  {
-    this.readDB = readDB;
-    this.writeDB = writeDB;
-    this.getDB = getDB;
-    this.removeDB = removeDB;
-    this.addCache = addCache;
-    this.rmCache = rmCache;
+  constructor(tools: wordTools.ToolsFunction, cache: wordTools.CacheFunction) {
+    this.readDB = tools.readDB;
+    this.writeDB = tools.writeDB;
+    this.getDB = tools.getDB;
+    this.removeDB = tools.removeDB;
+    this.addCache = cache.addCache;
+    this.rmCache = cache.rmCache;
+    this.refreshCache = cache.cacheRefresh;
   }
 
   /**
@@ -26,8 +26,7 @@ export class Editor
    * @param name 目标词库
    * @returns 结果
    */
-  public async readWord(name: string): Promise<wordSaveData>
-  {
+  public async readWord(name: string): Promise<wordSaveData> {
     const readData = await this.readDB('wordData', name);
 
     let out: wordSaveData;
@@ -53,20 +52,17 @@ export class Editor
    * @param data 词库数据
    * @returns 结果
    */
-  private async updateWord(name: string, data: wordSaveData)
-  {
+  private async updateWord(name: string, data: wordSaveData) {
     return await this.writeDB('wordData', name, data);
   }
 
   // 写入数据到回收站
-  private async writeRecycleBin(name: string, data: wordSaveData)
-  {
+  private async writeRecycleBin(name: string, data: wordSaveData) {
     return await this.writeDB('recycleBinList', name, data);
   }
 
   // 读一个回收站词库内容
-  private async readRecycleBin(name: string): Promise<wordSaveData>
-  {
+  private async readRecycleBin(name: string): Promise<wordSaveData> {
     return await this.readDB('recycleBinList', name) as wordSaveData;
   }
 
@@ -74,8 +70,7 @@ export class Editor
    * 读取回收站列表
    * @returns idList
    */
-  async getRecycleBinList(): Promise<string[]>
-  {
+  async getRecycleBinList(): Promise<string[]> {
     const list = await this.getDB('recycleBinList');
     return list.idList;
   }
@@ -84,8 +79,7 @@ export class Editor
    * 读取普通词库列表
    * @returns idList
    */
-  async getWordList(): Promise<string[]>
-  {
+  async getWordList(): Promise<string[]> {
     const list = await this.getDB('wordData');
     return list.idList;
   }
@@ -95,8 +89,7 @@ export class Editor
    * @param name 需要删除的词库名
    * @returns 结果
    */
-  async removeWord(name: string): Promise<"词库列表不存在此词库" | "ok">
-  {
+  async removeWord(name: string): Promise<"词库列表不存在此词库" | "ok"> {
     const wordList = await this.getWordList();
     if (!wordList.includes(name)) { return '词库列表不存在此词库'; }
 
@@ -112,8 +105,7 @@ export class Editor
    * @param name 被恢复的词库名
    * @returns 返回结果
    */
-  async restoreWord(name: string): Promise<"回收站不存在此词库" | "ok">
-  {
+  async restoreWord(name: string): Promise<"回收站不存在此词库" | "ok"> {
     const recycleBinList = await this.getRecycleBinList();
     if (!recycleBinList.includes(name)) { return '回收站不存在此词库'; }
 
@@ -131,8 +123,7 @@ export class Editor
    * @param value 设置为的值
    * @returns 结果
    */
-  private async setWordKeyValue(name: string, key: keyof wordSaveData, value: wordSaveData[typeof key])
-  {
+  private async setWordKeyValue(name: string, key: keyof wordSaveData, value: wordSaveData[typeof key]) {
     if (!(await this.getWordList()).includes(name)) { return '无此词库'; }
     const wordData = await this.readWord(name);
 
@@ -149,8 +140,7 @@ export class Editor
    * @param key author|data|saveDB之一
    * @returns 结果
    */
-  private async readWordKeyValue(name: string, key: keyof wordSaveData): Promise<wordSaveData[typeof key]>
-  {
+  private async readWordKeyValue(name: string, key: keyof wordSaveData): Promise<wordSaveData[typeof key]> {
     if (!(await this.getWordList()).includes(name)) { return '无此词库'; }
     const wordData = await this.readWord(name);
     return wordData[key];
@@ -162,8 +152,7 @@ export class Editor
    * @param cell 存储格名
    * @param uid 操作者uid
    */
-  async setSaveCell(name: string, cell: string, uid: string)
-  {
+  async setSaveCell(name: string, cell: string, uid: string) {
     const author = await this.isAuthor(name, uid);
     if (!author) { return '你不是作者'; }
     return await this.setWordKeyValue(name, 'saveDB', cell);
@@ -174,8 +163,7 @@ export class Editor
    * @param name 目标词库名
    * @param uid 操作者uid
    */
-  async resetSaveCell(name: string, uid: string)
-  {
+  async resetSaveCell(name: string, uid: string) {
     const author = await this.isAuthor(name, uid);
     if (!author) { return '你不是作者'; }
     return await this.setWordKeyValue(name, 'saveDB', "default");
@@ -186,8 +174,7 @@ export class Editor
    * @param name 目标词库名
    * @param uid 操作者uid
    */
-  async readSaveCell(name: string, uid: string)
-  {
+  async readSaveCell(name: string, uid: string) {
     // const author = await this.isAuthor(name, uid);
     // if (!author) { return '你不是作者'; }
     return await this.readWordKeyValue(name, 'saveDB') as string;
@@ -198,8 +185,7 @@ export class Editor
    * @param name 目标词库名
    * @param authorList 更新作者列表
    */
-  private async updateAuthor(name: string, authorList: string[])
-  {
+  private async updateAuthor(name: string, authorList: string[]) {
     await this.setWordKeyValue(name, 'author', authorList);
   }
 
@@ -208,8 +194,7 @@ export class Editor
    * @param name 目标词库名
    * @returns 
    */
-  async getAuthor(name: string): Promise<string[]>
-  {
+  async getAuthor(name: string): Promise<string[]> {
     return await this.readWordKeyValue(name, 'author') as string[];
   }
 
@@ -220,8 +205,7 @@ export class Editor
    * @param authorID 新增uid
    * @returns 
    */
-  async addAuthor(name: string, uid: string, authorID: string)
-  {
+  async addAuthor(name: string, uid: string, authorID: string) {
     const author = await this.getAuthor(name);
 
     if (!(await this.isAuthor(name, uid))) { return '您不是作者，无权操作'; }
@@ -243,8 +227,7 @@ export class Editor
    * @param authorID 去除uid
    * @returns 
    */
-  async removeAuthor(name: string, uid: string, authorID: string)
-  {
+  async removeAuthor(name: string, uid: string, authorID: string) {
     let author = await this.getAuthor(name);
 
     if (!(await this.isAuthor(name, uid))) { return '您不是作者，无权操作'; }
@@ -265,8 +248,7 @@ export class Editor
    * @param authorID 是否含有此uid
    * @returns 
    */
-  async isAuthor(name: string, authorID: string)
-  {
+  async isAuthor(name: string, authorID: string) {
     const author = await this.getAuthor(name);
 
     if (!author.includes(authorID))
@@ -286,8 +268,7 @@ export class Editor
    * @param a 回答
    * @returns 
    */
-  async addWordItem(name: string, uid: string, q: string, a: string)
-  {
+  async addWordItem(name: string, uid: string, q: string, a: string) {
     const list = await this.getWordList();
     if (!list.includes(name))
     {
@@ -332,8 +313,7 @@ export class Editor
    * @param a 删除序号(从1开始，为'all'时删除此触发)
    * @returns 
    */
-  async rmWordItem(name: string, uid: string, q: string, a: "all" | number)
-  {
+  async rmWordItem(name: string, uid: string, q: string, a: "all" | number) {
     const wordData = await this.readWord(name);
     if (!(await this.isAuthor(name, uid))) { return '您不是作者，无权操作'; }
 
@@ -366,11 +346,9 @@ export class Editor
    * @param q 触发词 
    * @returns 
    */
-  async getQuestion(q: string)
-  {
+  async getQuestion(q: string) {
     const questionList = Object.keys(wordTools.wordCache.hasKey);
-    const matchedString = questionList.find(regText =>
-    {
+    const matchedString = questionList.find(regText => {
       const reg = new RegExp(`^${regText}$`);
       return reg.test(q);
     });
