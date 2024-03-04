@@ -127,6 +127,7 @@ export class wordDriver {
     const parOne = async () => {
       do
       {
+        if (parsedList.length >= list.length) { return ' [word-core] 此词条无可正确运行的语句'; }
         witchWord = this.word.tools.randomNumber(0, list.length - 1);
       } while (parsedList.includes(witchWord));
 
@@ -161,27 +162,32 @@ export class wordDriver {
     {
       // console.log(err);
       const errorType = err.message;
+      const msg = errorType.split(':')[1];
+
       // 执行后立刻终止，并且不保存数据
-      if (errorType == 'kill')
+      if (errorType.startsWith('kill'))
       {
+        if (msg) { return msg; }
         return;
       }
 
       // 执行后立即终止，但是保存数据
-      if (errorType == 'end')
+      if (errorType.startsWith('end'))
       {
         const ok = await this.word.user.saveTemp();
         if (ok)
         {
+          if (msg) { return msg; }
           return;
         } else
         {
+          if (msg) { return ' [word-core] 数据保存失败，并且' + msg; }
           return ' [word-core] 数据保存失败';
         }
       }
 
       // 执行后立即终止，不保存数据，并且进入下次解析
-      if (errorType == 'next')
+      if (errorType.startsWith('next'))
       {
         const a = await parOne();
         const ok = await this.word.user.saveTemp();

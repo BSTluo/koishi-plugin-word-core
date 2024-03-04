@@ -39,7 +39,7 @@ export const apply = async (ctx: Context, config: Config) => {
     ctx.command('word', '词库核心！');
 
     ctx.command('word', '词库核心！').subcommand('.add <question:string> <answer:string>', '为一个触发词添加回复').usage('添加一个词库')
-      .example('add 你好 你也好')
+      .example('word.add 你好 你也好')
       .action(async ({ session }, question, answer) => {
         if (!session) { return; }
         if (!question) { return `<at name="${session.username}" /> 你没有设置触发词`; }
@@ -65,8 +65,8 @@ export const apply = async (ctx: Context, config: Config) => {
       });
 
     ctx.command('word', '词库核心！').subcommand('.rm <question:string> <listNumber:text>', '删除触发词的回复').usage('序号为数字或者all')
-      .example('rm 你好 all')
-      .example('rm 你好 1')
+      .example('word.rm 你好 all')
+      .example('word.rm 你好 1')
       .action(async ({ session }, question, whichTemp) => {
         if (!session) { return; }
         if (!question) { return `<at name="${session.username}" /> 你没有设置触发词`; }
@@ -92,7 +92,7 @@ export const apply = async (ctx: Context, config: Config) => {
       });
 
     ctx.command('word', '词库核心！').subcommand('.setedit <dbname:text>', '选择库进行编辑').usage('当setedit后不加参数则代表选择为默认库')
-      .example('setedit 测试')
+      .example('word.setedit 测试')
       .action(async ({ session }, test) => {
         if (!session) { return; }
         let newDB = test;
@@ -110,7 +110,7 @@ export const apply = async (ctx: Context, config: Config) => {
       });
 
     ctx.command('word', '词库核心！').subcommand('.readedit', '查看当前正在编辑的词库')
-      .example('readedit')
+      .example('word.readedit')
       .action(async ({ session }) => {
         if (!session) { return; }
         const uid = session.userId;
@@ -121,7 +121,7 @@ export const apply = async (ctx: Context, config: Config) => {
       });
 
     ctx.command('word', '词库核心！').subcommand('.find <question:text>', '寻找某个触发词所在的词库')
-      .example('find 你好')
+      .example('word.find 你好')
       .action(async ({ session }, question) => {
         if (!session) { return; }
         const a = await ctx.word.editor.getQuestion(question);
@@ -135,7 +135,7 @@ export const apply = async (ctx: Context, config: Config) => {
       });
 
     ctx.command('word', '词库核心！').subcommand('.get <question:text>', '查看当前词库某触发词的所有回答')
-      .example('get 测试')
+      .example('word.get 测试')
       .action(async ({ session }, question) => {
         if (!session) { return; }
         if (!question) { return `<at name="${session.username}" /> 你没有输入需要查询的关键词`; }
@@ -153,9 +153,28 @@ export const apply = async (ctx: Context, config: Config) => {
         return outMsg;
       });
 
+    // 获取此词库所拥有的触发词
+    ctx.command('word', '词库核心！').subcommand('.getDB <dbName:text>', '查看当前/某词库某触发词的所有回答')
+      .example('word.getDB 测试')
+      .example('word.getDB')
+      .action(async ({ session }, dbName) => {
+        if (!session) { return; }
+        dbName = (dbName) ? dbName: await ctx.word.user.getEditWord(session.userId) 
+
+        const a = await ctx.word.editor.readWord(dbName);
+        const questionList = Object.keys(a.data);
+        
+        let outMsg = `<at name="${session.username}" /> 你当前编辑的库含有以下触发词：`;
+        questionList.forEach((value, index) => {
+          outMsg = outMsg + `\n${index + 1}. ${value}`;
+        });
+
+        return outMsg;
+      });
+
     // 设置存储格子
     ctx.command('word', '词库核心！').subcommand('.setsave <cell:text>', '设置当前词库的存储格子')
-      .example('setsave 存储格1')
+      .example('word.setsave 存储格1')
       .action(async ({ session }, cell) => {
         if (!session) { return; }
         if (!cell) { return `<at name="${session.username}" /> 你没有输入存储格子名称`; }
@@ -180,7 +199,7 @@ export const apply = async (ctx: Context, config: Config) => {
 
     // 恢复默认存储格子
     ctx.command('word', '词库核心！').subcommand('.resetsave', '重置当前词库的存储格子')
-      .example('resetsave')
+      .example('word.resetsave')
       .action(async ({ session }) => {
         if (!session) { return; }
 
@@ -203,7 +222,7 @@ export const apply = async (ctx: Context, config: Config) => {
       });
 
     ctx.command('word', '词库核心！').subcommand('.getsave', '查看当前词库的存储格子')
-      .example('getsave')
+      .example('word.getsave')
       .action(async ({ session }) => {
         if (!session) { return; }
 
@@ -227,7 +246,7 @@ export const apply = async (ctx: Context, config: Config) => {
         '删除权限：word.admin.rm',
         '管理员级权限：word.admin.*'
       ].join('\n'))
-      .example('addp 6503fb7b50308 word.edit.*')
+      .example('word.addp 6503fb7b50308 word.edit.*')
       .action(async ({ session }, uid, permission) => {
         if (!session) { return; }
 
@@ -257,7 +276,7 @@ export const apply = async (ctx: Context, config: Config) => {
         '删除权限：word.admin.rm',
         '管理员级权限：word.admin.*'
       ].join('\n'))
-      .example('rmp 6503fb7b50308 word.edit.*')
+      .example('word.rmp 6503fb7b50308 word.edit.*')
       .action(async ({ session }, uid, permission) => {
         if (!session) { return; }
 
@@ -278,7 +297,7 @@ export const apply = async (ctx: Context, config: Config) => {
 
     // 新增作者
     ctx.command('word', '词库核心！').subcommand('.addauthor <uid:string>', '设置某uid为作者')
-      .example('addauthor 6503fb7b50308')
+      .example('word.addauthor 6503fb7b50308')
       .action(async ({ session }, uid) => {
         if (!session) { return; }
         const mid = session.userId;
@@ -296,6 +315,7 @@ export const apply = async (ctx: Context, config: Config) => {
 
     // 减少作者
     ctx.command('word', '词库核心！').subcommand('.rmauthor <uid:string>', '删除某uid的作者权限')
+      .example('word.rmauthor 6503fb7b50308')
       .action(async ({ session }, uid) => {
         if (!session) { return; }
         const mid = session.userId;
@@ -310,11 +330,14 @@ export const apply = async (ctx: Context, config: Config) => {
         return `<at name="${session.username}" /> ${a}`;
       });
 
-    ctx.command('word', '词库核心！').subcommand('.id', '查看自己的id及名字').action(({ session }) => {
-      if (!session) { return '发生异常'; }
+    ctx.command('word', '词库核心！').subcommand('.id', '查看自己的id及名字')
+      .example('word.id')
+      .action(({ session }) => {
 
-      return `您的名字是：【${session.username}】，您的id是：【${session.userId}】`;
-    });
+        if (!session) { return '发生异常'; }
+
+        return `您的名字是：【${session.username}】，您的id是：【${session.userId}】`;
+      });
 
     ctx.on('message', async (session) => {
       if (!session.content) { return; }

@@ -16,10 +16,10 @@ export interface chatFunctionType {
 // data为返回的值
 type typeNext = (data?: string) => {
   status: 'next';
-  data: string;
+  data: string|undefined;
 };
 
-const next: typeNext = (data: string = 'next') => {
+const next: typeNext = (data?: string) => {
   return { status: 'next', data: data };
 };
 
@@ -27,10 +27,10 @@ const next: typeNext = (data: string = 'next') => {
 // data为返回的值
 type typeEnd = (data?: string) => {
   status: 'end';
-  data: string;
+  data: string|undefined;
 };
 
-const end: typeEnd = (data: string = 'end') => {
+const end: typeEnd = (data?: string) => {
   return { status: 'end', data: data };
 };
 
@@ -38,9 +38,10 @@ const end: typeEnd = (data: string = 'end') => {
 // data为返回的值
 type typeKill = (data?: string) => {
   status: 'kill';
-  data: string;
+  data: string|undefined;
 };
-const kill: typeKill = (data: string = 'kill') => {
+
+const kill: typeKill = (data?: string) => {
   return { status: 'kill', data: data };
 };
 
@@ -132,7 +133,7 @@ const parseTrees = async (inData: any[], session: Session, wordData: wordSaveDat
     return inData.join('');
   } else
   {
-    
+
     const reload = inData.join('');
     const newFunArr = reload.split(':');
     // which是语法包的头
@@ -165,7 +166,10 @@ const parStatement = async (which: string, toInData: chatFunctionType, session: 
   if (typeof str == "object")
   {
     const status = str.status;
-    if (status == 'kill' || status == 'end' || status == 'next') { throw new Error(status); }
+    if (status == 'kill' || status == 'end' || status == 'next') { 
+      const errorMsg = `${status}${(str.data) ? ':' + str.data : ''}`
+      throw new Error(errorMsg); 
+    }
   } else
   {
     return (str) ? str : '';
