@@ -141,7 +141,8 @@ export class wordDriver {
         if (parsedList.length >= questionList.length) { break; }
         witchWord = this.word.tools.randomNumber(0, questionList.length - 1);
       } while (parsedList.includes(witchWord));
-      parsedList.push(witchWord)
+      parsedList.push(witchWord);
+
 
       const message = await parsStart(questionList[witchWord], wordData, this.word, session, matchList);
 
@@ -152,6 +153,7 @@ export class wordDriver {
     {
       const a = await parOne();
       const ok = await this.word.user.saveTemp();
+      
       if (ok)
       {
         return a;
