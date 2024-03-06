@@ -28,12 +28,12 @@ export const apply = async (ctx: Context, config: Config) => {
   ctx.plugin(core);
   ctx.plugin(word);
 
-  ctx.inject(['console'], (ctx) => {
-    ctx.console.addEntry({
-      dev: resolve(__dirname, '../client/index.ts'),
-      prod: resolve(__dirname, '../dist'),
-    });
-  });
+  // ctx.inject(['console'], (ctx) => {
+  //   ctx.console.addEntry({
+  //     dev: resolve(__dirname, '../client/index.ts'),
+  //     prod: resolve(__dirname, '../dist'),
+  //   });
+  // });
 
   ctx.inject(['word'], async ctx => {
     ctx.command('word', '词库核心！');

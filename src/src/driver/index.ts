@@ -120,28 +120,30 @@ export class wordDriver {
       }
     });
 
+    const witchWordDB = this.word.tools.randomNumber(0, list.length - 1);
+
     const parsedList: number[] = [];
     let witchWord = 0;
-
     // 挑选一个词库，且不重复  
     const parOne = async () => {
-      do
-      {
-        if (parsedList.length >= list.length) { return ' [word-core] 此词条无可正确运行的语句'; }
-        witchWord = this.word.tools.randomNumber(0, list.length - 1);
-      } while (parsedList.includes(witchWord));
-
-      parsedList.push(witchWord);
-      const item = list[witchWord];
+      const item = list[witchWordDB];
 
       // 读取那个词库
       const wordData = await this.word.editor.readWord(item);
 
       // 获取那个词条对应的全部回答
       const questionList = wordData.data[q];
+
       if (!questionList) { return; }
 
-      const message = await parsStart(questionList, wordData, this.word, session, matchList);
+      do
+      {
+        if (parsedList.length >= questionList.length) { break; }
+        witchWord = this.word.tools.randomNumber(0, questionList.length - 1);
+      } while (parsedList.includes(witchWord));
+      parsedList.push(witchWord)
+
+      const message = await parsStart(questionList[witchWord], wordData, this.word, session, matchList);
 
       return message;
     };

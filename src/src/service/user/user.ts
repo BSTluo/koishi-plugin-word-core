@@ -94,8 +94,10 @@ export class User {
    */
   async getItem(uid: string, cell: string, itemName: string): Promise<null | number> {
     const data = await this.getData(uid);
+
     if (!data[cell]) { return null; }
     if (!data[cell][itemName]) { return null; }
+
     return data[cell][itemName];
   }
 

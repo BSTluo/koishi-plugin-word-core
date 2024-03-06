@@ -60,21 +60,21 @@ const parPack: typeParPack = {
 
 let funcPackKeys = Object.keys(statement);
 
-export const parsStart = async (questionList: string[], wordData: wordSaveData, word: word, session: Session, matchList?: matchType) => {
-  const randomNumber = word.tools.randomNumber;
+export const parsStart = async (questionList: string, wordData: wordSaveData, word: word, session: Session, matchList?: matchType) => {
+  // const randomNumber = word.tools.randomNumber;
 
   funcPackKeys = Object.keys(statement);
-  const getRandQuestion = (questionList: string[]) => {
-    const num = randomNumber(0, questionList.length - 1);
+  // const getRandQuestion = (questionList: string[]) => {
+  //   const num = randomNumber(0, questionList.length - 1);
 
-    return questionList[num];
-  };
+  //   return questionList[num];
+  // };
 
-  const temp = getRandQuestion(questionList);
+  // const temp = getRandQuestion(questionList);
   // 先将文本拆解为树
   // 你(+:xx:xx)好
   // [你,[+,xx,xx],好]
-  const tree = getTree(temp);
+  const tree = getTree(questionList);
 
   // 再进行树的解析
   const msg = await parseTrees(tree, session, wordData, !matchList ? {} : matchList, false);
