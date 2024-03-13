@@ -4,7 +4,8 @@ import { matchType } from "..";
 import { word } from "../../word";
 import { wordSaveData } from "../..";
 
-export interface chatFunctionType {
+export interface chatFunctionType
+{
   args: string[],
   matchs: matchType;
   wordData: wordSaveData;
@@ -24,7 +25,8 @@ type typeNext = (data?: string) => {
   data: string | undefined;
 };
 
-const next: typeNext = (data?: string) => {
+const next: typeNext = (data?: string) =>
+{
   return { status: 'next', data: data };
 };
 
@@ -35,7 +37,8 @@ type typeEnd = (data?: string) => {
   data: string | undefined;
 };
 
-const end: typeEnd = (data?: string) => {
+const end: typeEnd = (data?: string) =>
+{
   return { status: 'end', data: data };
 };
 
@@ -46,7 +49,8 @@ type typeKill = (data?: string) => {
   data: string | undefined;
 };
 
-const kill: typeKill = (data?: string) => {
+const kill: typeKill = (data?: string) =>
+{
   return { status: 'kill', data: data };
 };
 
@@ -65,7 +69,8 @@ const parPack: typeParPack = {
 
 let funcPackKeys = Object.keys(statement);
 
-export const parsStart = async (questionList: string, wordData: wordSaveData, word: word, session: Session, matchList?: matchType) => {
+export const parsStart = async (questionList: string, wordData: wordSaveData, word: word, session: Session, matchList?: matchType) =>
+{
   // const randomNumber = word.tools.randomNumber;
 
   funcPackKeys = Object.keys(statement);
@@ -90,10 +95,12 @@ export const parsStart = async (questionList: string, wordData: wordSaveData, wo
   return msg;
 };
 
-const getTree = (str: string): any[] => {
+const getTree = (str: string): any[] =>
+{
   let parseStr = str;
 
-  const par = () => {
+  const par = () =>
+  {
     const tempArr: any[] = [];
     let index = 0;
 
@@ -125,7 +132,8 @@ const getTree = (str: string): any[] => {
   return a;
 };
 
-const parseTrees = async (word: word, inData: any[], session: Session, wordData: wordSaveData, matchList: matchType, isFunction: boolean): Promise<string> => {
+const parseTrees = async (word: word, inData: any[], session: Session, wordData: wordSaveData, matchList: matchType, isFunction: boolean): Promise<string> =>
+{
   // 遍历最深层字符串，解析后返回结果，重复运行
 
   for (let i = 0; i < inData.length; i++)
@@ -175,7 +183,8 @@ const parseTrees = async (word: word, inData: any[], session: Session, wordData:
       wordData: wordData,
       parPack: parPack,
       internal: {
-        saveItem: (uid: string, saveDB: string, itemName: string, number: number) => {
+        saveItem: (uid: string, saveDB: string, itemName: string, number: number) =>
+        {
           if (!nowDataTemp[uid])
           {
             nowDataTemp[uid] = {};
@@ -187,17 +196,24 @@ const parseTrees = async (word: word, inData: any[], session: Session, wordData:
           };
         },
 
-        getItem: async (uid: string, saveDB: string, itemName: string) => {
+        getItem: async (uid: string, saveDB: string, itemName: string) =>
+        {
           const num = await word.user.getItem(uid, saveDB, itemName);
-
+          // console.log(nowDataTemp);
           if (!nowDataTemp[uid])
           {
             nowDataTemp[uid] = {};
+
+          }
+
+          if (!nowDataTemp[uid][itemName])
+          {
             nowDataTemp[uid][itemName] = {
               has: (!num) ? 0 : num,
               saveDB: saveDB
             };
           }
+
           return nowDataTemp[uid][itemName].has;
         }
       }
@@ -219,7 +235,8 @@ const parseTrees = async (word: word, inData: any[], session: Session, wordData:
 
 
 // 调用词库语法
-const parStatement = async (which: string, toInData: chatFunctionType, session: Session<never, never, Context>) => {
+const parStatement = async (which: string, toInData: chatFunctionType, session: Session<never, never, Context>) =>
+{
   const str: string | void | statusMsg = await statement[which](toInData, session);
   if (typeof str == "object")
   {

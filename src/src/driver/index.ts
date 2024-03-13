@@ -153,6 +153,7 @@ export class wordDriver {
     try
     {
       const a = await parOne();
+      // console.log(a)
       const needSave = saveItemDataTemp[q][0]
       for(let uid in needSave) {
         
@@ -220,7 +221,7 @@ export class wordDriver {
       if (errorType.startsWith('next'))
       {
         const a = await parOne();
-        
+
         const needSave = saveItemDataTemp[q][0]
         for(let uid in needSave) {
           
