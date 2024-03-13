@@ -1,5 +1,5 @@
 import { Context } from 'koishi';
-import { parsStart } from './src';
+import { parsStart, saveItemDataTemp } from './src';
 import { word } from '../word';
 import { Session } from 'koishi';
 
@@ -124,7 +124,8 @@ export class wordDriver {
 
     const parsedList: number[] = [];
     let witchWord = 0;
-    // 挑选一个词库，且不重复  
+    // 挑选一个词库，且不重复 
+    let needPar = '';
     const parOne = async () => {
       const item = list[witchWordDB];
 
@@ -143,8 +144,8 @@ export class wordDriver {
       } while (parsedList.includes(witchWord));
       parsedList.push(witchWord);
 
-
-      const message = await parsStart(questionList[witchWord], wordData, this.word, session, matchList);
+      needPar = questionList[witchWord];
+      const message = await parsStart(needPar, wordData, this.word, session, matchList);
 
       return message;
     };
@@ -152,16 +153,28 @@ export class wordDriver {
     try
     {
       const a = await parOne();
-      const ok = await this.word.user.saveTemp();
-      
-      if (ok)
-      {
-        return a;
-      } else
-      {
-        return ' [word-core] 数据保存失败';
+      const needSave = saveItemDataTemp[q][0]
+      for(let uid in needSave) {
+        
+        const itemNameList = needSave[uid]
+
+        for(let itemName in itemNameList) {
+
+          const num = itemNameList[itemName].has
+          const saveDB = itemNameList[itemName].saveDB
+          await this.word.user.updateItem(uid,saveDB,itemName, num)
+        }
       }
 
+      const ok = await this.word.user.saveTemp();
+
+        if (ok)
+        {
+          return a;
+        } else
+        {
+          return ' [word-core] 数据保存失败';
+        }
     } catch (err: any)
     {
       // console.log(err);
@@ -178,6 +191,19 @@ export class wordDriver {
       // 执行后立即终止，但是保存数据
       if (errorType.startsWith('end'))
       {
+        const needSave = saveItemDataTemp[q][0]
+        for(let uid in needSave) {
+          
+          const itemNameList = needSave[uid]
+  
+          for(let itemName in itemNameList) {
+  
+            const num = itemNameList[itemName].has
+            const saveDB = itemNameList[itemName].saveDB
+            await this.word.user.updateItem(uid,saveDB,itemName, num)
+          }
+        }
+
         const ok = await this.word.user.saveTemp();
         if (ok)
         {
@@ -194,6 +220,20 @@ export class wordDriver {
       if (errorType.startsWith('next'))
       {
         const a = await parOne();
+        
+        const needSave = saveItemDataTemp[q][0]
+        for(let uid in needSave) {
+          
+          const itemNameList = needSave[uid]
+  
+          for(let itemName in itemNameList) {
+  
+            const num = itemNameList[itemName].has
+            const saveDB = itemNameList[itemName].saveDB
+            await this.word.user.updateItem(uid,saveDB,itemName, num)
+          }
+        }
+
         const ok = await this.word.user.saveTemp();
         if (ok)
         {
