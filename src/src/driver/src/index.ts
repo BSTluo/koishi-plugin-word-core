@@ -119,9 +119,11 @@ const getTree = (str: string): any[] => {
       {
         if (!tempArr[index]) { tempArr[index] = ['']; }
         const length = tempArr[index].length;
-        if (Array.isArray(tempArr[index][length - 1])) {
-          tempArr[index].push(v)
-        } else {
+        if (Array.isArray(tempArr[index][length - 1]))
+        {
+          tempArr[index].push(v);
+        } else
+        {
           tempArr[index][length - 1] += v;
         }
       }
@@ -130,105 +132,93 @@ const getTree = (str: string): any[] => {
     return tempArr;
   };
 
-  const a = par();
-  return a[0];
+  const a = par()[0];
+
+  const par2 = (arr: any[]): any[] => {
+    const c = [];
+    for (let d of arr)
+    {
+      if (Array.isArray(d))
+      {
+        if (d.length == 1 && !Array.isArray(d[0]))
+        {
+          c.push(d[0]);
+        } else
+        {
+          c.push(par2(d));
+        }
+      } else
+      {
+        c.push(d);
+      }
+    }
+
+    return c;
+  };
+  const b = par2(a);
+
+  return b;
 };
 
 const parseTrees = async (word: word, inData: any[], session: Session, wordData: wordSaveData, matchList: matchType, isFunction: boolean): Promise<string> => {
-  // 遍历最深层字符串，解析后返回结果，重复运行
+  // // 遍历最深层字符串，解析后返回结果，重复运行
+  // const reload = inData.join('');
+  // const newFunArr = reload.split(':');
+  // // which是语法包的头
+  // const which = newFunArr[0];
 
-  for (let i = 0; i < inData.length; i++)
-  {
-    if (Array.isArray(inData[i]))
-    {
-      const saveTemp = saveItemDataTemp[(!session.content) ? '' : session.content];
+  // const toInData: chatFunctionType = {
+  //   args: newFunArr.slice(1), // 参数
+  //   matchs: matchList,  // 匹配的结果
+  //   wordData: wordData, // 所在词库的数据
+  //   parPack: parPack, // 解释功能包：包括kill，end，next
+  //   internal: { // 缓存功能
+  //     saveItem: (uid: string, saveDB: string, itemName: string, number: number) => {
+  //       if (!nowDataTemp[uid])
+  //       {
+  //         nowDataTemp[uid] = {};
+  //       }
 
-      let firstTemp = inData[i];
-      saveTemp.push(saveTemp[0]);
-      const getData = await parseTrees(word, firstTemp, session, wordData, matchList, true); // 递归调用处理嵌套数组
+  //       nowDataTemp[uid][itemName] = {
+  //         has: number,
+  //         saveDB: saveDB
+  //       };
+  //     },
 
-      if (getData == "[word-core]KILL")
-      {
-        saveTemp.pop();
-        inData[i] = '';
+  //     getItem: async (uid: string, saveDB: string, itemName: string) => {
+  //       const num = await word.user.getItem(uid, saveDB, itemName);
+  //       // console.log(nowDataTemp);
+  //       if (!nowDataTemp[uid])
+  //       {
+  //         nowDataTemp[uid] = {};
 
-      } else
-      {
-        const saveLenghtTemp = saveTemp.length;
-        const saveLenght = (saveLenghtTemp > 2) ? saveLenghtTemp - 2 : 0;
+  //       }
 
-        saveTemp[saveLenght] = saveTemp[saveLenght + 1];
-        saveTemp.pop();
+  //       if (!nowDataTemp[uid][itemName])
+  //       {
+  //         nowDataTemp[uid][itemName] = {
+  //           has: (!num) ? 0 : num,
+  //           saveDB: saveDB
+  //         };
+  //       }
 
-        inData[i] = getData;
-      }
-    }
-  }
+  //       return nowDataTemp[uid][itemName].has;
+  //     }
+  //   }
+  // };
 
-  if (!isFunction)
-  {
-    return inData.join('');
-  } else
-  {
-    const saveLenghtTemp = saveItemDataTemp[(!session.content) ? '' : session.content].length;
-    const nowDataTemp = saveItemDataTemp[(!session.content) ? '' : session.content][(saveLenghtTemp > 0) ? saveLenghtTemp - 1 : 0];
+  // // newFunArr 是解析得到的语法字符串
+  // // overPar 运行完成语法包后的的字符串
+  // if (funcPackKeys.includes(which))
+  // {
+  //   const overPar = await parStatement(which, toInData, session);
+  //   return overPar;
+  // } else
+  // {
+  //   return newFunArr.join('');
+  // }
 
-    const reload = inData.join('');
-    const newFunArr = reload.split(':');
-    // which是语法包的头
-    const which = newFunArr[0];
-
-    const toInData: chatFunctionType = {
-      args: newFunArr.slice(1),
-      matchs: matchList,
-      wordData: wordData,
-      parPack: parPack,
-      internal: {
-        saveItem: (uid: string, saveDB: string, itemName: string, number: number) => {
-          if (!nowDataTemp[uid])
-          {
-            nowDataTemp[uid] = {};
-          }
-
-          nowDataTemp[uid][itemName] = {
-            has: number,
-            saveDB: saveDB
-          };
-        },
-
-        getItem: async (uid: string, saveDB: string, itemName: string) => {
-          const num = await word.user.getItem(uid, saveDB, itemName);
-          // console.log(nowDataTemp);
-          if (!nowDataTemp[uid])
-          {
-            nowDataTemp[uid] = {};
-
-          }
-
-          if (!nowDataTemp[uid][itemName])
-          {
-            nowDataTemp[uid][itemName] = {
-              has: (!num) ? 0 : num,
-              saveDB: saveDB
-            };
-          }
-
-          return nowDataTemp[uid][itemName].has;
-        }
-      }
-    };
-
-    // newFunArr 是解析得到的语法字符串
-    // overPar 运行完成语法包后的的字符串
-    if (funcPackKeys.includes(which))
-    {
-      const overPar = await parStatement(which, toInData, session);
-      return overPar;
-    } else
-    {
-      return newFunArr.join('');
-    }
-  }
+  return '';
 };
 
 
