@@ -4,8 +4,7 @@ import { matchType } from "..";
 import { word } from "../../word";
 import { wordSaveData } from "../..";
 
-export interface chatFunctionType
-{
+export interface chatFunctionType {
   args: string[],
   matchs: matchType;
   wordData: wordSaveData;
@@ -25,8 +24,7 @@ type typeNext = (data?: string) => {
   data: string | undefined;
 };
 
-const next: typeNext = (data?: string) =>
-{
+const next: typeNext = (data?: string) => {
   return { status: 'next', data: data };
 };
 
@@ -37,8 +35,7 @@ type typeEnd = (data?: string) => {
   data: string | undefined;
 };
 
-const end: typeEnd = (data?: string) =>
-{
+const end: typeEnd = (data?: string) => {
   return { status: 'end', data: data };
 };
 
@@ -49,8 +46,7 @@ type typeKill = (data?: string) => {
   data: string | undefined;
 };
 
-const kill: typeKill = (data?: string) =>
-{
+const kill: typeKill = (data?: string) => {
   return { status: 'kill', data: data };
 };
 
@@ -69,8 +65,7 @@ const parPack: typeParPack = {
 
 let funcPackKeys = Object.keys(statement);
 
-export const parsStart = async (questionList: string, wordData: wordSaveData, word: word, session: Session, matchList?: matchType) =>
-{
+export const parsStart = async (questionList: string, wordData: wordSaveData, word: word, session: Session, matchList?: matchType) => {
   // const randomNumber = word.tools.randomNumber;
 
   funcPackKeys = Object.keys(statement);
@@ -85,23 +80,23 @@ export const parsStart = async (questionList: string, wordData: wordSaveData, wo
   // 你(+:xx:xx)好
   // [你,[+,xx,xx],好]
   const tree = getTree(questionList);
+  // console.log(tree);
 
   if (!session.content) { return; }
   // 再进行树的解析
-  saveItemDataTemp[session.content] = [{}];
+  //saveItemDataTemp[session.content] = [{}];
 
-  const msg = await parseTrees(word, tree, session, wordData, !matchList ? {} : matchList, false);
+  // const msg = await parseTrees(word, tree, session, wordData, !matchList ? {} : matchList, false);
   // console.log(msg)
-  return msg;
+  // return msg;
+  return '';
 };
 
-const getTree = (str: string): any[] =>
-{
+const getTree = (str: string): any[] => {
   let parseStr = str;
 
-  const par = () =>
-  {
-    const tempArr: any[] = [];
+  const par = () => {
+    let tempArr: any[] = [];
     let index = 0;
 
     while (parseStr.length > 0)
@@ -109,19 +104,26 @@ const getTree = (str: string): any[] =>
       const v = parseStr[0];
       parseStr = parseStr.slice(1);
 
-      if (v === '(')
+      if (v == '(')
       {
-        index++;
-        // parseStr = parseStr.slice(0);
-        tempArr[index] = par();
-        index++;
-      } else if (v === ')')
+        if (!tempArr[index]) { tempArr[index] = []; }
+        tempArr[index].push(par());
+
+      } else if (v == ')')
       {
         return tempArr;
+      } else if (v == ':')
+      {
+        index++;
       } else
       {
-        if (!tempArr[index]) { tempArr[index] = ''; }
-        tempArr[index] += v;
+        if (!tempArr[index]) { tempArr[index] = ['']; }
+        const length = tempArr[index].length;
+        if (Array.isArray(tempArr[index][length - 1])) {
+          tempArr[index].push(v)
+        } else {
+          tempArr[index][length - 1] += v;
+        }
       }
     }
 
@@ -129,11 +131,10 @@ const getTree = (str: string): any[] =>
   };
 
   const a = par();
-  return a;
+  return a[0];
 };
 
-const parseTrees = async (word: word, inData: any[], session: Session, wordData: wordSaveData, matchList: matchType, isFunction: boolean): Promise<string> =>
-{
+const parseTrees = async (word: word, inData: any[], session: Session, wordData: wordSaveData, matchList: matchType, isFunction: boolean): Promise<string> => {
   // 遍历最深层字符串，解析后返回结果，重复运行
 
   for (let i = 0; i < inData.length; i++)
@@ -183,8 +184,7 @@ const parseTrees = async (word: word, inData: any[], session: Session, wordData:
       wordData: wordData,
       parPack: parPack,
       internal: {
-        saveItem: (uid: string, saveDB: string, itemName: string, number: number) =>
-        {
+        saveItem: (uid: string, saveDB: string, itemName: string, number: number) => {
           if (!nowDataTemp[uid])
           {
             nowDataTemp[uid] = {};
@@ -196,8 +196,7 @@ const parseTrees = async (word: word, inData: any[], session: Session, wordData:
           };
         },
 
-        getItem: async (uid: string, saveDB: string, itemName: string) =>
-        {
+        getItem: async (uid: string, saveDB: string, itemName: string) => {
           const num = await word.user.getItem(uid, saveDB, itemName);
           // console.log(nowDataTemp);
           if (!nowDataTemp[uid])
@@ -235,8 +234,7 @@ const parseTrees = async (word: word, inData: any[], session: Session, wordData:
 
 
 // 调用词库语法
-const parStatement = async (which: string, toInData: chatFunctionType, session: Session<never, never, Context>) =>
-{
+const parStatement = async (which: string, toInData: chatFunctionType, session: Session<never, never, Context>) => {
   const str: string | void | statusMsg = await statement[which](toInData, session);
   if (typeof str == "object")
   {
