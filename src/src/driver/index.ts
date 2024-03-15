@@ -126,6 +126,7 @@ export class wordDriver {
     let witchWord = 0;
     // 挑选一个词库，且不重复 
     let needPar = '';
+
     const parOne = async () => {
       const item = list[witchWordDB];
 
@@ -152,30 +153,37 @@ export class wordDriver {
 
     try
     {
-      const a = await parOne();
+      const abc = await parOne();
+      if (!abc) { return; }
+      const a = abc.message;
+
       // console.log(a)
-      const needSave = saveItemDataTemp[q][0]
-      for(let uid in needSave) {
-        
-        const itemNameList = needSave[uid]
+      const needSave = abc.data;
+      for (let uid in needSave)
+      {
+        const saveDBList = needSave[uid];
 
-        for(let itemName in itemNameList) {
+        for (let saveDB in saveDBList)
+        {
+          const itemNameList = saveDBList[saveDB];
 
-          const num = itemNameList[itemName].has
-          const saveDB = itemNameList[itemName].saveDB
-          await this.word.user.updateItem(uid,saveDB,itemName, num)
+          for (let itemName in itemNameList)
+          {
+            const num = itemNameList[itemName];
+            await this.word.user.updateItem(uid, saveDB, itemName, num);
+          }
         }
       }
 
       const ok = await this.word.user.saveTemp();
 
-        if (ok)
-        {
-          return a;
-        } else
-        {
-          return ' [word-core] 数据保存失败';
-        }
+      if (ok)
+      {
+        return a;
+      } else
+      {
+        return ' [word-core] 数据保存失败';
+      }
     } catch (err: any)
     {
       // console.log(err);
@@ -192,16 +200,20 @@ export class wordDriver {
       // 执行后立即终止，但是保存数据
       if (errorType.startsWith('end'))
       {
-        const needSave = saveItemDataTemp[q][0]
-        for(let uid in needSave) {
-          
-          const itemNameList = needSave[uid]
-  
-          for(let itemName in itemNameList) {
-  
-            const num = itemNameList[itemName].has
-            const saveDB = itemNameList[itemName].saveDB
-            await this.word.user.updateItem(uid,saveDB,itemName, num)
+        const needSave = saveItemDataTemp[q];
+        for (let uid in needSave)
+        {
+          const saveDBList = needSave[uid];
+
+          for (let saveDB in saveDBList)
+          {
+            const itemNameList = saveDBList[saveDB];
+
+            for (let itemName in itemNameList)
+            {
+              const num = itemNameList[itemName];
+              await this.word.user.updateItem(uid, saveDB, itemName, num);
+            }
           }
         }
 
@@ -220,28 +232,26 @@ export class wordDriver {
       // 执行后立即终止，不保存数据，并且进入下次解析
       if (errorType.startsWith('next'))
       {
-        const a = await parOne();
+        const abc = await parOne();
+        if (!abc) { return; }
+        const a = abc.message;
 
-        const needSave = saveItemDataTemp[q][0]
-        for(let uid in needSave) {
-          
-          const itemNameList = needSave[uid]
-  
-          for(let itemName in itemNameList) {
-  
-            const num = itemNameList[itemName].has
-            const saveDB = itemNameList[itemName].saveDB
-            await this.word.user.updateItem(uid,saveDB,itemName, num)
+        // console.log(a)
+        const needSave = abc.data;
+        for (let uid in needSave)
+        {
+          const saveDBList = needSave[uid];
+
+          for (let saveDB in saveDBList)
+          {
+            const itemNameList = saveDBList[saveDB];
+
+            for (let itemName in itemNameList)
+            {
+              const num = itemNameList[itemName];
+              await this.word.user.updateItem(uid, saveDB, itemName, num);
+            }
           }
-        }
-
-        const ok = await this.word.user.saveTemp();
-        if (ok)
-        {
-          return a;
-        } else
-        {
-          return ' [word-core] 数据保存失败';
         }
       }
     }
