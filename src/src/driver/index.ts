@@ -156,6 +156,7 @@ export class wordDriver {
       const abc = await parOne();
       if (!abc) { return; }
       const a = abc.message;
+      // console.log(abc)
 
       // console.log(a)
       const needSave = abc.data;
