@@ -344,6 +344,7 @@ export const apply = async (ctx: Context, config: Config) => {
       if (session.userId == session.bot.user.id) { return; }
       const msg = await ctx.word.driver.start(session);
       if (!msg) { return; }
+      // console.log(msg)
       session.send(msg);
     });
 

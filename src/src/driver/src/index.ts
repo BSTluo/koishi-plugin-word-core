@@ -84,7 +84,7 @@ export const parsStart = async (questionList: string, wordData: wordSaveData, wo
 
   const msg = [];
   let userData = {};
-  let oldUserData = {}
+  let oldUserData = {};
 
   for (let needParMsg of tree)
   {
@@ -92,14 +92,15 @@ export const parsStart = async (questionList: string, wordData: wordSaveData, wo
     if (Array.isArray(needParMsg))
     {
       over = await parseTrees(word, needParMsg, session, wordData, !matchList ? {} : matchList, JSON.parse(JSON.stringify(userData)));
-      
+
       if (over)
       {
         msg.push(over.message);
-        oldUserData = userData
+        oldUserData = userData;
         userData = over.data;
-      } else {
-        userData = oldUserData
+      } else
+      {
+        userData = oldUserData;
       }
     } else
     {
@@ -128,6 +129,7 @@ const getTree = (str: string): any[] =>
 
     while (parseStr.length > 0)
     {
+
       const v = parseStr[0];
       parseStr = parseStr.slice(1);
 
@@ -141,7 +143,23 @@ const getTree = (str: string): any[] =>
         return tempArr;
       } else if (v == ':')
       {
-        index++;
+        if (!tempArr[index]) { tempArr[index] = ['']; }
+        const length = tempArr[index].length;
+
+        if (tempArr[index][length - 1].endsWith('http') || tempArr[index][length - 1].endsWith('https'))
+        {
+
+          if (Array.isArray(tempArr[index][length - 1]))
+          {
+            tempArr[index].push(v);
+          } else
+          {
+            tempArr[index][length - 1] += v;
+          }
+        } else
+        {
+          index++;
+        }
       } else
       {
         if (!tempArr[index]) { tempArr[index] = ['']; }
