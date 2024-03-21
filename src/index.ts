@@ -1,4 +1,4 @@
-import { Context, Logger, Schema } from 'koishi';
+import { Context, Logger, Schema, h } from 'koishi';
 import { word } from './src/word';
 import { resolve } from 'path';
 import { } from '@koishijs/plugin-console';
@@ -131,7 +131,7 @@ export const apply = async (ctx: Context, config: Config) => {
           outMsg = outMsg + `\n${index + 1}. ${value}`;
         });
 
-        return outMsg;
+        return h.text(outMsg);
       });
 
     ctx.command('word', '词库核心！').subcommand('.get <question:text>', '查看当前词库某触发词的所有回答')
@@ -150,7 +150,7 @@ export const apply = async (ctx: Context, config: Config) => {
           outMsg = outMsg + `\n${index + 1}. ${value}`;
         });
 
-        return outMsg;
+        return h.text(outMsg);
       });
 
     // 获取此词库所拥有的触发词
@@ -169,7 +169,7 @@ export const apply = async (ctx: Context, config: Config) => {
           outMsg = outMsg + `\n${index + 1}. ${value}`;
         });
 
-        return outMsg;
+        return h.text(outMsg);
       });
 
     // 设置存储格子
@@ -344,6 +344,7 @@ export const apply = async (ctx: Context, config: Config) => {
       if (session.userId == session.bot.user.id) { return; }
       const msg = await ctx.word.driver.start(session);
       if (!msg) { return; }
+      // console.log(msg)
       session.send(msg);
     });
 

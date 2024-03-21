@@ -9,11 +9,13 @@ export const inject = {
 
 export type matchType = Record<string, string[]>;
 
-export class wordDriver {
+export class wordDriver
+{
   private ctx: Context;
   private word: word;
 
-  constructor(word: word, ctx: Context) {
+  constructor(word: word, ctx: Context)
+  {
     this.ctx = ctx;
     this.word = word;
   }
@@ -23,7 +25,8 @@ export class wordDriver {
    * @param session 当前对话对象
    * @returns 
    */
-  async start(session: Session | wordDataInputType) {
+  async start(session: Session | wordDataInputType)
+  {
     // this.ctx.inject(['word'], async ctx => {
     if (!session.content) { return; }
     let q: string = session.content;
@@ -58,32 +61,36 @@ export class wordDriver {
     if (!wordCache.hasKey[q])
     {
       // 找到这个触发词对应的词库，并开始解析
-      matchedString = Object.keys(wordCache.hasKey).find(regText => {
+      matchedString = Object.keys(wordCache.hasKey).find(regText =>
+      {
 
         // 获取输入替换列表
         const triggerList = Object.keys(this.word.trigger.trigger);
-
         // 遍历获取被替换的词
         for (const repKey of triggerList)
         {
           const thisTemp = this.word.trigger.trigger[repKey];
 
-          let regTextTemp = regText;
+          let regTextTemp: string = regText;
 
           for (const repReg of thisTemp.reg)
           {
-            regTextTemp = regTextTemp.replace(repKey, repReg);
+            regTextTemp = regTextTemp.replaceAll(repKey, repReg);
 
             const reg = new RegExp(`^${regTextTemp}$`, 'g');
             const regTemp = q.match(reg);
 
             if (!regTemp) { continue; }
 
-            regTemp.forEach(element => {
+            regTemp.forEach(element =>
+            {
               const reg2 = new RegExp(`^${regTextTemp}$`);
               if (!matchList[thisTemp.id]) { matchList[thisTemp.id] = []; }
               const matchString: string[] = element.match(reg2) as string[];
-              matchList[thisTemp.id].push(matchString[1]);
+
+              const list = matchString.slice(1,matchString.length)
+              matchList[thisTemp.id] = matchList[thisTemp.id].concat(list);
+              // console.log(matchList[thisTemp.id])
             });
 
             return true;
@@ -97,7 +104,6 @@ export class wordDriver {
         list = wordCache.hasKey[q];
       }
     }
-
     if (!list) { return; }
     if (list.length <= 0) { return; }
 
@@ -110,7 +116,8 @@ export class wordDriver {
 
     let overPrimitiveList: string[] = [];
 
-    primitiveList.forEach(e => {
+    primitiveList.forEach(e =>
+    {
       if (killWordList.includes(e))
       {
         return;
@@ -127,15 +134,14 @@ export class wordDriver {
     // 挑选一个词库，且不重复 
     let needPar = '';
 
-    const parOne = async () => {
+    const parOne = async () =>
+    {
       const item = list[witchWordDB];
-
       // 读取那个词库
       const wordData = await this.word.editor.readWord(item);
 
       // 获取那个词条对应的全部回答
       const questionList = wordData.data[q];
-
       if (!questionList) { return; }
 
       do
@@ -154,10 +160,11 @@ export class wordDriver {
     try
     {
       const abc = await parOne();
+
       if (!abc) { return; }
       const a = abc.message;
+      // console.log(abc)
 
-      // console.log(a)
       const needSave = abc.data;
       for (let uid in needSave)
       {
