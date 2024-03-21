@@ -10,6 +10,7 @@ export class Editor {
   private addCache: wordTools.addCacheType;
   private rmCache: wordTools.rmCacheType;
   private refreshCache: wordTools.cacheRefreshType;
+  private getCache: wordTools.getCacheType;
 
   constructor(tools: wordTools.ToolsFunction, cache: wordTools.CacheFunction) {
     this.readDB = tools.readDB;
@@ -19,6 +20,7 @@ export class Editor {
     this.addCache = cache.addCache;
     this.rmCache = cache.rmCache;
     this.refreshCache = cache.cacheRefresh;
+    this.getCache = cache.getCache;
   }
 
   /**
@@ -347,7 +349,10 @@ export class Editor {
    * @returns 
    */
   async getQuestion(q: string) {
-    const questionList = Object.keys(wordTools.wordCache.hasKey);
+    const hasKey = this.getCache().hasKey
+    
+    const questionList = Object.keys(hasKey);
+
     const matchedString = questionList.find(regText => {
       const reg = new RegExp(`^${regText}$`);
       return reg.test(q);
@@ -357,8 +362,9 @@ export class Editor {
       return [];
     } else
     {
-      return wordTools.wordCache.hasKey[q];
+      return hasKey[q];
     }
+
   }
 
   // 云端下载

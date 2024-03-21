@@ -126,12 +126,12 @@ export const apply = async (ctx: Context, config: Config) => {
         if (!session) { return; }
         const a = await ctx.word.editor.getQuestion(question);
 
-        let outMsg = `<at name="${session.username}" /> 此关键词存在以下词库：`;
+        let outMsg = '';
         a.forEach((value, index) => {
           outMsg = outMsg + `\n${index + 1}. ${value}`;
         });
 
-        return h.text(outMsg);
+        return `<at name="${session.username}" /> 此关键词存在以下词库：` + h.text(outMsg);
       });
 
     ctx.command('word', '词库核心！').subcommand('.get <question:text>', '查看当前词库某触发词的所有回答')

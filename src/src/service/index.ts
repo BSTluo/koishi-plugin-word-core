@@ -8,9 +8,7 @@ import * as trigger from "../extend/trigger";
 import * as statement from "../extend/statement";
 import * as Config from "./config/config";
 
-
 export * from './tools/tools';
-export * from './editor/cache';
 export * from './editor/cache';
 
 export class wordService {
