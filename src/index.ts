@@ -159,11 +159,11 @@ export const apply = async (ctx: Context, config: Config) => {
       .example('word.getDB')
       .action(async ({ session }, dbName) => {
         if (!session) { return; }
-        dbName = (dbName) ? dbName: await ctx.word.user.getEditWord(session.userId) 
+        dbName = (dbName) ? dbName : await ctx.word.user.getEditWord(session.userId);
 
         const a = await ctx.word.editor.readWord(dbName);
         const questionList = Object.keys(a.data);
-        
+
         let outMsg = `<at name="${session.username}" /> 你当前编辑的库含有以下触发词：`;
         questionList.forEach((value, index) => {
           outMsg = outMsg + `\n${index + 1}. ${value}`;

@@ -1,5 +1,5 @@
-import { Context, Session } from "koishi";
-import { chatFunctionType } from '../driver/src';
+import { Session } from "koishi";
+import { chatFunctionType, wordDataInputType } from '../driver/src';
 
 export const statement: statementType = {
 };
@@ -10,7 +10,7 @@ export const statement: statementType = {
  * @param callback 触发时执行的函数，返回值为字符串，此字符串会替换词库语句
  * @returns 当前整个statment规则
  */
-export const addStatement = (ruleTrigger: string, callback: (inData: chatFunctionType, session: Session) => statementCallBackType) => {
+export const addStatement = (ruleTrigger: string, callback: (inData: chatFunctionType, session: Session | wordDataInputType) => statementCallBackType) => {
   statement[ruleTrigger] = callback;
   return statement;
 };
@@ -25,16 +25,16 @@ export const rmStatement = (ruleTrigger: string) => {
   return statement;
 };
 
-export type statementCallBackType = Promise<string | void | statusMsg>
+export type statementCallBackType = Promise<string | void | statusMsg>;
 
 export type statementType = {
-  [key: string]: (inData: chatFunctionType, session: Session) => statementCallBackType;
+  [key: string]: (inData: chatFunctionType, session: Session | wordDataInputType) => statementCallBackType;
 };
 
 export type statusMsg = { status: string; data?: string; };
 
 export interface statementFunction {
   statement: statementType;
-  addStatement: (ruleTrigger: string, callback: (inData: chatFunctionType, session: Session) => statementCallBackType) => statementType;
+  addStatement: (ruleTrigger: string, callback: (inData: chatFunctionType, session: Session | wordDataInputType) => statementCallBackType) => statementType;
   rmStatement: (ruleTrigger: string) => statementType;
 }

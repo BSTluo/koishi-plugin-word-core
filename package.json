@@ -22,6 +22,9 @@
     "service": {
       "required": [
         "database"
+      ],
+      "implements": [
+        "word"
       ]
     }
   },

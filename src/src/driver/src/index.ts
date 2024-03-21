@@ -4,6 +4,13 @@ import { matchType } from "..";
 import { word } from "../../word";
 import { wordSaveData } from "../..";
 
+export interface wordDataInputType {
+  username: string;
+  userId: string;
+  channelId: string;
+  content: string;
+}
+
 export interface chatFunctionType {
   args: string[],
   matchs: matchType;
@@ -65,7 +72,7 @@ const parPack: typeParPack = {
 
 let funcPackKeys = Object.keys(statement);
 
-export const parsStart = async (questionList: string, wordData: wordSaveData, word: word, session: Session, matchList?: matchType): Promise<{ data: any, message: string; } | null> => {
+export const parsStart = async (questionList: string, wordData: wordSaveData, word: word, session: Session | wordDataInputType, matchList?: matchType): Promise<{ data: any, message: string; } | null> => {
   // const randomNumber = word.tools.randomNumber;
 
   funcPackKeys = Object.keys(statement);
@@ -188,7 +195,7 @@ const getTree = (str: string): any[] => {
   return b;
 };
 
-const parseTrees = async (word: word, inData: any[], session: Session, wordData: wordSaveData, matchList: matchType, userData: any): Promise<{ data: any, message: string; } | null> => {
+const parseTrees = async (word: word, inData: any[], session: Session | wordDataInputType, wordData: wordSaveData, matchList: matchType, userData: any): Promise<{ data: any, message: string; } | null> => {
   // // 遍历最深层字符串，解析后返回结果，重复运行
 
   const par = async (functonArray: any[], data: any): Promise<{ data: any, message: string; } | null> => {
@@ -204,7 +211,7 @@ const parseTrees = async (word: word, inData: any[], session: Session, wordData:
         {
           functonArray[i] = a.message;
           userData = a.data;
-        } else { saveItemDataTemp[(session.content) ? session.content : ''] = {}; userData = {} }
+        } else { saveItemDataTemp[(session.content) ? session.content : ''] = {}; userData = {}; }
       }
     }
 
@@ -268,7 +275,7 @@ const parseTrees = async (word: word, inData: any[], session: Session, wordData:
 
 
 // 调用词库语法
-const parStatement = async (which: string, toInData: chatFunctionType, session: Session<never, never, Context>) => {
+const parStatement = async (which: string, toInData: chatFunctionType, session: Session | wordDataInputType) => {
   const str: string | void | statusMsg = await statement[which](toInData, session);
   if (typeof str == "object")
   {

@@ -1,11 +1,11 @@
 import { Context } from 'koishi';
-import { parsStart, saveItemDataTemp } from './src';
+import { parsStart, saveItemDataTemp, wordDataInputType } from './src';
 import { word } from '../word';
 import { Session } from 'koishi';
 
 export const inject = {
   require: ['word']
-};
+}; 
 
 export type matchType = Record<string, string[]>;
 
@@ -23,7 +23,7 @@ export class wordDriver {
    * @param session 当前对话对象
    * @returns 
    */
-  async start(session: Session) {
+  async start(session: Session | wordDataInputType) {
     // this.ctx.inject(['word'], async ctx => {
     if (!session.content) { return; }
     let q: string = session.content;
@@ -105,7 +105,7 @@ export class wordDriver {
     let primitiveList: string[] = list;
     const killWordListTemp = (await this.word.config.getConfig('filtration')) as unknown as Record<string, string[]>;
 
-    const guildId = session.guildId;
+    const guildId = session.channelId;
     const killWordList = (killWordListTemp[guildId]) ? killWordListTemp[guildId] : [];
 
     let overPrimitiveList: string[] = [];
