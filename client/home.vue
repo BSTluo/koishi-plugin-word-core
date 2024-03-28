@@ -1,12 +1,10 @@
 <template>
     <k-layout>
         <div class="home">
-            <div class="top-nav">
-                <!-- <div class="fold" v-if="$store.state.isMobile" @click="this.$store.state.isSidebar = 1"><i
-                    class="bi bi-list"></i>
-            </div> -->
+            <!-- <div class="top-nav">
+
                 <div class="title">{{ config.name }}</div>
-            </div>
+            </div> -->
             <div class="conten">
                 <div class="search-box">
                     <div class="search-container">
@@ -133,6 +131,9 @@
             justify-content: center;
             width: 100%;
             margin: 24px 0 18px 0;
+            background-color: #313136;
+            border: none;
+            box-shadow: none;
 
             .search-container {
                 position: relative;
@@ -350,7 +351,8 @@
 <script>
 
 export default {
-    data() {
+    data()
+    {
         return {
             url: 'http://127.0.0.1:1145',
             config: {
@@ -368,17 +370,20 @@ export default {
         };
     },
     methods: {
-        async getList() {
+        async getList()
+        {
             const resTemp = await fetch(`${this.url}/getList`);
             const res = await resTemp.json();
 
             this.pluginList = res;
             this.page.time = this.getCurrentFormattedTime();
         },
-        async getPlugin(name) {
+        async getPlugin(name)
+        {
             return `${this.url}/getPlugin/${name}.js`;
         },
-        formatTimestamp(timestamp) {
+        formatTimestamp(timestamp)
+        {
             const now = Date.now();
             const diff = now - timestamp;
 
@@ -413,7 +418,8 @@ export default {
                 return `${years}年前`;
             }
         },
-        getCurrentFormattedTime() {
+        getCurrentFormattedTime()
+        {
             const now = new Date();
             const year = now.getFullYear();
             const month = String(now.getMonth() + 1).padStart(2, '0');
@@ -425,7 +431,8 @@ export default {
             return `${year}/${month}/${day} ${hours}:${minutes}:${seconds}`;
         },
     },
-    mounted() {
+    mounted()
+    {
         this.getList();
     },
 };
