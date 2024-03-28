@@ -28,12 +28,12 @@ export const apply = async (ctx: Context, config: Config) => {
   ctx.plugin(core);
   ctx.plugin(word);
 
-  // ctx.inject(['console'], (ctx) => {
-  //   ctx.console.addEntry({
-  //     dev: resolve(__dirname, '../client/index.ts'),
-  //     prod: resolve(__dirname, '../dist'),
-  //   });
-  // });
+  ctx.inject(['console'], (ctx) => {
+    ctx.console.addEntry({
+      dev: resolve(__dirname, '../client/index.ts'),
+      prod: resolve(__dirname, '../dist'),
+    });
+  });
 
   ctx.inject(['word'], async ctx => {
     ctx.command('word', '词库核心！');
@@ -246,7 +246,7 @@ export const apply = async (ctx: Context, config: Config) => {
         '删除权限：word.admin.rm',
         '管理员级权限：word.admin.*'
       ].join('\n'))
-      .example('word.addp 6503fb7b50308 word.edit.*')
+      .example('word.addp 5b0fe8a3b1ff2 word.edit.*')
       .action(async ({ session }, uid, permission) => {
         if (!session) { return; }
 

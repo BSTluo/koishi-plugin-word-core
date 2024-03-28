@@ -1,86 +1,91 @@
 <template>
-    <div class="home">
-        <div class="top-nav">
-            <div class="fold" v-if="$store.state.isMobile" @click="this.$store.state.isSidebar = 1"><i
+    <k-layout>
+        <div class="home">
+            <div class="top-nav">
+                <!-- <div class="fold" v-if="$store.state.isMobile" @click="this.$store.state.isSidebar = 1"><i
                     class="bi bi-list"></i>
+            </div> -->
+                <div class="title">{{ config.name }}</div>
             </div>
-            <div class="title">{{ config.name }}</div>
-        </div>
-        <div class="conten">
-            <div class="search-box">
-                <div class="search-container">
-                    <input placeholder="输入想要查询的插件名">
-                    <div class="search-btn"><i class="bi bi-search"></i></div>
+            <div class="conten">
+                <div class="search-box">
+                    <div class="search-container">
+                        <input placeholder="输入想要查询的插件名">
+                        <div class="search-btn"><i class="bi bi-search"></i></div>
+                    </div>
                 </div>
-            </div>
-            <div class="statistics">
-                <div class="text"> {{ `当前有${Object.keys(pluginList).length}个可用于 forge${page.version} 版本的插件(${page.time})` }}
+                <div class="statistics">
+                    <div class="text"> {{ `当前有${Object.keys(pluginList).length}个可用于 forge${page.version}
+                        版本的插件(${page.time})` }}
+                    </div>
                 </div>
-            </div>
-            <div class="market-box">
-                <div class="market-grid">
-                    <div class="item-grid" v-for="item of pluginList">
-                        <div class="item">
-                            <div class="header">
-                                <div class="icon"><i class="bi bi-plug"></i></div>
-                                <div class="info">
-                                    <div class="name">{{ item.name }}</div>
-                                    <div class="author">{{ item.author }}</div>
+                <div class="market-box">
+                    <div class="market-grid">
+                        <div class="item-grid" v-for="item of pluginList">
+                            <div class="item">
+                                <div class="header">
+                                    <div class="icon"><i class="bi bi-plug"></i></div>
+                                    <div class="info">
+                                        <div class="name">{{ item.name }}</div>
+                                        <div class="author">{{ item.author }}</div>
+                                    </div>
+                                </div>
+                                <div class="text">{{ item.descriptor }}</div>
+                                <div class="footer">
+                                    <!-- <div class="tag">{{ item.tag }}</div> -->
+                                    <div class="version"><i class="bi bi-tag"></i>{{ item.version }}</div>
+                                    <div class="time">{{ formatTimestamp(item.update) }}</div>
                                 </div>
                             </div>
-                            <div class="text">{{ item.descriptor }}</div>
-                            <div class="footer">
-                                <!-- <div class="tag">{{ item.tag }}</div> -->
-                                <div class="version"><i class="bi bi-tag"></i>{{ item.version }}</div>
-                                <div class="time">{{ formatTimestamp(item.update) }}</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="pageNum-box">
+                    <div class="pageNum">
+                        <div class="item" @click="page.now > 1 && page.now--"><i class="bi bi-chevron-left"></i></div>
+                        <div v-for="item in page.max">
+                            <div class="item"
+                                @click="((page.now + 2) != item) && ((page.now - 2) != item) && (page.now = item)"
+                                :class="item == page.now && 'active'"
+                                v-if="((page.now + 2) >= item) && ((page.now - 2) <= item) || item == 1 || item == page.max">
+                                {{
+                    ((page.now + 2) !=
+                        item) && ((page.now - 2) != item) || item == 1 || item == page.max ? item : '...' }}
                             </div>
                         </div>
-                    </div>
-                </div>
-            </div>
-            <div class="pageNum-box">
-                <div class="pageNum">
-                    <div class="item" @click="page.now > 1 && page.now--"><i class="bi bi-chevron-left"></i></div>
-                    <div v-for="item in page.max">
-                        <div class="item" @click="((page.now + 2) != item) && ((page.now - 2) != item) && (page.now = item)"
-                            :class="item == page.now && 'active'"
-                            v-if="((page.now + 2) >= item) && ((page.now - 2) <= item) || item == 1 || item == page.max">{{
-                                ((page.now + 2) !=
-                                    item) && ((page.now - 2) != item) || item == 1 || item == page.max ? item : '...' }}
+                        <div class="item" @click="(page.now < page.max) && page.now++"><i
+                                class="bi bi-chevron-right"></i>
                         </div>
                     </div>
-                    <div class="item" @click="(page.now < page.max) && page.now++"><i class="bi bi-chevron-right"></i>
-                    </div>
+
                 </div>
 
             </div>
-
         </div>
-    </div>
+    </k-layout>
 </template>
 <style lang="scss" scoped>
-
 /* 隐藏浏览器默认的滚动条 */
 ::-webkit-scrollbar {
     width: 8px;
-  }
-  
-  /* 轨道部分（滚动条背景） */
-  ::-webkit-scrollbar-track {
+}
+
+/* 轨道部分（滚动条背景） */
+::-webkit-scrollbar-track {
     background-color: transparent;
-  }
-  
-  /* 滑块部分（可拖动的滚动条） */
-  ::-webkit-scrollbar-thumb {
+}
+
+/* 滑块部分（可拖动的滚动条） */
+::-webkit-scrollbar-thumb {
     background-color: #787875;
     border-radius: 6px;
-  }
-  
-  /* 滑块悬停状态 */
-  ::-webkit-scrollbar-thumb:hover {
+}
+
+/* 滑块悬停状态 */
+::-webkit-scrollbar-thumb:hover {
     background-color: #E9E9E0;
-  }
-  
+}
+
 
 .home {
     width: 100%;
@@ -345,8 +350,7 @@
 <script>
 
 export default {
-    data ()
-    {
+    data() {
         return {
             url: 'http://127.0.0.1:1145',
             config: {
@@ -354,6 +358,7 @@ export default {
                 "version": "0.0.0",
             },
             pluginList: {},
+
             page: {
                 time: 0,
                 now: 5,
@@ -363,20 +368,17 @@ export default {
         };
     },
     methods: {
-        async getList ()
-        {
+        async getList() {
             const resTemp = await fetch(`${this.url}/getList`);
             const res = await resTemp.json();
 
             this.pluginList = res;
             this.page.time = this.getCurrentFormattedTime();
         },
-        async getPlugin (name)
-        {
+        async getPlugin(name) {
             return `${this.url}/getPlugin/${name}.js`;
         },
-        formatTimestamp (timestamp)
-        {
+        formatTimestamp(timestamp) {
             const now = Date.now();
             const diff = now - timestamp;
 
@@ -411,8 +413,7 @@ export default {
                 return `${years}年前`;
             }
         },
-        getCurrentFormattedTime ()
-        {
+        getCurrentFormattedTime() {
             const now = new Date();
             const year = now.getFullYear();
             const month = String(now.getMonth() + 1).padStart(2, '0');
@@ -424,8 +425,7 @@ export default {
             return `${year}/${month}/${day} ${hours}:${minutes}:${seconds}`;
         },
     },
-    mounted ()
-    {
+    mounted() {
         this.getList();
     },
 };

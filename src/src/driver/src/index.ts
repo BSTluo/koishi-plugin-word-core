@@ -11,14 +11,6 @@ export interface wordDataInputType {
   content: string;
 }
 
-export interface wordDataInputType 
-{
-  username: string;
-  userId: string;
-  channelId: string;
-  content: string;
-}
-
 export interface chatFunctionType
 {
   args: string[],
