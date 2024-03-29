@@ -3,10 +3,12 @@ import { CacheFunction, ToolsFunction, WordCache, wordService } from './service/
 import { wordDriver } from "./driver";
 import { Editor } from "./service/editor/editor";
 import { Permission } from "./service/permission/permission";
-import { UserFunction } from "./service/user/user";
+// import { User, UserFunction } from "./service/user/user";
+import { User } from "./service/user/user";
 import { triggerFunction } from "./extend/trigger";
 import { statementFunction } from "./extend/statement";
-import { configFunction } from "./service/config/config";
+// import { Config, configFunction } from "./service/config/config";
+import { Config } from "./service/config/config";
 
 declare module 'koishi' {
   interface Context {
@@ -19,11 +21,13 @@ export class word extends Service {
   cache: CacheFunction;
   editor: Editor;
   tools: ToolsFunction;
-  user: UserFunction;
+  // user: UserFunction;
+  user: User;
   trigger: triggerFunction;
   permission: Permission;
   statement: statementFunction;
-  config: configFunction;
+  // config: configFunction;
+  config: Config;
 
   constructor(ctx: Context) {
     super(ctx, 'word', true);

@@ -21,6 +21,11 @@ export class Config {
     this.refreshCache = cache.cacheRefresh;
   }
 
+  /**
+   * 获取配置
+   * @param key 配置的键
+   * @returns 
+   */
   async getConfig(key: string) {
     const readData = await this.readDB('wordCoreConfig', key);
 
@@ -35,16 +40,21 @@ export class Config {
     }
     return out;
   }
-
+  /**
+   * 更新(新建)配置
+   * @param key 配置的键
+   * @param value 配置的值
+   * @returns 
+   */
   async updateConfig(key: string, value: settingTypeValue) {
     return await this.writeDB('wordCoreConfig', key, value as allType);
   }
 }
 
-export type getConfigType = (key: string) => Promise<settingTypeValue>;
-export type updateConfigType = (key: string, value: settingTypeValue) => Promise<boolean>;
+// export type getConfigType = (key: string) => Promise<settingTypeValue>;
+// export type updateConfigType = (key: string, value: settingTypeValue) => Promise<boolean>;
 
-export interface configFunction {
-  getConfig: getConfigType;
-  updateConfig: updateConfigType;
-}
+// export interface configFunction {
+//   getConfig: getConfigType;
+//   updateConfig: updateConfigType;
+// }

@@ -2,8 +2,9 @@ import { readDBType, writeDBType } from "../index";
 import { allType, settingType, settingTypeValue, wordUserConfig, wordUserTemp } from "../../index";
 
 export class User {
-  readDBTools: readDBType;
-  writeDBTools: writeDBType;
+  private readDBTools: readDBType;
+  private writeDBTools: writeDBType;
+  
   constructor(readDBTools: readDBType, writeDBTools: writeDBType) {
     this.readDBTools = readDBTools;
     this.writeDBTools = writeDBTools;
@@ -237,33 +238,33 @@ export class User {
   }
 }
 
-export type getDataType = (uid: string) => Promise<Record<string, Record<string, number>>>;
-export type updateDataType = (uid: string, data: Record<string, Record<string, number>>) => Promise<boolean>;
-export type getItemType = (uid: string, cell: string, itemName: string) => Promise<null | number>;
-export type updateItemForceType = (uid: string, cell: string, itemName: string, amount: number) => Promise<boolean>;
-export type getEditWordType = (uid: string) => Promise<string>;
-export type setEditWordType = (uid: string, newDB: string) => Promise<boolean>;
-export type saveTempType = () => Promise<boolean>;
-export type updateTempType = (uid: string, data: Record<string, Record<string, number>>) => boolean;
-export type updateItemType = (uid: string, cell: string, itemName: string, amount: number) => Promise<boolean>;
-export type getConfigType = (uid: string) => Promise<settingType>;
-export type setConfigType = (uid: string, key: string, value: settingTypeValue) => Promise<void>;
-export type setConfigForceType = (uid: string, key: string, value: settingTypeValue) => Promise<void>;
-export type saveConfigType = () => Promise<boolean>;
+// export type getDataType = (uid: string) => Promise<Record<string, Record<string, number>>>;
+// export type updateDataType = (uid: string, data: Record<string, Record<string, number>>) => Promise<boolean>;
+// export type getItemType = (uid: string, cell: string, itemName: string) => Promise<null | number>;
+// export type updateItemForceType = (uid: string, cell: string, itemName: string, amount: number) => Promise<boolean>;
+// export type getEditWordType = (uid: string) => Promise<string>;
+// export type setEditWordType = (uid: string, newDB: string) => Promise<boolean>;
+// export type saveTempType = () => Promise<boolean>;
+// export type updateTempType = (uid: string, data: Record<string, Record<string, number>>) => boolean;
+// export type updateItemType = (uid: string, cell: string, itemName: string, amount: number) => Promise<boolean>;
+// export type getConfigType = (uid: string) => Promise<settingType>;
+// export type setConfigType = (uid: string, key: string, value: settingTypeValue) => Promise<void>;
+// export type setConfigForceType = (uid: string, key: string, value: settingTypeValue) => Promise<void>;
+// export type saveConfigType = () => Promise<boolean>;
 
 
-export interface UserFunction {
-  getData: getDataType;
-  updateData: updateDataType;
-  getItem: getItemType;
-  updateItemForce: updateItemForceType;
-  getEditWord: getEditWordType;
-  setEditWord: setEditWordType;
-  saveTemp: saveTempType;
-  updateTemp: updateTempType;
-  updateItem: updateItemType;
-  getConfig: getConfigType;
-  setConfig: setConfigType;
-  setConfigForce: setConfigForceType;
-  saveConfig: saveConfigType;
-}
+// export interface UserFunction {
+//   getData: getDataType;
+//   updateData: updateDataType;
+//   getItem: getItemType;
+//   updateItemForce: updateItemForceType;
+//   getEditWord: getEditWordType;
+//   setEditWord: setEditWordType;
+//   saveTemp: saveTempType;
+//   updateTemp: updateTempType;
+//   updateItem: updateItemType;
+//   getConfig: getConfigType;
+//   setConfig: setConfigType;
+//   setConfigForce: setConfigForceType;
+//   saveConfig: saveConfigType;
+// }

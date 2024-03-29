@@ -13,7 +13,7 @@
                     </div>
                 </div>
                 <div class="statistics">
-                    <div class="text"> {{ `当前有${Object.keys(pluginList).length}个可用于 forge${page.version}
+                    <div class="text"> {{ `当前有${Object.keys(pluginList).length}个可用于 词库${page.version}
                         版本的插件(${page.time})` }}
                     </div>
                 </div>

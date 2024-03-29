@@ -347,7 +347,8 @@ export const apply = async (ctx: Context, config: Config) => {
       // console.log(msg)
       session.send(msg);
     });
-
+    ctx.word.editor.getRecycleBinList()
+    
     // 上传
     // 下载
   });

@@ -16,7 +16,7 @@ export class wordService {
 
   public Tools: Tools.ToolsFunction = {} as Tools.ToolsFunction;
 
-  public User: User.UserFunction = {} as User.UserFunction;
+  public User: User.User = {} as User.User;
 
   public Cache: Cache.CacheFunction = {} as Cache.CacheFunction;
 
@@ -28,7 +28,7 @@ export class wordService {
 
   public statement: statement.statementFunction = {} as statement.statementFunction;
 
-  public config: Config.configFunction = {} as Config.configFunction;
+  public config: Config.Config = {} as Config.Config;
 
   constructor(ctx: Context) {
     this.ctx = ctx;

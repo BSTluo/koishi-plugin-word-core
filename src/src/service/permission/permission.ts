@@ -10,14 +10,12 @@ export class Permission {
     this.writeDB = writeDB;
   }
 
-  // 获取权限表
-  async getList(uid: string) {
-    const permissionData = await this.readDB('wordUserConfig', uid) as unknown as Record<string, string[]>;
-    if (!permissionData.permission) { permissionData.permission = []; }
-    return permissionData.permission;
-  }
-
-  // 添加权限
+  /**
+   * 为某人添加权限
+   * @param uid 被操作者uid
+   * @param newPermission 权限树
+   * @returns 
+   */
   async add(uid: string, newPermission: string) {
     const permissionData = await this.readDB('wordUserConfig', uid) as unknown as Record<string, string[]>;
     if (!permissionData.permission) { permissionData.permission = []; }
@@ -27,7 +25,12 @@ export class Permission {
     return await this.writeDB('wordUserConfig', uid, permissionData as unknown as allType);
   }
 
-  // 减少权限
+  /**
+   * 删除某人的权限
+   * @param uid 被操作者uid
+   * @param permission 权限树
+   * @returns 
+   */
   async rm(uid: string, permission: string) {
     const permissionData = await this.readDB('wordUserConfig', uid) as unknown as Record<string, string[]>;
     if (!permissionData.permission) { permissionData.permission = []; }
@@ -41,7 +44,12 @@ export class Permission {
     return await this.writeDB('wordUserConfig', uid, permissionData as unknown as allType);
   }
 
-  // 判断是否拥有某权限
+  /**
+   * 判断某人是否拥有某权限
+   * @param uid 查询目标uid
+   * @param permission 权限树
+   * @returns 
+   */
   async isHave(uid: string, permission: string): Promise<boolean> {
     const permissionData = await this.readDB('wordUserConfig', uid) as unknown as Record<string, string[]>;
     if (!permissionData.permission) { permissionData.permission = []; }
@@ -60,7 +68,11 @@ export class Permission {
     return false;
   }
 
-  // 返回全部权限
+  /**
+   * 查看某人的全部权限
+   * @param uid 被操作者uid
+   * @returns 权限树
+   */
   async all(uid: string) {
     const permissionData = await this.readDB('wordUserConfig', uid) as unknown as Record<string, string[]>;
     if (!permissionData.permission) { permissionData.permission = []; }
