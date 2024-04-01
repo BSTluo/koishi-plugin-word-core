@@ -1,10 +1,6 @@
 <template>
     <k-layout>
         <div class="home">
-            <!-- <div class="top-nav">
-
-                <div class="title">{{ config.name }}</div>
-            </div> -->
             <div class="conten">
                 <div class="search-box">
                     <div class="search-container">
@@ -40,19 +36,19 @@
                 </div>
                 <div class="pageNum-box">
                     <div class="pageNum">
-                        <div class="item" @click="page.now > 1 && page.now--"><i class="bi bi-chevron-left"></i></div>
+                        <div class="item" @click="page.now > 1 && page.now--"><i class="bi bi-chevron-left" style="color: var(--fg1);"></i></div>
                         <div v-for="item in page.max">
                             <div class="item"
                                 @click="((page.now + 2) != item) && ((page.now - 2) != item) && (page.now = item)"
                                 :class="item == page.now && 'active'"
                                 v-if="((page.now + 2) >= item) && ((page.now - 2) <= item) || item == 1 || item == page.max">
                                 {{
-                    ((page.now + 2) !=
-                        item) && ((page.now - 2) != item) || item == 1 || item == page.max ? item : '...' }}
+                        ((page.now + 2) !=
+                            item) && ((page.now - 2) != item) || item == 1 || item == page.max ? item : '...' }}
                             </div>
                         </div>
                         <div class="item" @click="(page.now < page.max) && page.now++"><i
-                                class="bi bi-chevron-right"></i>
+                                class="bi bi-chevron-right" style="color: var(--fg1);"></i>
                         </div>
                     </div>
 
@@ -83,7 +79,6 @@
 ::-webkit-scrollbar-thumb:hover {
     background-color: #E9E9E0;
 }
-
 
 .home {
     width: 100%;
@@ -131,7 +126,7 @@
             justify-content: center;
             width: 100%;
             margin: 24px 0 18px 0;
-            background-color: #313136;
+            background-color: var(--k-main-bg);
             border: none;
             box-shadow: none;
 
@@ -143,12 +138,14 @@
                 justify-content: center;
                 max-width: 550px;
                 width: 80%;
+                box-shadow: var(--k-card-shadow);
+                border-radius: 1.5rem;
 
 
                 input {
                     max-width: 550px;
                     width: 100%;
-                    background: #1F1F22;
+                    background: var(--k-card-bg);
                     border-radius: 20px;
                     display: flex;
                     flex-direction: column;
@@ -156,8 +153,9 @@
                     justify-content: center;
                     border: none;
                     border-left: 24px solid transparent;
-                    caret-color: rgba(255, 255, 245, 0.9);
-                    color: rgba(255, 255, 245, 0.9);
+                    caret-color: var(--fg1);
+                    color: var(--fg1);
+
                     padding: 12px 0px 12px 0px;
 
                     &::placeholder {
@@ -174,7 +172,7 @@
                 .search-btn {
                     position: absolute;
                     right: 10px;
-                    color: #7B7B77;
+                    color: var(--fg1);
                     cursor: pointer;
                 }
             }
@@ -219,22 +217,23 @@
                     align-items: center;
                     justify-content: center;
 
-
-
                     .item {
                         position: relative;
                         width: 100%;
                         height: 100%;
                         max-width: 500px;
                         min-width: 300px;
-                        background: #1F1F22;
+                        background: var(--k-card-bg);
                         border-radius: 8px;
                         transition: all 0.2s ease;
-                        outline: transparent 2px solid;
+                        // outline: transparent 2px solid;
                         cursor: pointer;
-
+                        border: 1px solid var(--k-card-border);
                         display: flex;
                         flex-direction: column;
+                        outline: #3b82f6 2px solid;
+                        outline: transparent 2px solid;
+
 
                         &:hover {
                             outline: #3b82f6 2px solid;
@@ -254,10 +253,11 @@
                                 display: flex;
                                 align-items: center;
                                 justify-content: center;
-
+                                
                                 i {
                                     font-size: 32px;
-                                    color: rgba(255, 255, 245, 0.9);
+                                    color: var(--fg1);
+                                    // color: red;
                                 }
                             }
 
@@ -306,7 +306,7 @@
                                 right: 0;
                                 bottom: 0;
                                 font-size: 12px;
-                                color: #aaa;
+                                color: var(--el-text-color-secondary);
                             }
                         }
                     }
@@ -335,7 +335,8 @@
                     border-radius: 4px;
                     height: 32px;
                     margin: 0 4px;
-                    background: #1F1F22;
+                    background: var(--k-status-bg, var(--k-side-bg));
+                    color: var(--el-text-color-placeholder);
                 }
 
                 .active {
@@ -349,10 +350,9 @@
 }
 </style>
 <script>
-
+import "bootstrap-icons/font/bootstrap-icons.css";
 export default {
-    data()
-    {
+    data() {
         return {
             url: 'http://127.0.0.1:1145',
             config: {
@@ -370,20 +370,17 @@ export default {
         };
     },
     methods: {
-        async getList()
-        {
+        async getList() {
             const resTemp = await fetch(`${this.url}/getList`);
             const res = await resTemp.json();
 
             this.pluginList = res;
             this.page.time = this.getCurrentFormattedTime();
         },
-        async getPlugin(name)
-        {
+        async getPlugin(name) {
             return `${this.url}/getPlugin/${name}.js`;
         },
-        formatTimestamp(timestamp)
-        {
+        formatTimestamp(timestamp) {
             const now = Date.now();
             const diff = now - timestamp;
 
@@ -418,8 +415,7 @@ export default {
                 return `${years}年前`;
             }
         },
-        getCurrentFormattedTime()
-        {
+        getCurrentFormattedTime() {
             const now = new Date();
             const year = now.getFullYear();
             const month = String(now.getMonth() + 1).padStart(2, '0');
@@ -431,8 +427,7 @@ export default {
             return `${year}/${month}/${day} ${hours}:${minutes}:${seconds}`;
         },
     },
-    mounted()
-    {
+    mounted() {
         this.getList();
     },
 };

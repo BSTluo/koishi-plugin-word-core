@@ -33,6 +33,10 @@
     "url": "git+https://github.com/BSTluo/koishi-plugin-word-core.git"
   },
   "devDependencies": {
-    "@koishijs/client": "^5.27.9"
+    "@koishijs/client": "^5.27.9",
+    "bootstrap-icons": "^1.11.3"
+  },
+  "dependencies": {
+    "bootstrap-icons": "^1.11.3"
   }
 }
