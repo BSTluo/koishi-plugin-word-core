@@ -207,6 +207,7 @@ export class wordDriver {
     {
       // console.log(err);
       const errorType = err.message;
+      if (!errorType) { return err; }
       const msg = errorType.split(':')[1];
 
       // 执行后立刻终止，并且不保存数据

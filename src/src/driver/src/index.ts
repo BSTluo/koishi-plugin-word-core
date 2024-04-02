@@ -82,7 +82,7 @@ export const parsStart = async (questionList: string, wordData: wordSaveData, wo
   const msg = [];
   let userData = {};
   let oldUserData = {};
-
+  // console.log(tree[0]);
   for (let needParMsg of tree)
   {
     let over;
@@ -132,7 +132,6 @@ const getTree = (str: string): any[] => {
       {
         if (!tempArr[index]) { tempArr[index] = []; }
         tempArr[index].push(par());
-
       } else if (v == ')')
       {
         return tempArr;
@@ -141,7 +140,10 @@ const getTree = (str: string): any[] => {
         if (!tempArr[index]) { tempArr[index] = ['']; }
         const length = tempArr[index].length;
 
-        if (tempArr[index][length - 1].endsWith('http') || tempArr[index][length - 1].endsWith('https'))
+        if (Array.isArray(tempArr[index][length - 1]))
+        {
+          index++;
+        } else if (tempArr[index][length - 1].endsWith('http') || tempArr[index][length - 1].endsWith('https'))
         {
 
           if (Array.isArray(tempArr[index][length - 1]))
@@ -215,7 +217,7 @@ export interface chatFunctionType {
 }
 
 const parseTrees = async (word: word, inData: any[], session: Session | wordDataInputType, wordData: wordSaveData, matchList: matchType, inputUserData: any): Promise<{ data: parTemp, message: string; } | null> => {
-  // // 遍历最深层字符串，解析后返回结果，重复运行
+  // 遍历最深层字符串，解析后返回结果，重复运行
 
   const par = async (functonArray: any[], data: parTemp): Promise<{ data: any, message: string; } | null> => {
     let userDataTemp = data;
@@ -238,9 +240,9 @@ const parseTrees = async (word: word, inData: any[], session: Session | wordData
     const arg = functonArray.slice(1);
     const matchs = matchList;
 
+    // console.log(which);
     if (funcPackKeys.includes(which))
     {
-
       const overPar = await parStatement(which, {
         args: arg,
         matchs: matchs,
@@ -277,7 +279,7 @@ const parseTrees = async (word: word, inData: any[], session: Session | wordData
 
           getUserConfig: async (uid: string, key: string) => {
             const userConfig = await word.user.getConfig(uid);
-            
+
             if (!userDataTemp.userConfig) { userDataTemp.userConfig = {}; }
 
             if (!userDataTemp.userConfig[uid]) { userDataTemp.userConfig[uid] = {}; }
@@ -308,8 +310,8 @@ const parseTrees = async (word: word, inData: any[], session: Session | wordData
           }
         }
       }, session);
-
-      if (overPar)
+      
+      if (overPar || overPar == '')
       {
         return { message: overPar, data: userDataTemp };
       } else
@@ -319,6 +321,7 @@ const parseTrees = async (word: word, inData: any[], session: Session | wordData
 
     } else
     {
+      // console.log("functonArray", functonArray)
       return { message: functonArray.join(''), data: userDataTemp };
     }
   };
