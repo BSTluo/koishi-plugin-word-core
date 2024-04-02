@@ -213,6 +213,7 @@ export class wordDriver {
       // 执行后立刻终止，并且不保存数据
       if (errorType.startsWith('kill'))
       {
+        // console.log(msg)
         if (msg) { return msg; }
         return;
       }
@@ -297,8 +298,6 @@ export class wordDriver {
             }
           }
         }
-
-
 
         const needSaveConfig = needSaveObj.userConfig;
         if (!needSaveConfig)

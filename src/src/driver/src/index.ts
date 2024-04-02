@@ -335,16 +335,16 @@ const parseTrees = async (word: word, inData: any[], session: Session | wordData
 // 调用词库语法
 const parStatement = async (which: string, toInData: chatFunctionType, session: Session | wordDataInputType) => {
   const str: string | void | statusMsg = await statement[which](toInData, session);
-
+  
   if (typeof str == "object")
   {
     const status = str.status;
-    if (status == 'end' || status == 'next')
+    if (status == 'end' || status == 'next' || status == 'kill')
     {
       const errorMsg = `${status}${(str.data) ? ':' + str.data : ''}`;
       throw new Error(errorMsg);
     }
-    if (status == 'kill')
+    if (status == 'killthis')
     {
       return null;
     }
