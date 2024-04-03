@@ -351,9 +351,27 @@ export const apply = async (ctx: Context, config: Config) => {
     ctx.word.editor.getRecycleBinList();
 
     // 上传
+    
+
     // 下载
+    ctx.console.addListener('getWord', (name) => {
+      ctx.word.editor.getCloudWord(name)
+    });
+
+    // 卸载
+    ctx.console.addListener('rmWord', (name) => {
+      console.log(name);
+      ctx.word.editor.removeWord(name);
+    });
   });
 };
+
+declare module '@koishijs/plugin-console' {
+  interface Events {
+    'rmWord'(name: string): void;
+    'getWord'(name: string): void;
+  }
+}
 
 // ...o/......@OoOO........=@@@*****..........................***@@^.......[\/.....
 // ..,@^....*//oOo^........@@@@*****.........................***=@@^...............
