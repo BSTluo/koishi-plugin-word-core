@@ -34,9 +34,12 @@
   },
   "devDependencies": {
     "@koishijs/client": "^5.27.9",
-    "bootstrap-icons": "^1.11.3"
+    "bootstrap-icons": "^1.11.3",
+    "form-data": "^4.0.0"
   },
   "dependencies": {
-    "bootstrap-icons": "^1.11.3"
+    "axios": "^1.6.8",
+    "bootstrap-icons": "^1.11.3",
+    "form-data": "^4.0.0"
   }
 }

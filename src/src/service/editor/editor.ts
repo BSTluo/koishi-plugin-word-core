@@ -1,6 +1,9 @@
 // 编辑词库
 import * as wordTools from '../index';
 import { wordSaveData } from '../../index';
+import FormData from 'form-data';
+import axios from 'axios';
+import { createWriteStream } from 'fs';
 
 export class Editor {
   private readDB: wordTools.readDBType;
@@ -11,6 +14,7 @@ export class Editor {
   private rmCache: wordTools.rmCacheType;
   private refreshCache: wordTools.cacheRefreshType;
   private getCache: wordTools.getCacheType;
+  private tools: wordTools.ToolsFunction;
 
   constructor(tools: wordTools.ToolsFunction, cache: wordTools.CacheFunction) {
     this.readDB = tools.readDB;
@@ -21,6 +25,7 @@ export class Editor {
     this.rmCache = cache.rmCache;
     this.refreshCache = cache.cacheRefresh;
     this.getCache = cache.getCache;
+    this.tools = tools;
   }
 
   /**
@@ -54,7 +59,7 @@ export class Editor {
    * @param data 词库数据
    * @returns 结果
    */
-  private async updateWord(name: string, data: wordSaveData) {
+  public async updateWord(name: string, data: wordSaveData) {
     return await this.writeDB('wordData', name, data);
   }
 
@@ -349,8 +354,8 @@ export class Editor {
    * @returns 
    */
   async getQuestion(q: string) {
-    const hasKey = this.getCache().hasKey
-    
+    const hasKey = this.getCache().hasKey;
+
     const questionList = Object.keys(hasKey);
 
     const matchedString = questionList.find(regText => {
@@ -366,6 +371,58 @@ export class Editor {
     }
   }
 
+  private res: Record<string, Record<string, string>> = {};
+
+  // 获取云端插件序列
+  async getCloudWordList() {
+    const fetchDataTemp = await fetch(`${this.tools.url}/getList`);
+    const fetchData = await fetchDataTemp.json();
+    this.res = fetchData;
+  }
+
   // 云端下载
+  async getCloudWord(name: string) {
+    if (JSON.stringify(this.res) == "{}") { await this.getCloudWordList(); }
+    const pluginData = this.res[name];
+    if (!pluginData) { return; }
+
+    const authorId = pluginData.authorId;
+    const pluginName = pluginData.name;
+    // const authorName = pluginData.author;
+
+    const fetchDataTemp = await fetch(`${this.tools.url}/getPlugin/${authorId}/${pluginName}.json`);
+    const fetchData = await fetchDataTemp.json();
+    this.updateWord(name, fetchData);
+
+    this.getCache()
+  }
+
   // 云端上传
+  async updateCloudWord(pluginData: pluginData) {
+    const formData = new FormData();
+
+    const a = await this.readWord(pluginData.dbName);
+    if (a.author.length == 0) { return; }
+
+    const file = Buffer.from(JSON.stringify(a));
+    formData.append('file', file, { filename: `${pluginData.name}.json` });
+    formData.append('tag', JSON.stringify(pluginData.tag));
+    formData.append('author', pluginData.author);
+    formData.append('name', pluginData.name);
+    formData.append('wiki', pluginData.wiki);
+    formData.append('authorId', pluginData.authorId);
+
+    await axios.post(`${this.tools.url}/newPlugin`, formData);
+
+  }
 }
+
+type pluginData = {
+  tag: string[],
+  author: string,
+  name: string,
+  wiki: string,
+  authorId: string,
+  dbName: string,
+  descriptor: string;
+};

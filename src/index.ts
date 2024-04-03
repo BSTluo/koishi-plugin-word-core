@@ -10,6 +10,7 @@ export * from './src/word';
 
 export interface Config {
   masterID: string[];
+  searchEndpoint: string;
 }
 
 export const inject = {
@@ -17,23 +18,23 @@ export const inject = {
 };
 
 export const Config: Schema<Config> = Schema.object({
-  masterID: Schema.array(String).description('管理员的唯一标识')
+  masterID: Schema.array(String).description('管理员的唯一标识'),
+  searchEndpoint: Schema.string().description('词库插件市场后端地址').default('http://127.0.0.1:1145')
 });
 
 export const logger = new Logger('Word-core');
 
 // TypeScript 用户需要进行类型合并
-
 export const apply = async (ctx: Context, config: Config) => {
   ctx.plugin(core);
-  ctx.plugin(word);
+  ctx.plugin(word, { searchEndpoint: config.searchEndpoint });
 
-  // ctx.inject(['console'], (ctx) => {
-  //   ctx.console.addEntry({
-  //     dev: resolve(__dirname, '../client/index.ts'),
-  //     prod: resolve(__dirname, '../dist'),
-  //   });
-  // });
+  ctx.inject(['console'], (ctx) => {
+    ctx.console.addEntry({
+      dev: resolve(__dirname, '../client/index.ts'),
+      prod: resolve(__dirname, '../dist'),
+    });
+  });
 
   ctx.inject(['word'], async ctx => {
     ctx.command('word', '词库核心！');
@@ -347,8 +348,8 @@ export const apply = async (ctx: Context, config: Config) => {
       // console.log(msg)
       session.send(msg);
     });
-    ctx.word.editor.getRecycleBinList()
-    
+    ctx.word.editor.getRecycleBinList();
+
     // 上传
     // 下载
   });

@@ -55,6 +55,8 @@ export const randomNumber = (minNumber: number, maxNumber: number): number => {
   return Math.floor(Math.random() * (maxNumber - minNumber + 1)) + minNumber;
 };
 
+export let url = ''
+
 type dbNameList = 'wordUserPackData' | 'wordData' | 'recycleBinList' | 'wordUserConfig' | 'wordUserTemp' | 'wordCoreConfig';
 
 export type readDBType = (dbName: dbNameList, key: string) => Promise<allType>;
@@ -69,4 +71,5 @@ export interface ToolsFunction {
   getDB: getDBType;
   removeDB: removeDBType;
   randomNumber: randomNumberType;
+  url: string
 }

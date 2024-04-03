@@ -1,4 +1,4 @@
-import { Service, Context } from "koishi";
+import { Service, Context, Schema } from "koishi";
 import { CacheFunction, ToolsFunction, WordCache, wordService } from './service/index';
 import { wordDriver } from "./driver";
 import { Editor } from "./service/editor/editor";
@@ -8,12 +8,16 @@ import { User } from "./service/user/user";
 import { triggerFunction } from "./extend/trigger";
 import { statementFunction } from "./extend/statement";
 // import { Config, configFunction } from "./service/config/config";
-import { Config } from "./service/config/config";
+import * as wordConfig from "./service/config/config";
 
 declare module 'koishi' {
   interface Context {
     word: word;
   }
+}
+
+export interface Config {
+  searchEndpoint: string;
 }
 
 export class word extends Service {
@@ -27,18 +31,19 @@ export class word extends Service {
   permission: Permission;
   statement: statementFunction;
   // config: configFunction;
-  config: Config;
+  config: wordConfig.Config;
 
-  constructor(ctx: Context) {
+  constructor(ctx: Context, config: Config) {
     super(ctx, 'word', true);
 
     const WordDriver = new wordDriver(this, ctx);
     this.driver = WordDriver;
 
     const wordServiceTemp = new wordService(ctx);
+    this.tools = wordServiceTemp.Tools;
+    this.tools.url = config.searchEndpoint
     this.cache = wordServiceTemp.Cache;
     this.editor = wordServiceTemp.Editor;
-    this.tools = wordServiceTemp.Tools;
     this.user = wordServiceTemp.User;
     this.permission = wordServiceTemp.Permission;
     this.trigger = wordServiceTemp.trigger;
@@ -46,4 +51,8 @@ export class word extends Service {
     this.cache.cacheRefresh();
     this.config = wordServiceTemp.config;
   }
+
+  Config: Schema<Config> = Schema.object({
+    searchEndpoint: Schema.string().description('词库插件市场后端地址').default('http://127.0.0.1:1145')
+  });
 }
