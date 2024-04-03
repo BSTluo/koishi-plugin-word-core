@@ -348,14 +348,13 @@ export const apply = async (ctx: Context, config: Config) => {
       // console.log(msg)
       session.send(msg);
     });
-    ctx.word.editor.getRecycleBinList();
 
     // 上传
-    
+
 
     // 下载
     ctx.console.addListener('getWord', (name) => {
-      ctx.word.editor.getCloudWord(name)
+      ctx.word.editor.getCloudWord(name);
     });
 
     // 卸载
