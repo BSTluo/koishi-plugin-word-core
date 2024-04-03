@@ -14,7 +14,7 @@ export interface Config {
 }
 
 export const inject = {
-  required: ['database']
+  required: ['database', 'console']
 };
 
 export const Config: Schema<Config> = Schema.object({
@@ -28,13 +28,6 @@ export const logger = new Logger('Word-core');
 export const apply = async (ctx: Context, config: Config) => {
   ctx.plugin(core);
   ctx.plugin(word, { searchEndpoint: config.searchEndpoint });
-
-  ctx.inject(['console'], (ctx) => {
-    ctx.console.addEntry({
-      dev: resolve(__dirname, '../client/index.ts'),
-      prod: resolve(__dirname, '../dist'),
-    });
-  });
 
   ctx.inject(['word'], async ctx => {
     ctx.command('word', '词库核心！');
@@ -347,6 +340,11 @@ export const apply = async (ctx: Context, config: Config) => {
       if (!msg) { return; }
       // console.log(msg)
       session.send(msg);
+    });
+
+    ctx.console.addEntry({
+      dev: resolve(__dirname, '../client/index.ts'),
+      prod: resolve(__dirname, '../dist'),
     });
 
     // 上传

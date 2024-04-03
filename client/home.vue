@@ -23,6 +23,9 @@
                     <div class="name">{{ item.name }}</div>
                     <div class="author">{{ item.author }}</div>
                   </div>
+                  <!-- 安装卸载按钮 -->
+                  <div class="setup" @click="pluginSetup(item.name)">{{ (pluginStatusList[item.name]) ? '卸载' : '安装' }}
+                  </div>
                 </div>
                 <div class="text">{{ item.descriptor }}</div>
                 <div class="footer">
@@ -276,6 +279,10 @@
                   color: #aaa;
                 }
               }
+
+              .setup {
+                
+              }
             }
 
             .text {
@@ -364,6 +371,8 @@ export default {
       },
       pluginList: {},
 
+      // {插件:true/false}
+      pluginStatusList: {},
       page: {
         time: 0,
         now: 5,
@@ -429,15 +438,27 @@ export default {
 
       return `${year}/${month}/${day} ${hours}:${minutes}:${seconds}`;
     },
+    // 安装卸载按钮按下
+    pluginSetup(name) {
+      if (!pluginStatusList[item.name])
+      {
+        pluginStatusList[item.name] = true;
+        this.getWord(name);
+      } else
+      {
+        pluginStatusList[item.name] = false;
+        this.removeWord(name);
+      }
+    },
 
     // 卸载插件
     removeWord(name) {
-      send('rmWord', name)
+      send('rmWord', name);
     },
 
     // 安装插件
     getWord(name) {
-      send('getWord', name)
+      send('getWord', name);
     }
   },
   async mounted() {
