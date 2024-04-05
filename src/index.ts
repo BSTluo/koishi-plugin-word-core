@@ -342,10 +342,10 @@ export const apply = async (ctx: Context, config: Config) => {
       session.send(msg);
     });
 
-    ctx.console.addEntry({
-      dev: resolve(__dirname, '../client/index.ts'),
-      prod: resolve(__dirname, '../dist'),
-    });
+    // ctx.console.addEntry({
+    //   dev: resolve(__dirname, '../client/index.ts'),
+    //   prod: resolve(__dirname, '../dist'),
+    // });
 
     // 上传
 

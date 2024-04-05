@@ -146,13 +146,14 @@ const getTree = (str: string): any[] =>
       {
         if (!tempArr[index]) { tempArr[index] = ['']; }
         const length = tempArr[index].length;
-
+        // console.log(tempArr);
         if (Array.isArray(tempArr[index][length - 1]))
         {
+          // console.log('1');
           index++;
         } else if (tempArr[index][length - 1].endsWith('http') || tempArr[index][length - 1].endsWith('https'))
         {
-
+          // console.log('2');
           if (Array.isArray(tempArr[index][length - 1]))
           {
             tempArr[index].push(v);
@@ -162,8 +163,10 @@ const getTree = (str: string): any[] =>
           }
         } else
         {
+          // console.log('3');
           index++;
         }
+        // console.log(tempArr);
       } else
       {
         if (!tempArr[index]) { tempArr[index] = ['']; }
@@ -175,13 +178,14 @@ const getTree = (str: string): any[] =>
         {
           tempArr[index][length - 1] += v;
         }
+        // console.log(tempArr);
       }
     }
 
     return tempArr;
   };
-
-  const a = par()[0];
+  const aTemp = par();
+  const a = aTemp.length > 0 ? aTemp : aTemp[0];
 
   const par2 = (arr: any[]): any[] =>
   {
