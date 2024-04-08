@@ -342,13 +342,23 @@ export const apply = async (ctx: Context, config: Config) => {
       session.send(msg);
     });
 
-    // ctx.console.addEntry({
-    //   dev: resolve(__dirname, '../client/index.ts'),
-    //   prod: resolve(__dirname, '../dist'),
-    // });
+    ctx.console.addEntry({
+      dev: resolve(__dirname, '../client/index.ts'),
+      prod: resolve(__dirname, '../dist'),
+    });
 
     // 上传
-
+    // ctx.word.editor.updateCloudWord({
+    //   tag: ['demo'],
+    //   author: 'word-core',
+    //   name: '测试项目',
+    //   wiki: '',
+    //   authorId: 'BSTluo',
+    //   dbName: 'default',
+    //   descriptor: '这是一个测试项目',
+    //   version: '0.0.1',
+    //   icon: 'games'
+    // })
 
     // 下载
     ctx.console.addListener('getWord', (name) => {

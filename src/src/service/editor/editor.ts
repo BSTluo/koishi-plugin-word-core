@@ -394,7 +394,7 @@ export class Editor {
     const fetchData = await fetchDataTemp.json();
     this.updateWord(name, fetchData);
 
-    this.getCache()
+    this.getCache();
   }
 
   // 云端上传
@@ -407,13 +407,19 @@ export class Editor {
     const file = Buffer.from(JSON.stringify(a));
     formData.append('file', file, { filename: `${pluginData.name}.json` });
     formData.append('tag', JSON.stringify(pluginData.tag));
-    formData.append('author', pluginData.author);
-    formData.append('name', pluginData.name);
-    formData.append('wiki', pluginData.wiki);
-    formData.append('authorId', pluginData.authorId);
+
+    Object.keys(pluginData).forEach(v => {
+      const a = v as pluginDataKeys;
+      if (v == 'file' || v == 'tag')
+      {
+        return;
+      }
+      {
+        formData.append(a, pluginData[a]);
+      }
+    });
 
     await axios.post(`${this.tools.url}/newPlugin`, formData);
-
   }
 }
 
@@ -424,5 +430,9 @@ type pluginData = {
   wiki: string,
   authorId: string,
   dbName: string,
-  descriptor: string;
+  descriptor: string,
+  version: string,
+  icon: string;
 };
+
+type pluginDataKeys = keyof pluginData;
