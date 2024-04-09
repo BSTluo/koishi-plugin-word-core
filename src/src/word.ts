@@ -53,6 +53,6 @@ export class word extends Service {
   }
 
   Config: Schema<Config> = Schema.object({
-    searchEndpoint: Schema.string().description('词库插件市场后端地址').default('http://127.0.0.1:1145')
+    searchEndpoint: Schema.string().description('词库插件市场后端地址').default('https://wplugin.reifuu.icu')
   });
 }

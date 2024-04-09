@@ -9,8 +9,8 @@
           </div>
         </div>
         <div class="statistics">
-          <div class="text"> {{ `当前有${Object.keys(pluginList).length}个可用于 词库${page.version}
-            版本的插件(${page.time})` }}
+          <div class="text">
+            {{ `当前有${Object.keys(pluginList).length}个可用于词库的插件，词库市场的发布暂时还在制作` }}
           </div>
         </div>
         <div class="market-box">
@@ -63,8 +63,21 @@
 
       </div>
     </div>
+
+    <div class="el-message el-message--error" role="alert" style="top: 16px; z-index: 2133;" v-if="error">
+      <p class="el-message__content">
+        {{ errorMsg }}
+      </p>
+    </div>
+
+    <div class="el-message el-message--success" role="alert" style="top: 16px; z-index: 2544;" v-if="success">
+      <p class="el-message__content">
+        {{ successMsg }}
+      </p>
+    </div>
   </k-layout>
 </template>
+
 <style lang="scss" scoped>
 /* 隐藏浏览器默认的滚动条 */
 ::-webkit-scrollbar {
@@ -407,7 +420,7 @@
 
 <script>
 import "bootstrap-icons/font/bootstrap-icons.css";
-import { send } from '@koishijs/client';
+import { send, useContext } from '@koishijs/client';
 
 export default {
   data() {
@@ -420,15 +433,18 @@ export default {
       pluginList: {},
 
       // {插件:true/false}
-      pluginStatusList: {}
-      ,
+      pluginStatusList: {},
       page: {
         time: 0,
         now: 1,
         Pmax: 10,// 页面最多呈现几个
         max: 0,
         version: '1.9'
-      }
+      },
+      success: false,
+      successMsg: '',
+      error: false,
+      errorMsg: '',
     };
   },
   methods: {
@@ -489,29 +505,57 @@ export default {
       return `${year}/${month}/${day} ${hours}:${minutes}:${seconds}`;
     },
     // 安装卸载按钮按下
-    pluginSetup(name) {
-      if (!pluginStatusList[item.name])
+    async pluginSetup(name) {
+      if (!this.pluginStatusList[name])
       {
-        pluginStatusList[item.name] = true;
-        this.getWord(name);
+        const a = await this.getWord(name);
+        if (a != "ok") { this.newError(a); return; }
+        this.pluginStatusList[name] = true;
+        this.newSuccess('插件安装成功');
       } else
       {
-        pluginStatusList[item.name] = false;
-        this.removeWord(name);
+        const a = await this.removeWord(name);
+        if (a != "ok") { this.newError(a); return; }
+        this.pluginStatusList[name] = false;
+        this.newSuccess('插件卸载成功');
       }
     },
 
     // 卸载插件
-    removeWord(name) {
-      send('rmWord', name);
+    async removeWord(name) {
+      console.log('开始卸载插件', name);
+      return await send('rmWord', name);
     },
 
     // 安装插件
-    getWord(name) {
-      send('getWord', name);
+    async getWord(name) {
+      console.log('开始安装插件', name);
+      return await send('getWord', name);
+    },
+
+    async newError(msg) {
+      this.errorMsg = msg;
+      this.error = true;
+
+      setTimeout(() => {
+        this.error = false;
+        this.errorMsg = '';
+      }, 2000);
+    },
+
+    async newSuccess(msg) {
+      this.successMsg = msg;
+      this.success = true;
+
+      setTimeout(() => {
+        this.success = false;
+        this.successMsg = '';
+      }, 2000);
     }
   },
   async mounted() {
+    const a = await send('getPluginServerUrl');
+    this.url = a;
     this.getList();
   },
   computed: {
@@ -519,7 +563,7 @@ export default {
       this.page.max = Math.ceil(Object.keys(this.pluginList).length / this.page.Pmax);
       const start = (this.page.now - 1) * this.page.Pmax;
       const end = this.page.now * this.page.Pmax;
-      console.log(start, end);
+      // console.log(start, end);
       return Object.values(this.pluginList).slice(start, end);
     }
   }

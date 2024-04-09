@@ -2,6 +2,8 @@ import { Context, Logger, Schema, h } from 'koishi';
 import { word } from './src/word';
 import { resolve } from 'path';
 import { } from '@koishijs/plugin-console';
+// import { } from '@koishijs/plugin-notifier';
+
 import * as core from './src/index';
 
 export const name = 'word-core';
@@ -14,12 +16,13 @@ export interface Config {
 }
 
 export const inject = {
+  // required: ['database', 'console', 'notifier']
   required: ['database', 'console']
 };
 
 export const Config: Schema<Config> = Schema.object({
   masterID: Schema.array(String).description('管理员的唯一标识'),
-  searchEndpoint: Schema.string().description('词库插件市场后端地址').default('http://127.0.0.1:1145')
+  searchEndpoint: Schema.string().description('词库插件市场后端地址').default('https://wplugin.reifuu.icu')
 });
 
 export const logger = new Logger('Word-core');
@@ -349,7 +352,7 @@ export const apply = async (ctx: Context, config: Config) => {
 
     // 上传
     // ctx.word.editor.updateCloudWord({
-    //   tag: ['demo'],
+    //   tag: [],
     //   author: 'word-core',
     //   name: '测试项目',
     //   wiki: '',
@@ -360,23 +363,37 @@ export const apply = async (ctx: Context, config: Config) => {
     //   icon: 'games'
     // })
 
+    // const notifier = ctx.notifier.create();
+    // const newNotifier = async (str: string) => {
+    //   notifier.update(str);
+    //   await ctx.sleep(5000);
+    //   notifier.dispose();
+    // };
     // 下载
-    ctx.console.addListener('getWord', (name) => {
-      ctx.word.editor.getCloudWord(name);
+    ctx.console.addListener('getWord', async (name) => {
+      const a = await ctx.word.editor.getCloudWord(name);
+      // newNotifier(a);
+      return a;
     });
 
     // 卸载
-    ctx.console.addListener('rmWord', (name) => {
-      console.log(name);
-      ctx.word.editor.removeWord(name);
+    ctx.console.addListener('rmWord', async (name) => {
+      const a = await ctx.word.editor.removeWord(name);
+      // newNotifier(a);
+      return a;
+    });
+
+    ctx.console.addListener('getPluginServerUrl', () => {
+      return ctx.word.tools.url
     });
   });
 };
 
 declare module '@koishijs/plugin-console' {
   interface Events {
-    'rmWord'(name: string): void;
-    'getWord'(name: string): void;
+    'rmWord'(name: string): Promise<"ok" | "词库列表不存在此词库">;
+    'getWord'(name: string): Promise<"获取的插件格式异常" | "词库已存在，无法安装" | "ok">;
+    'getPluginServerUrl'(): string;
   }
 }
 

@@ -384,7 +384,7 @@ export class Editor {
   async getCloudWord(name: string) {
     if (JSON.stringify(this.res) == "{}") { await this.getCloudWordList(); }
     const pluginData = this.res[name];
-    if (!pluginData) { return; }
+    if (!pluginData) { return '获取的插件格式异常'; }
 
     const authorId = pluginData.authorId;
     const pluginName = pluginData.name;
@@ -392,9 +392,13 @@ export class Editor {
 
     const fetchDataTemp = await fetch(`${this.tools.url}/getPlugin/${authorId}/${pluginName}.json`);
     const fetchData = await fetchDataTemp.json();
+    const a = await this.getWordList();
+    const getDBName = fetchData.name;
+    if (a.includes(getDBName)) { return '词库已存在，无法安装'; }
     this.updateWord(name, fetchData);
 
     this.getCache();
+    return 'ok';
   }
 
   // 云端上传
