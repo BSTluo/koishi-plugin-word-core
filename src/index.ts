@@ -52,11 +52,9 @@ export const apply = async (ctx: Context, config: Config) => {
 
         const a = await ctx.word.editor.addWordItem(nowWordDB, uid, question, answer);
 
-        if (typeof a === 'number')
-        {
+        if (typeof a === 'number') {
           return `<at name="${session.username}" /> 添加到【${nowWordDB}】词库成功，序号为【${a}】`;
-        } else
-        {
+        } else {
           return a;
         }
       });
@@ -79,11 +77,9 @@ export const apply = async (ctx: Context, config: Config) => {
 
         const a = await ctx.word.editor.rmWordItem(nowWordDB, uid, question, which);
 
-        if (a === 'over')
-        {
+        if (a === 'over') {
           return `<at name="${session.username}" /> 删除触发词成功`;
-        } else
-        {
+        } else {
           return `<at name="${session.username}" /> ${a}`;
         }
       });
@@ -97,11 +93,9 @@ export const apply = async (ctx: Context, config: Config) => {
         const uid = session.userId;
 
         const a = await ctx.word.user.setEditWord(uid, newDB);
-        if (a)
-        {
+        if (a) {
           return `<at name="${session.username}" /> 设置成功`;
-        } else
-        {
+        } else {
           return `<at name="${session.username}" /> 设置失败`;
         }
       });
@@ -185,11 +179,9 @@ export const apply = async (ctx: Context, config: Config) => {
 
         const a = await ctx.word.editor.setSaveCell(nowWordDB, cell, uid);
 
-        if (typeof a === 'boolean')
-        {
+        if (typeof a === 'boolean') {
           return `<at name="${session.username}" /> 修改成功`;
-        } else
-        {
+        } else {
           return `<at name="${session.username}" /> ${a}`;
         }
       });
@@ -209,11 +201,9 @@ export const apply = async (ctx: Context, config: Config) => {
 
         const a = await ctx.word.editor.setSaveCell(nowWordDB, 'default', uid);
 
-        if (typeof a === 'boolean')
-        {
+        if (typeof a === 'boolean') {
           return `<at name="${session.username}" /> 修改成功`;
-        } else
-        {
+        } else {
           return `<at name="${session.username}" /> ${a}`;
         }
       });
@@ -254,11 +244,9 @@ export const apply = async (ctx: Context, config: Config) => {
         if (!hasPermission && !config.masterID.includes(mid)) { return `<at name="${session.username}" /> 你没有词库的【添加权限】权限`; }
 
         const a = await ctx.word.permission.add(uid, permission);
-        if (typeof a === 'boolean')
-        {
+        if (typeof a === 'boolean') {
           return (a) ? `<at name="${session.username}" /> 添加成功` : `<at name="${session.username}" /> 添加失败`;
-        } else
-        {
+        } else {
           return `<at name="${session.username}" /> ${a}`;
         }
       });
@@ -283,11 +271,9 @@ export const apply = async (ctx: Context, config: Config) => {
         if (!hasPermission && !config.masterID.includes(mid)) { return `<at name="${session.username}" /> 你没有词库的【删除权限】权限`; }
 
         const a = await ctx.word.permission.rm(uid, permission);
-        if (typeof a === 'boolean')
-        {
+        if (typeof a === 'boolean') {
           return (a) ? `<at name="${session.username}" /> 添加成功` : `<at name="${session.username}" /> 添加失败`;
-        } else
-        {
+        } else {
           return `<at name="${session.username}" /> ${a}`;
         }
       });
@@ -362,6 +348,20 @@ export const apply = async (ctx: Context, config: Config) => {
     //   version: '0.0.1',
     //   icon: 'games'
     // })
+
+    setInterval(async () => {
+      try {
+        // 这个接口只是给我看看！有多少人使用的！下面那个是查看使用人数的
+        await fetch(`https://xc.null.red:8043/api/online/heartbeat?t=word_core&_=${Date.now()}`);
+
+        // const temp = await fetch(`https://xc.null.red:8043/api/online/list?t=wordcore&_=${Date.now()}`)
+        // const data = await temp.json()
+        // const hasUser = data.online
+        // console.log(data)
+      } catch (err) {
+        return `获取在线人数失败，请检查网络是否通畅，也可能是服务器挂掉了`
+      }
+    }, 2 * 60 * 1000)
 
     // const notifier = ctx.notifier.create();
     // const newNotifier = async (str: string) => {
