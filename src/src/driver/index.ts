@@ -73,7 +73,9 @@ export class wordDriver {
           {
             regTextTemp = regTextTemp.replaceAll(repKey, repReg);
 
-            const reg = new RegExp(`^${regTextTemp}$`, 'g');
+            // const reg = new RegExp(`^${regTextTemp}$`, 'g');
+            const reg = new RegExp(`${regTextTemp}`, 'g');
+            
             const regTemp = q.match(reg);
 
             if (!regTemp) { continue; }
