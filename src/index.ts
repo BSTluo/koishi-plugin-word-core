@@ -354,7 +354,7 @@ export const apply = async (ctx: Context, config: Config) => {
         // 这个接口只是给我看看！有多少人使用的！下面那个是查看使用人数的
         await fetch(`https://xc.null.red:8043/api/online/heartbeat?t=word_core&_=${Date.now()}`);
 
-        // const temp = await fetch(`https://xc.null.red:8043/api/online/list?t=wordcore&_=${Date.now()}`)
+        // const temp = await fetch(`https://xc.null.red:8043/api/online/list?t=word_core&_=${Date.now()}`)
         // const data = await temp.json()
         // const hasUser = data.online
         // console.log(data)

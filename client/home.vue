@@ -420,7 +420,7 @@
 
 <script>
 import "bootstrap-icons/font/bootstrap-icons.css";
-import { send, useContext } from '@koishijs/client';
+import { send } from '@koishijs/client';
 
 export default {
   data() {

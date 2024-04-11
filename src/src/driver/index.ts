@@ -55,17 +55,20 @@ export class wordDriver {
     // 过滤过群组的群组列表
     let list = wordCache.hasKey[q];
 
+    // 获取输入替换列表
+    const triggerList = Object.keys(this.word.trigger.trigger);
+
     if (!wordCache.hasKey[q])
     {
       // 找到这个触发词对应的词库，并开始解析
       matchedString = Object.keys(wordCache.hasKey).find(regText => {
 
-        // 获取输入替换列表
-        const triggerList = Object.keys(this.word.trigger.trigger);
         // 遍历获取被替换的词
         for (const repKey of triggerList)
         {
           const thisTemp = this.word.trigger.trigger[repKey];
+
+          if (!regText.includes(repKey)) { continue; }
 
           let regTextTemp: string = regText;
 
@@ -75,7 +78,7 @@ export class wordDriver {
 
             // const reg = new RegExp(`^${regTextTemp}$`, 'g');
             const reg = new RegExp(`${regTextTemp}`, 'g');
-            
+
             const regTemp = q.match(reg);
 
             if (!regTemp) { continue; }
