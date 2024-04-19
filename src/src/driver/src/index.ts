@@ -1,5 +1,5 @@
-import { Context, Session, capitalize } from "koishi";
-import { statement, statusMsg } from "../../extend/statement";
+import { Context, Session, capitalize, is } from "koishi";
+import { ifStatement, statement, statusMsg } from "../../extend/statement";
 import { matchType } from "..";
 import { word } from "../../word";
 import { settingType, settingTypeValue, wordSaveData } from "../..";
@@ -70,6 +70,7 @@ const parPack: typeParPack = {
 };
 
 let funcPackKeys = Object.keys(statement);
+let ifFuncPackKeys = Object.keys(ifStatement);
 
 export const parsStart = async (questionList: string, wordData: wordSaveData, word: word, session: Session | wordDataInputType, matchList?: matchType): Promise<{ data: any, message: string; } | null> =>
 {
@@ -216,7 +217,7 @@ const getTree = (str: string): any[] =>
 
 export interface chatFunctionType
 {
-  args: string[],
+  args: any[],
   matchs: matchType;
   wordData: wordSaveData;
   parPack: typeParPack;
@@ -229,18 +230,23 @@ export interface chatFunctionType
   };
 }
 
-const parseTrees = async (word: word, inData: any[], session: Session | wordDataInputType, wordData: wordSaveData, matchList: matchType, inputUserData: any): Promise<{ data: parTemp, message: string; } | null> =>
+const parseTrees = async (word: word, inData: any[], session: Session | wordDataInputType, wordData: wordSaveData, matchList: matchType, inputUserData: any): Promise<{ data: parTemp, message: string | any[]; } | null> =>
 {
   // 遍历最深层字符串，解析后返回结果，重复运行
 
-  const par = async (functonArray: any[], data: parTemp): Promise<{ data: any, message: string; } | null> =>
+  const par = async (functonArray: any[], data: parTemp): Promise<{ data: any, message: string | any[]; } | null> =>
   {
     let userDataTemp = data;
+    let isIF = ifFuncPackKeys.includes(functonArray[0]);
+    const rule: number[] = (isIF) ? ifStatement[functonArray[0]].rule as number[] : [0];
+
     // 查看当前输入数组的各项是否都为字符串，若发现包含非字符串的项，则递归调用自身解析
     for (let i = 0; i < functonArray.length; i++)
     {
+      const canPar = (isIF) ? Array.isArray(functonArray[i]) && rule[i] == 1 : Array.isArray(functonArray[i]);
+
       // 如果有项是数组
-      if (Array.isArray(functonArray[i]))
+      if (canPar)
       {
         const a = await par(functonArray[i], JSON.parse(JSON.stringify(userDataTemp)));
 
@@ -248,117 +254,150 @@ const parseTrees = async (word: word, inData: any[], session: Session | wordData
         {
           functonArray[i] = a.message;
           userDataTemp = a.data;
-        } else { saveItemDataTemp[(session.content) ? session.content : ''] = { item: {}, userConfig: {} }; userDataTemp = { item: {}, userConfig: {} }; }
+        } else
+        {
+          saveItemDataTemp[(session.content) ? session.content : ''] = { item: {}, userConfig: {} };
+          userDataTemp = { item: {}, userConfig: {} };
+        }
       }
     }
 
-    const which = functonArray[0];
-    const arg = functonArray.slice(1);
-    const matchs = matchList;
-
-    if (funcPackKeys.includes(which))
+    const getPar = async () =>
     {
-      // console.log(which);
-      // console.log(userDataTemp.item)
-      const overPar = await parStatement(which, {
-        args: arg,
-        matchs: matchs,
-        wordData: wordData,
-        parPack: parPack,
-        internal: { // 缓存功能
-          saveItem: (uid: string, saveDB: string, itemName: string, number: number) =>
+      const which = functonArray[0];
+      const arg = functonArray.slice(1);
+      const matchs = matchList;
+
+      if ((funcPackKeys.includes(which) && isIF == false) || (ifFuncPackKeys.includes(which) && isIF == true))
+      {
+        // console.log(which);
+        // console.log(userDataTemp.item)
+        const overPar = await parStatement(which, {
+          args: arg,
+          matchs: matchs,
+          wordData: wordData,
+          parPack: parPack,
+          internal: { // 缓存功能
+            saveItem: (uid: string, saveDB: string, itemName: string, number: number) =>
+            {
+
+              if (!userDataTemp.item) { userDataTemp.item = {}; }
+
+              if (!userDataTemp.item[uid]) { userDataTemp.item[uid] = {}; }
+
+              if (!userDataTemp.item[uid][saveDB]) { userDataTemp.item[uid][saveDB] = {}; }
+
+              userDataTemp.item[uid][saveDB][itemName] = number;
+              saveItemDataTemp[(session.content) ? session.content : ''] = userDataTemp;
+            },
+
+            getItem: async (uid: string, saveDB: string, itemName: string) =>
+            {
+              const num = await word.user.getItem(uid, saveDB, itemName);
+
+              if (!userDataTemp.item) { userDataTemp.item = {}; }
+
+              if (!userDataTemp.item[uid]) { userDataTemp.item[uid] = {}; }
+
+              if (!userDataTemp.item[uid][saveDB]) { userDataTemp.item[uid][saveDB] = {}; }
+
+              if (!userDataTemp.item[uid][saveDB][itemName] && userDataTemp.item[uid][saveDB][itemName] != 0) { userDataTemp.item[uid][saveDB][itemName] = num ? num : 0; }
+
+              saveItemDataTemp[(session.content) ? session.content : ''] = userDataTemp;
+
+              return userDataTemp.item[uid][saveDB][itemName];
+            },
+
+            getUserConfig: async (uid: string, key: string) =>
+            {
+              const userConfig = await word.user.getConfig(uid);
+
+              if (!userDataTemp.userConfig) { userDataTemp.userConfig = {}; }
+
+              if (!userDataTemp.userConfig[uid]) { userDataTemp.userConfig[uid] = {}; }
+
+              userDataTemp.userConfig[uid] = userConfig;
+              saveItemDataTemp[(session.content) ? session.content : ''] = userDataTemp;
+
+              return userDataTemp.userConfig[uid][key];
+            },
+
+            saveUserConfig: async (uid: string, key: string, value: settingTypeValue) =>
+            {
+              if (!userDataTemp.userConfig) { userDataTemp.userConfig = {}; }
+
+              if (!userDataTemp.userConfig[uid]) { userDataTemp.userConfig[uid] = await word.user.getConfig(uid); }
+
+              userDataTemp.userConfig[uid][key] = value;
+
+              saveItemDataTemp[(session.content) ? session.content : ''] = userDataTemp;
+            },
+
+            removeUserConfig: async (uid: string, key: string) =>
+            {
+              if (!userDataTemp.userConfig[uid]) { userDataTemp.userConfig[uid] = await word.user.getConfig(uid); }
+              if (!userDataTemp.userConfig[uid][key]) { return; }
+
+              delete userDataTemp.userConfig[uid][key];
+
+              saveItemDataTemp[(session.content) ? session.content : ''] = userDataTemp;
+            }
+          }
+        }, session, isIF);
+
+        if (Array.isArray(overPar))
+        {
+          const a = await par(overPar, JSON.parse(JSON.stringify(userDataTemp)));
+          console.log(a);
+          if (a)
           {
-
-            if (!userDataTemp.item) { userDataTemp.item = {}; }
-
-            if (!userDataTemp.item[uid]) { userDataTemp.item[uid] = {}; }
-
-            if (!userDataTemp.item[uid][saveDB]) { userDataTemp.item[uid][saveDB] = {}; }
-
-            userDataTemp.item[uid][saveDB][itemName] = number;
-            saveItemDataTemp[(session.content) ? session.content : ''] = userDataTemp;
-          },
-
-          getItem: async (uid: string, saveDB: string, itemName: string) =>
+            return { message: a.message, data: a.data };
+          } else
           {
-            const num = await word.user.getItem(uid, saveDB, itemName);
-
-            if (!userDataTemp.item) { userDataTemp.item = {}; }
-
-            if (!userDataTemp.item[uid]) { userDataTemp.item[uid] = {}; }
-
-            if (!userDataTemp.item[uid][saveDB]) { userDataTemp.item[uid][saveDB] = {}; }
-
-            if (!userDataTemp.item[uid][saveDB][itemName] && userDataTemp.item[uid][saveDB][itemName] != 0) { userDataTemp.item[uid][saveDB][itemName] = num ? num : 0; }
-
-            saveItemDataTemp[(session.content) ? session.content : ''] = userDataTemp;
-
-            return userDataTemp.item[uid][saveDB][itemName];
-          },
-
-          getUserConfig: async (uid: string, key: string) =>
-          {
-            const userConfig = await word.user.getConfig(uid);
-
-            if (!userDataTemp.userConfig) { userDataTemp.userConfig = {}; }
-
-            if (!userDataTemp.userConfig[uid]) { userDataTemp.userConfig[uid] = {}; }
-
-            userDataTemp.userConfig[uid] = userConfig;
-            saveItemDataTemp[(session.content) ? session.content : ''] = userDataTemp;
-
-            return userDataTemp.userConfig[uid][key];
-          },
-
-          saveUserConfig: async (uid: string, key: string, value: settingTypeValue) =>
-          {
-            if (!userDataTemp.userConfig) { userDataTemp.userConfig = {}; }
-
-            if (!userDataTemp.userConfig[uid]) { userDataTemp.userConfig[uid] = await word.user.getConfig(uid); }
-
-            userDataTemp.userConfig[uid][key] = value;
-
-            saveItemDataTemp[(session.content) ? session.content : ''] = userDataTemp;
-          },
-
-          removeUserConfig: async (uid: string, key: string) =>
-          {
-            if (!userDataTemp.userConfig[uid]) { userDataTemp.userConfig[uid] = await word.user.getConfig(uid); }
-            if (!userDataTemp.userConfig[uid][key]) { return; }
-
-            delete userDataTemp.userConfig[uid][key];
-
-            saveItemDataTemp[(session.content) ? session.content : ''] = userDataTemp;
+            saveItemDataTemp[(session.content) ? session.content : ''] = { item: {}, userConfig: {} };
+            userDataTemp = { item: {}, userConfig: {} };
+            return { message: '', data: userDataTemp };
           }
         }
-      }, session);
+        else if (overPar || overPar == '')
+        {
+          return { message: overPar, data: userDataTemp };
+        }
+        else
+        {
+          return null;
+        }
 
-      if (overPar || overPar == '')
-      {
-        return { message: overPar, data: userDataTemp };
       } else
       {
-        return null;
+        return { message: functonArray.join(''), data: userDataTemp };
       }
+    };
 
-    } else
-    {
-      return { message: functonArray.join(''), data: userDataTemp };
-    }
+    return getPar();
   };
 
   const aaa = await par(inData, JSON.parse(JSON.stringify(inputUserData)));
+
   return aaa;
 };
 
-
-
 // 调用词库语法
-const parStatement = async (which: string, toInData: chatFunctionType, session: Session | wordDataInputType) =>
+const parStatement = async (which: string, toInData: chatFunctionType, session: Session | wordDataInputType, isIF: boolean) =>
 {
-  const str: string | void | statusMsg = await statement[which](toInData, session);
+  let str: string | void | statusMsg;
+  if (isIF)
+  {
+    str = await ifStatement[which].func(toInData, session);
+  } else
+  {
+    str = await statement[which].func(toInData, session);
+  }
 
-  if (typeof str == "object")
+  if (Array.isArray(str))
+  {
+    return str;
+  } else if (typeof str == "object")
   {
     const status = str.status;
     if (status == 'end' || status == 'next' || status == 'kill')

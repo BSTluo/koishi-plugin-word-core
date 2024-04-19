@@ -79,6 +79,7 @@ export class wordService {
 
     this.statement = {
       statement: statement.statement,
+      ifStatement: statement.ifStatement,
       rmStatement: statement.rmStatement,
       addStatement: statement.addStatement
     };
