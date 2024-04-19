@@ -9,11 +9,13 @@ export const inject = {
 
 export type matchType = Record<string, string[]>;
 
-export class wordDriver {
+export class wordDriver
+{
   private ctx: Context;
   private word: word;
 
-  constructor(word: word, ctx: Context) {
+  constructor(word: word, ctx: Context)
+  {
     this.ctx = ctx;
     this.word = word;
   }
@@ -23,7 +25,8 @@ export class wordDriver {
    * @param session 当前对话对象
    * @returns 
    */
-  async start(session: Session | wordDataInputType) {
+  async start(session: Session | wordDataInputType)
+  {
     // this.ctx.inject(['word'], async ctx => {
     if (!session.content) { return; }
     let q: string = session.content;
@@ -61,7 +64,8 @@ export class wordDriver {
     if (!wordCache.hasKey[q])
     {
       // 找到这个触发词对应的词库，并开始解析
-      matchedString = Object.keys(wordCache.hasKey).find(regText => {
+      matchedString = Object.keys(wordCache.hasKey).find(regText =>
+      {
 
         // 遍历获取被替换的词
         for (const repKey of triggerList)
@@ -83,7 +87,8 @@ export class wordDriver {
 
             if (!regTemp) { continue; }
 
-            regTemp.forEach(element => {
+            regTemp.forEach(element =>
+            {
               const reg2 = new RegExp(`^${regTextTemp}$`);
               if (!matchList[thisTemp.id]) { matchList[thisTemp.id] = []; }
               const matchString: string[] = element.match(reg2) as string[];
@@ -116,7 +121,8 @@ export class wordDriver {
 
     let overPrimitiveList: string[] = [];
 
-    primitiveList.forEach(e => {
+    primitiveList.forEach(e =>
+    {
       if (killWordList.includes(e))
       {
         return;
@@ -133,7 +139,8 @@ export class wordDriver {
     // 挑选一个词库，且不重复 
     let needPar = '';
 
-    const parOne = async () => {
+    const parOne = async () =>
+    {
       const item = list[witchWordDB];
       // 读取那个词库
       const wordData = await this.word.editor.readWord(item);
@@ -156,7 +163,8 @@ export class wordDriver {
       return message;
     };
 
-    const run = async (): Promise<string | null | undefined> => {
+    const run = async (): Promise<string | null | undefined> =>
+    {
       try
       {
         const abc = await parOne();
@@ -168,25 +176,25 @@ export class wordDriver {
         const needSaveObj = abc.data;
         // 获取物品
 
-        const needSave = needSaveObj.item;
-        if (needSave)
-        {
-          for (let uid in needSave)
-          {
-            const saveDBList = needSave[uid];
+        // const needSave = needSaveObj.item;
+        // if (needSave)
+        // {
+        //   for (let uid in needSave)
+        //   {
+        //     const saveDBList = needSave[uid];
 
-            for (let saveDB in saveDBList)
-            {
-              const itemNameList = saveDBList[saveDB];
+        //     for (let saveDB in saveDBList)
+        //     {
+        //       const itemNameList = saveDBList[saveDB];
 
-              for (let itemName in itemNameList)
-              {
-                const num = itemNameList[itemName];
-                await this.word.user.updateItem(uid, saveDB, itemName, num);
-              }
-            }
-          }
-        }
+        //       for (let itemName in itemNameList)
+        //       {
+        //         const num = itemNameList[itemName];
+        //         await this.word.user.updateItem(uid, saveDB, itemName, num);
+        //       }
+        //     }
+        //   }
+        // }
 
         const needSaveConfig = needSaveObj.userConfig;
         if (needSaveConfig)
@@ -201,9 +209,10 @@ export class wordDriver {
         }
 
         const ok = await this.word.user.saveConfig();
-        const ok2 = await this.word.user.saveTemp();
+        // const ok2 = await this.word.user.saveTemp();
 
-        if (ok && ok2)
+        // if (ok && ok2)
+        if (ok)
         {
           return a;
         } else
@@ -229,26 +238,26 @@ export class wordDriver {
         if (errorType.startsWith('end'))
         {
           const needSaveObj = saveItemDataTemp[q];
-          // 获取物品
-          const needSave = needSaveObj.item;
-          if (needSave)
-          {
-            for (let uid in needSave)
-            {
-              const saveDBList = needSave[uid];
+          // // 获取物品
+          // const needSave = needSaveObj.item;
+          // if (needSave)
+          // {
+          //   for (let uid in needSave)
+          //   {
+          //     const saveDBList = needSave[uid];
 
-              for (let saveDB in saveDBList)
-              {
-                const itemNameList = saveDBList[saveDB];
+          //     for (let saveDB in saveDBList)
+          //     {
+          //       const itemNameList = saveDBList[saveDB];
 
-                for (let itemName in itemNameList)
-                {
-                  const num = itemNameList[itemName];
-                  await this.word.user.updateItem(uid, saveDB, itemName, num);
-                }
-              }
-            }
-          }
+          //       for (let itemName in itemNameList)
+          //       {
+          //         const num = itemNameList[itemName];
+          //         await this.word.user.updateItem(uid, saveDB, itemName, num);
+          //       }
+          //     }
+          //   }
+          // }
 
           const needSaveConfig = needSaveObj.userConfig;
           if (needSaveConfig)
@@ -263,9 +272,10 @@ export class wordDriver {
           }
 
           const ok = await this.word.user.saveConfig();
-          const ok2 = await this.word.user.saveTemp();
+          // const ok2 = await this.word.user.saveTemp();
 
-          if (ok && ok2)
+          // if (ok && ok2)
+          if (ok)
           {
             if (msg) { return msg; }
             return;

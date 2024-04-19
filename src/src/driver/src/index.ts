@@ -222,7 +222,7 @@ export interface chatFunctionType
   wordData: wordSaveData;
   parPack: typeParPack;
   internal: {
-    saveItem: (uid: string, saveDB: string, itemName: string, number: number) => void;
+    saveItem: (uid: string, saveDB: string, itemName: string, number: number) => Promise<boolean>;
     getItem: (uid: string, saveDB: string, itemName: string) => Promise<any>;
     getUserConfig: (uid: string, key: string) => Promise<settingTypeValue>;
     saveUserConfig: (uid: string, key: string, value: settingTypeValue) => Promise<void>;
@@ -244,7 +244,8 @@ const parseTrees = async (word: word, inData: any[], session: Session | wordData
     for (let i = 0; i < functonArray.length; i++)
     {
       const canPar = (isIF) ? Array.isArray(functonArray[i]) && rule[i] == 1 : Array.isArray(functonArray[i]);
-
+      // console.log(canPar)
+      // console.log(functonArray)
       // 如果有项是数组
       if (canPar)
       {
@@ -278,34 +279,36 @@ const parseTrees = async (word: word, inData: any[], session: Session | wordData
           wordData: wordData,
           parPack: parPack,
           internal: { // 缓存功能
-            saveItem: (uid: string, saveDB: string, itemName: string, number: number) =>
+            saveItem: async (uid: string, saveDB: string, itemName: string, number: number) =>
             {
+              // if (!userDataTemp.item) { userDataTemp.item = {}; }
 
-              if (!userDataTemp.item) { userDataTemp.item = {}; }
+              // if (!userDataTemp.item[uid]) { userDataTemp.item[uid] = {}; }
 
-              if (!userDataTemp.item[uid]) { userDataTemp.item[uid] = {}; }
+              // if (!userDataTemp.item[uid][saveDB]) { userDataTemp.item[uid][saveDB] = {}; }
 
-              if (!userDataTemp.item[uid][saveDB]) { userDataTemp.item[uid][saveDB] = {}; }
+              // userDataTemp.item[uid][saveDB][itemName] = number;
+              // saveItemDataTemp[(session.content) ? session.content : ''] = userDataTemp;
 
-              userDataTemp.item[uid][saveDB][itemName] = number;
-              saveItemDataTemp[(session.content) ? session.content : ''] = userDataTemp;
+              return await word.user.updateItem(uid, saveDB, itemName, number)
             },
 
             getItem: async (uid: string, saveDB: string, itemName: string) =>
             {
               const num = await word.user.getItem(uid, saveDB, itemName);
 
-              if (!userDataTemp.item) { userDataTemp.item = {}; }
+              // if (!userDataTemp.item) { userDataTemp.item = {}; }
 
-              if (!userDataTemp.item[uid]) { userDataTemp.item[uid] = {}; }
+              // if (!userDataTemp.item[uid]) { userDataTemp.item[uid] = {}; }
 
-              if (!userDataTemp.item[uid][saveDB]) { userDataTemp.item[uid][saveDB] = {}; }
+              // if (!userDataTemp.item[uid][saveDB]) { userDataTemp.item[uid][saveDB] = {}; }
 
-              if (!userDataTemp.item[uid][saveDB][itemName] && userDataTemp.item[uid][saveDB][itemName] != 0) { userDataTemp.item[uid][saveDB][itemName] = num ? num : 0; }
+              // if (!userDataTemp.item[uid][saveDB][itemName] && userDataTemp.item[uid][saveDB][itemName] != 0) { userDataTemp.item[uid][saveDB][itemName] = num ? num : 0; }
 
-              saveItemDataTemp[(session.content) ? session.content : ''] = userDataTemp;
+              // saveItemDataTemp[(session.content) ? session.content : ''] = userDataTemp;
 
-              return userDataTemp.item[uid][saveDB][itemName];
+              // return userDataTemp.item[uid][saveDB][itemName];
+              return num
             },
 
             getUserConfig: async (uid: string, key: string) =>
