@@ -9,13 +9,11 @@ export const inject = {
 
 export type matchType = Record<string, string[]>;
 
-export class wordDriver
-{
+export class wordDriver {
   private ctx: Context;
   private word: word;
 
-  constructor(word: word, ctx: Context)
-  {
+  constructor(word: word, ctx: Context) {
     this.ctx = ctx;
     this.word = word;
   }
@@ -25,10 +23,10 @@ export class wordDriver
    * @param session 当前对话对象
    * @returns 
    */
-  async start(session: Session | wordDataInputType)
-  {
+  async start(session: Session | wordDataInputType, callback: (str: string | null | undefined) => void) {
     // this.ctx.inject(['word'], async ctx => {
     if (!session.content) { return; }
+
     let q: string = session.content;
     const wordCache = await this.word.cache.getCache();
 
@@ -61,23 +59,19 @@ export class wordDriver
     // 获取输入替换列表
     const triggerList = Object.keys(this.word.trigger.trigger);
 
-    if (!wordCache.hasKey[q])
-    {
+    if (!wordCache.hasKey[q]) {
       // 找到这个触发词对应的词库，并开始解析
-      matchedString = Object.keys(wordCache.hasKey).find(regText =>
-      {
+      matchedString = Object.keys(wordCache.hasKey).find(regText => {
 
         // 遍历获取被替换的词
-        for (const repKey of triggerList)
-        {
+        for (const repKey of triggerList) {
           const thisTemp = this.word.trigger.trigger[repKey];
 
           if (!regText.includes(repKey)) { continue; }
 
           let regTextTemp: string = regText;
 
-          for (const repReg of thisTemp.reg)
-          {
+          for (const repReg of thisTemp.reg) {
             regTextTemp = regTextTemp.replaceAll(repKey, repReg);
 
             // const reg = new RegExp(`^${regTextTemp}$`, 'g');
@@ -87,8 +81,7 @@ export class wordDriver
 
             if (!regTemp) { continue; }
 
-            regTemp.forEach(element =>
-            {
+            regTemp.forEach(element => {
               const reg2 = new RegExp(`^${regTextTemp}$`);
               if (!matchList[thisTemp.id]) { matchList[thisTemp.id] = []; }
               const matchString: string[] = element.match(reg2) as string[];
@@ -103,8 +96,7 @@ export class wordDriver
         }
       });
 
-      if (matchedString)
-      {
+      if (matchedString) {
         q = matchedString;
         list = wordCache.hasKey[q];
       }
@@ -121,13 +113,10 @@ export class wordDriver
 
     let overPrimitiveList: string[] = [];
 
-    primitiveList.forEach(e =>
-    {
-      if (killWordList.includes(e))
-      {
+    primitiveList.forEach(e => {
+      if (killWordList.includes(e)) {
         return;
-      } else
-      {
+      } else {
         overPrimitiveList.push(e);
       }
     });
@@ -139,8 +128,8 @@ export class wordDriver
     // 挑选一个词库，且不重复 
     let needPar = '';
 
-    const parOne = async () =>
-    {
+    const parOne = async (): Promise<string | null | undefined> => {
+      if (!session.content) { return }
       const item = list[witchWordDB];
       // 读取那个词库
       const wordData = await this.word.editor.readWord(item);
@@ -149,8 +138,7 @@ export class wordDriver
       const questionList = wordData.data[q];
       if (!questionList) { return; }
 
-      do
-      {
+      do {
         if (parsedList.length >= questionList.length) { return; }
         witchWord = this.word.tools.randomNumber(0, questionList.length - 1);
       } while (parsedList.includes(witchWord));
@@ -158,87 +146,18 @@ export class wordDriver
 
       needPar = questionList[witchWord];
 
-      const message = await parsStart(needPar, wordData, this.word, session, matchList);
+      const contentList = needPar.split('(换)');
+      for (let i of contentList) {
+        try {
+          let abc = await parsStart(i, wordData, this.word, session, matchList);
 
-      return message;
-    };
+          if (!abc) { continue; }
+          const a = abc.message;
+          // console.log(abc)
 
-    const run = async (): Promise<string | null | undefined> =>
-    {
-      try
-      {
-        const abc = await parOne();
+          const needSaveObj = abc.data;
+          // 获取物品
 
-        if (!abc) { return; }
-        const a = abc.message;
-        // console.log(abc)
-
-        const needSaveObj = abc.data;
-        // 获取物品
-
-        // const needSave = needSaveObj.item;
-        // if (needSave)
-        // {
-        //   for (let uid in needSave)
-        //   {
-        //     const saveDBList = needSave[uid];
-
-        //     for (let saveDB in saveDBList)
-        //     {
-        //       const itemNameList = saveDBList[saveDB];
-
-        //       for (let itemName in itemNameList)
-        //       {
-        //         const num = itemNameList[itemName];
-        //         await this.word.user.updateItem(uid, saveDB, itemName, num);
-        //       }
-        //     }
-        //   }
-        // }
-
-        const needSaveConfig = needSaveObj.userConfig;
-        if (needSaveConfig)
-        {
-          for (let uid in needSaveConfig)
-          {
-            for (let key in needSaveConfig[uid])
-            {
-              await this.word.user.setConfig(uid, key, needSaveConfig[uid][key]);
-            }
-          }
-        }
-
-        const ok = await this.word.user.saveConfig();
-        // const ok2 = await this.word.user.saveTemp();
-
-        // if (ok && ok2)
-        if (ok)
-        {
-          return a;
-        } else
-        {
-          return ' [word-core] 数据保存失败';
-        }
-      } catch (err: any)
-      {
-        // console.log(err);
-        const errorType = err.message;
-        if (!errorType) { return err; }
-        const msg = errorType.split(':')[1];
-
-        // 执行后立刻终止，并且不保存数据
-        if (errorType.startsWith('kill'))
-        {
-          // console.log(msg)
-          if (msg) { return msg; }
-          return;
-        }
-
-        // 执行后立即终止，但是保存数据
-        if (errorType.startsWith('end'))
-        {
-          const needSaveObj = saveItemDataTemp[q];
-          // // 获取物品
           // const needSave = needSaveObj.item;
           // if (needSave)
           // {
@@ -260,12 +179,9 @@ export class wordDriver
           // }
 
           const needSaveConfig = needSaveObj.userConfig;
-          if (needSaveConfig)
-          {
-            for (let uid in needSaveConfig)
-            {
-              for (let key in needSaveConfig[uid])
-              {
+          if (needSaveConfig) {
+            for (let uid in needSaveConfig) {
+              for (let key in needSaveConfig[uid]) {
                 await this.word.user.setConfig(uid, key, needSaveConfig[uid][key]);
               }
             }
@@ -275,26 +191,81 @@ export class wordDriver
           // const ok2 = await this.word.user.saveTemp();
 
           // if (ok && ok2)
-          if (ok)
-          {
-            if (msg) { return msg; }
-            return;
-          } else
-          {
-            if (msg) { return ' [word-core] 数据保存失败，并且' + msg; }
-            return ' [word-core] 数据保存失败';
+          if (ok) {
+            callback(a);
+            continue;
+          } else {
+            callback(' [word-core] 数据保存失败');
+            continue;
           }
-        }
+        } catch (err: any) {
+          // console.log(err);
+          const errorType = err.message;
+          if (!errorType) { return err; }
+          const msg = errorType.split(':')[1];
 
-        // 执行后立即终止，不保存数据，并且进入下次解析
-        if (errorType.startsWith('next'))
-        {
-          return run();
+          // 执行后立刻终止，并且不保存数据
+          if (errorType.startsWith('kill')) {
+            // console.log(msg)
+            if (msg) { callback(msg); continue; }
+            continue;
+          }
+
+          // 执行后立即终止，但是保存数据
+          if (errorType.startsWith('end')) {
+            const needSaveObj = saveItemDataTemp[q];
+            // // 获取物品
+            // const needSave = needSaveObj.item;
+            // if (needSave)
+            // {
+            //   for (let uid in needSave)
+            //   {
+            //     const saveDBList = needSave[uid];
+
+            //     for (let saveDB in saveDBList)
+            //     {
+            //       const itemNameList = saveDBList[saveDB];
+
+            //       for (let itemName in itemNameList)
+            //       {
+            //         const num = itemNameList[itemName];
+            //         await this.word.user.updateItem(uid, saveDB, itemName, num);
+            //       }
+            //     }
+            //   }
+            // }
+
+            const needSaveConfig = needSaveObj.userConfig;
+            if (needSaveConfig) {
+              for (let uid in needSaveConfig) {
+                for (let key in needSaveConfig[uid]) {
+                  await this.word.user.setConfig(uid, key, needSaveConfig[uid][key]);
+                }
+              }
+            }
+
+            const ok = await this.word.user.saveConfig();
+            // const ok2 = await this.word.user.saveTemp();
+
+            // if (ok && ok2)
+            if (ok) {
+              if (msg) { callback(msg); continue; }
+              continue;
+            } else {
+              if (msg) { callback(' [word-core] 数据保存失败，并且' + msg); continue; }
+              callback(' [word-core] 数据保存失败');
+              continue;
+            }
+          }
+
+          // 执行后立即终止，不保存数据，并且进入下次解析
+          if (errorType.startsWith('next')) {
+            return parOne();
+          }
         }
       }
     };
 
-    const canOut = run();
-    return canOut;
+    parOne();
   }
 }

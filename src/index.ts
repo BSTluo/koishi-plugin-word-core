@@ -329,10 +329,12 @@ export const apply = async (ctx: Context, config: Config) => {
       const atBot = `<at id="${session.bot.selfId}"/> `
       if (session.content.startsWith(atBot)) { session.content = session.content.replace(atBot, '') }
 
-      const msg = await ctx.word.driver.start(session);
-      if (!msg) { return; }
-      // console.log(msg)
-      session.send(msg);
+      await ctx.word.driver.start(session, (str) => {
+        if (!str) { return; }
+        // console.log(msg)
+        session.send(str);
+      });
+
     });
 
     ctx.console.addEntry({
@@ -440,3 +442,5 @@ declare module '@koishijs/plugin-console' {
 // @@@@@@@@@@@@@@@@]]]]]..............*****************=@/......O`..*/@`,/o@@......
 // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@\]`............................/`../O@OOoo@^.......
 // O@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\`.......................O..=O@/OOO@`........
+
+// 更新了回复中的(换)，可以换一个气泡发送
