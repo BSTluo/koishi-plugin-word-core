@@ -252,7 +252,7 @@ export const apply = async (ctx: Context, config: Config) => {
       });
 
     // 取消权限
-    ctx.command('word', '词库核心！').subcommand('.rmp <uid:string> <permission:text>', '增加权限')
+    ctx.command('word', '词库核心！').subcommand('.rmp <uid:string> <permission:text>', '取消权限')
       .usage([
         '权限节点说明：',
         '编辑词库：word.edit.词库名',
