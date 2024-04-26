@@ -59,48 +59,40 @@ export class wordDriver {
     // 获取输入替换列表
     const triggerList = Object.keys(this.word.trigger.trigger);
 
+    let over = false;
+
     if (!wordCache.hasKey[q]) {
       // 找到这个触发词对应的词库，并开始解析
-      matchedString = Object.keys(wordCache.hasKey).find(regText => {
-
-        // 遍历获取被替换的词
-        for (const repKey of triggerList) {
-          const thisTemp = this.word.trigger.trigger[repKey];
-
-          if (!regText.includes(repKey)) { continue; }
-
-          let regTextTemp: string = regText;
-
-          for (const repReg of thisTemp.reg) {
-            regTextTemp = regTextTemp.replaceAll(repKey, repReg);
-
-            // const reg = new RegExp(`^${regTextTemp}$`, 'g');
-            const reg = new RegExp(`${regTextTemp}`, 'g');
-
-            const regTemp = q.match(reg);
-
-            if (!regTemp) { continue; }
-
-            regTemp.forEach(element => {
-              const reg2 = new RegExp(`^${regTextTemp}$`);
-              if (!matchList[thisTemp.id]) { matchList[thisTemp.id] = []; }
-              const matchString: string[] = element.match(reg2) as string[];
-
-              const list = matchString.slice(1, matchString.length);
-              matchList[thisTemp.id] = matchList[thisTemp.id].concat(list);
-              // console.log(matchList[thisTemp.id])
-            });
-
-            return true;
+      const getCanReplace = () =>{
+        while (!over) {
+          const oldQ = q;
+  
+          for (let e of triggerList) {
+            const nowTrigger = this.word.trigger.trigger[e];
+            const regList = nowTrigger.reg;
+            for (let regStr of regList) {
+              const reg = new RegExp(regStr);
+  
+              const matchResult = q.match(reg);
+              if (!matchResult) { continue; }
+  
+              q = q.replace(reg, e);
+              if (!matchList[nowTrigger.id]) { matchList[nowTrigger.id] = [] }
+              matchList[nowTrigger.id] = matchList[nowTrigger.id].concat(matchResult[1]);
+  
+              if (wordCache.hasKey[q]) { list = wordCache.hasKey[q]; return; }
+            }
+          }
+  
+          if (oldQ === q) {
+            over = true;
+            return;
           }
         }
-      });
-
-      if (matchedString) {
-        q = matchedString;
-        list = wordCache.hasKey[q];
       }
+      getCanReplace()
     }
+    
     if (!list) { return; }
     if (list.length <= 0) { return; }
 
@@ -129,6 +121,7 @@ export class wordDriver {
     let needPar = '';
 
     const parOne = async (): Promise<string | null | undefined> => {
+
       if (!session.content) { return }
       const item = list[witchWordDB];
       // 读取那个词库
@@ -136,6 +129,7 @@ export class wordDriver {
 
       // 获取那个词条对应的全部回答
       const questionList = wordData.data[q];
+
       if (!questionList) { return; }
 
       do {
