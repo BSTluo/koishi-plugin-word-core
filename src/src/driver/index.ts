@@ -63,27 +63,27 @@ export class wordDriver {
 
     if (!wordCache.hasKey[q]) {
       // 找到这个触发词对应的词库，并开始解析
-      const getCanReplace = () =>{
+      const getCanReplace = () => {
         while (!over) {
           const oldQ = q;
-  
+
           for (let e of triggerList) {
             const nowTrigger = this.word.trigger.trigger[e];
             const regList = nowTrigger.reg;
             for (let regStr of regList) {
               const reg = new RegExp(regStr);
-  
+
               const matchResult = q.match(reg);
               if (!matchResult) { continue; }
-  
+
               q = q.replace(reg, e);
               if (!matchList[nowTrigger.id]) { matchList[nowTrigger.id] = [] }
               matchList[nowTrigger.id] = matchList[nowTrigger.id].concat(matchResult[1]);
-  
+
               if (wordCache.hasKey[q]) { list = wordCache.hasKey[q]; return; }
             }
           }
-  
+
           if (oldQ === q) {
             over = true;
             return;
@@ -92,7 +92,7 @@ export class wordDriver {
       }
       getCanReplace()
     }
-    
+
     if (!list) { return; }
     if (list.length <= 0) { return; }
 

@@ -1,4 +1,4 @@
-import { Context, Session, capitalize, is } from "koishi";
+import { Context, Element, Session, capitalize, is } from "koishi";
 import { ifStatement, statement, statusMsg } from "../../extend/statement";
 import { matchType } from "..";
 import { word } from "../../word";
@@ -9,6 +9,9 @@ export interface wordDataInputType {
   userId: string;
   channelId: string;
   content: string;
+  send: Session['send'];
+  bot: Session['bot'];
+  event: Session['event'];
 }
 
 type parTemp = {
