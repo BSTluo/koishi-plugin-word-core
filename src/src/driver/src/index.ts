@@ -13,6 +13,7 @@ export interface wordDataInputType
   send?: Session['send'];
   bot?: Bot;
   event?: Session['event'];
+  prompt?: Session['prompt'];
 }
 
 type parTemp = {
