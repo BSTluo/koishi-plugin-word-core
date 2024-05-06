@@ -254,12 +254,12 @@ export class wordDriver {
 
           // 执行后立即终止，不保存数据，并且进入下次解析
           if (errorType.startsWith('next')) {
-            return parOne();
+            return await parOne();
           }
         }
       }
     };
 
-    parOne();
+    await parOne();
   }
 }
