@@ -287,34 +287,35 @@ const parseTrees = async (word: word, inData: any[], session: Session | wordData
           internal: { // 缓存功能
             saveItem: async (uid: string, saveDB: string, itemName: string, number: number) =>
             {
-              // if (!userDataTemp.item) { userDataTemp.item = {}; }
+              if (!userDataTemp.item) { userDataTemp.item = {}; }
 
-              // if (!userDataTemp.item[uid]) { userDataTemp.item[uid] = {}; }
+              if (!userDataTemp.item[uid]) { userDataTemp.item[uid] = {}; }
 
-              // if (!userDataTemp.item[uid][saveDB]) { userDataTemp.item[uid][saveDB] = {}; }
+              if (!userDataTemp.item[uid][saveDB]) { userDataTemp.item[uid][saveDB] = {}; }
 
-              // userDataTemp.item[uid][saveDB][itemName] = number;
-              // saveItemDataTemp[(session.content) ? session.content : ''] = userDataTemp;
+              userDataTemp.item[uid][saveDB][itemName] = number;
+              saveItemDataTemp[(session.content) ? session.content : ''] = userDataTemp;
 
-              return await word.user.updateItem(uid, saveDB, itemName, number);
+              // return await word.user.updateItem(uid, saveDB, itemName, number);
+              return true;
             },
 
             getItem: async (uid: string, saveDB: string, itemName: string) =>
             {
               const num = await word.user.getItem(uid, saveDB, itemName);
 
-              // if (!userDataTemp.item) { userDataTemp.item = {}; }
+              if (!userDataTemp.item) { userDataTemp.item = {}; }
 
-              // if (!userDataTemp.item[uid]) { userDataTemp.item[uid] = {}; }
+              if (!userDataTemp.item[uid]) { userDataTemp.item[uid] = {}; }
 
-              // if (!userDataTemp.item[uid][saveDB]) { userDataTemp.item[uid][saveDB] = {}; }
+              if (!userDataTemp.item[uid][saveDB]) { userDataTemp.item[uid][saveDB] = {}; }
 
-              // if (!userDataTemp.item[uid][saveDB][itemName] && userDataTemp.item[uid][saveDB][itemName] != 0) { userDataTemp.item[uid][saveDB][itemName] = num ? num : 0; }
+              if (!userDataTemp.item[uid][saveDB][itemName] && userDataTemp.item[uid][saveDB][itemName] != 0) { userDataTemp.item[uid][saveDB][itemName] = num ? num : 0; }
 
-              // saveItemDataTemp[(session.content) ? session.content : ''] = userDataTemp;
+              saveItemDataTemp[(session.content) ? session.content : ''] = userDataTemp;
 
-              // return userDataTemp.item[uid][saveDB][itemName];
-              return num;
+              return userDataTemp.item[uid][saveDB][itemName];
+              // return num;
             },
 
             getUserConfig: async (uid: string, key: string) =>
