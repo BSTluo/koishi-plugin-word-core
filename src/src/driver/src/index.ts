@@ -14,6 +14,7 @@ export interface wordDataInputType
   bot?: Bot;
   event?: Session['event'];
   prompt?: Session['prompt'];
+  guildId?: Session['guildId'];
 }
 
 type parTemp = {
