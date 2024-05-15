@@ -1,7 +1,7 @@
 {
   "name": "koishi-plugin-word-core",
   "description": "多功能文字对话引擎！",
-  "version": "1.0.0-alpha.9",
+  "version": "1.0.0-alpha.10",
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",
   "files": [
