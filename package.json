@@ -28,6 +28,10 @@
       ]
     }
   },
+  "bugs": {
+    "url": "https://github.com/BSTluo/koishi-plugin-word-core/issues"
+  },
+  "homepage": "https://docs.reifuu.icu/docs/word-core-3.0/00readme/",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/BSTluo/koishi-plugin-word-core.git"
