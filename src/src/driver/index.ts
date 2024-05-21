@@ -88,7 +88,7 @@ export class wordDriver
               {
                 Object.keys(wordCache.hasKey).forEach(element =>
                 {
-                  if (q.match(element)) { list = wordCache.hasKey[element]; session.content = element; q = element; return; }
+                  if (q.match(RegExp('^' + element + '$'))) { list = wordCache.hasKey[element]; session.content = element; q = element; return; }
                 });
               } else
               {
