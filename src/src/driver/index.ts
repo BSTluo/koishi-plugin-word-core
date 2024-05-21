@@ -117,8 +117,8 @@ export class wordDriver
     let primitiveList: string[] = list;
     const killWordListTemp = (await this.word.config.getConfig('filtration')) as unknown as Record<string, string[]>;
 
-    const guildId = session.channelId;
-    const killWordList = (killWordListTemp[guildId]) ? killWordListTemp[guildId] : [];
+    const channelId = session.channelId;
+    const killWordList = (killWordListTemp[channelId]) ? killWordListTemp[channelId] : [];
 
     let overPrimitiveList: string[] = [];
 
