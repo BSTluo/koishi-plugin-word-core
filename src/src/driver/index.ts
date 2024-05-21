@@ -77,18 +77,26 @@ export class wordDriver
           {
             const nowTrigger = this.word.trigger.trigger[e];
             const regList = nowTrigger.reg;
+
             for (let regStr of regList)
             {
               const reg = new RegExp(regStr);
 
               const matchResult = q.match(reg);
-              if (!matchResult) { continue; }
 
-              q = q.replace(reg, e);
-              if (!matchList[nowTrigger.id]) { matchList[nowTrigger.id] = []; }
-              matchList[nowTrigger.id] = matchList[nowTrigger.id].concat(matchResult[1]);
+              if (!matchResult)
+              {
+                Object.keys(wordCache.hasKey).forEach(element =>
+                {
+                  if (q.match(element)) { list = wordCache.hasKey[element]; session.content = element; q = element; return; }
+                });
+              } else
+              {
+                if (!matchList[nowTrigger.id]) { matchList[nowTrigger.id] = []; }
+                matchList[nowTrigger.id] = matchList[nowTrigger.id].concat(matchResult[1]);
 
-              if (wordCache.hasKey[q]) { list = wordCache.hasKey[q]; return; }
+                if (wordCache.hasKey[q]) { list = wordCache.hasKey[q]; return; }
+              }
             }
           }
 
@@ -137,6 +145,7 @@ export class wordDriver
 
       if (!session.content) { return; }
       const item = list[witchWordDB];
+
       // 读取那个词库
       const wordData = await this.word.editor.readWord(item);
 
