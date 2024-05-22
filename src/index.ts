@@ -351,11 +351,69 @@ export const apply = async (ctx: Context, config: Config) =>
       .example('word.id')
       .action(({ session }) =>
       {
-
         if (!session) { return '发生异常'; }
 
         return `您的名字是：【${session.username}】，您的id是：【${session.userId}】`;
       });
+
+    // 设置词库黑名单
+    ctx.command('word', '词库核心！').subcommand('.skip <dbname:text>', '禁止某词库在本频道运行')
+      .example('word.skip default')
+      .action(async ({ session }, dbName) =>
+      {
+        if (!session) { return '发生异常'; }
+        if (!dbName) { return `<at name="${session.username}" /> 你没有输入词库名称`; }
+
+        const skipData = await ctx.word.config.getConfig('filtration') as unknown as Record<string, string[]>;
+
+        if (!skipData[session.channelId]) { skipData[session.channelId] = []; }
+
+        skipData[session.channelId].push(dbName);
+
+        await ctx.word.config.updateConfig('filtration', skipData as unknown as core.settingTypeValue);
+
+        return `<at name="${session.username}" /> 修改成功`;
+      });
+
+    // 取消设置词库黑名单
+    ctx.command('word', '词库核心！').subcommand('.unskip <dbname:text>', '允许某词库在本频道运行')
+      .example('word.unskip default')
+      .action(async ({ session }, dbName) =>
+      {
+        if (!session) { return '发生异常'; }
+        if (!dbName) { return `<at name="${session.username}" /> 你没有输入词库名称`; }
+
+        const skipData = await ctx.word.config.getConfig('filtration') as unknown as Record<string, string[]>;
+
+        if (!skipData[session.channelId]) { skipData[session.channelId] = []; }
+
+        const findIndex = skipData[session.channelId].indexOf(dbName);
+
+        skipData[session.channelId].splice(findIndex, 1);
+
+        if (skipData[session.channelId].length == 0) { delete skipData[session.channelId]; }
+
+        await ctx.word.config.updateConfig('filtration', skipData as unknown as core.settingTypeValue);
+
+        return `<at name="${session.username}" /> 修改成功`;
+      });
+
+    // 获取本频道设置的词库黑名单
+    ctx.command('word', '词库核心！').subcommand('.skip.list', '查看本频道词库黑名单')
+      .example('word.skip.list')
+      .action(async ({ session }) =>
+      {
+        if (!session) { return '发生异常'; }
+
+        const skipData = await ctx.word.config.getConfig('filtration') as unknown as Record<string, string[]>;
+
+        if (!skipData[session.channelId]) { return `<at name="${session.username}" /> 当前群内未设置禁用的词库`; }
+
+        const skipList = skipData[session.channelId];
+
+        return `<at name="${session.username}" /> 当前群内有以下词库被禁用：\n\n ${skipList.join('，')}`;
+      });
+
 
     ctx.on('message', async (session) =>
     {
@@ -435,6 +493,8 @@ export const apply = async (ctx: Context, config: Config) =>
     {
       return ctx.word.tools.url;
     });
+
+
   });
 };
 

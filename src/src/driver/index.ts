@@ -35,7 +35,7 @@ export class wordDriver
 
     const matchList: matchType = {};
 
-    let matchedString: string | undefined;
+    // let matchedString: string | undefined;
 
     // // 获取过滤当前群组过滤的库
     // let primitiveList = wordCache.hasKey[q];
@@ -133,7 +133,7 @@ export class wordDriver
       }
     });
 
-    const witchWordDB = this.word.tools.randomNumber(0, list.length - 1);
+    const witchWordDB = this.word.tools.randomNumber(0, overPrimitiveList.length - 1);
 
     const parsedList: number[] = [];
     let witchWord = 0;
@@ -144,7 +144,7 @@ export class wordDriver
     {
 
       if (!session.content) { return; }
-      const item = list[witchWordDB];
+      const item = overPrimitiveList[witchWordDB];
 
       // 读取那个词库
       const wordData = await this.word.editor.readWord(item);
