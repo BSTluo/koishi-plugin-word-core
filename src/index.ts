@@ -14,6 +14,7 @@ export interface Config
 {
   masterID: string[];
   searchEndpoint: string;
+  telemetry: boolean;
 }
 
 export const inject = {
@@ -23,7 +24,8 @@ export const inject = {
 
 export const Config: Schema<Config> = Schema.object({
   masterID: Schema.array(String).description('管理员的唯一标识'),
-  searchEndpoint: Schema.string().description('词库插件市场后端地址').default('https://wplugin.reifuu.icu')
+  searchEndpoint: Schema.string().description('词库插件市场后端地址').default('https://wplugin.reifuu.icu'),
+  telemetry: Schema.boolean().description('告诉作者我正在使用词库~\n\n（求求大家开启这个选项！这对作者真的很重要！）').default(true)
 });
 
 export const logger = new Logger('Word-core');
@@ -454,8 +456,11 @@ export const apply = async (ctx: Context, config: Config) =>
     {
       try
       {
-        // 这个接口只是给我看看！有多少人使用的！下面那个是查看使用人数的
-        await fetch(`https://xc.null.red:8043/api/online/heartbeat?t=word_core&_=${Date.now()}`);
+        if (config.telemetry)
+        {
+          // 这个接口是告诉作者！有多少人使用的！下面那个是查看使用人数的
+          await fetch(`https://xc.null.red:8043/api/online/heartbeat?t=word_core&_=${Date.now()}`);
+        }
 
         // const temp = await fetch(`https://xc.null.red:8043/api/online/list?t=word_core&_=${Date.now()}`)
         // const data = await temp.json()
@@ -463,7 +468,8 @@ export const apply = async (ctx: Context, config: Config) =>
         // console.log(data)
       } catch (err)
       {
-        return `获取在线人数失败，请检查网络是否通畅，也可能是服务器挂掉了`;
+        // return `获取在线人数失败，请检查网络是否通畅，也可能是服务器挂掉了`;
+        return '词库提交当前状态异常...作者木有办法收到你的鼓励..'
       }
     }, 2 * 60 * 1000);
 
