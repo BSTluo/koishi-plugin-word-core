@@ -164,7 +164,7 @@ export const apply = async (ctx: Context, config: Config) =>
       });
 
     // 获取此词库所拥有的触发词
-    ctx.command('word', '词库核心！').subcommand('.getDB <dbName:text>', '查看当前/某词库某触发词的所有回答')
+    ctx.command('word', '词库核心！').subcommand('.getDB <dbName:text>', '查看当前/某词库的所有触发词')
       .example('word.getDB 测试')
       .example('word.getDB')
       .action(async ({ session }, dbName) =>
