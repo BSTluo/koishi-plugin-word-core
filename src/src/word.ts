@@ -11,16 +11,14 @@ import { statementFunction } from "./extend/statement";
 import * as wordConfig from "./service/config/config";
 
 declare module 'koishi' {
-  interface Context {
+  interface Context
+  {
     word: word;
   }
 }
 
-export interface Config {
-  searchEndpoint: string;
-}
-
-export class word extends Service {
+export class word extends Service
+{
   driver: wordDriver;
   cache: CacheFunction;
   editor: Editor;
@@ -33,7 +31,8 @@ export class word extends Service {
   // config: configFunction;
   config: wordConfig.Config;
 
-  constructor(ctx: Context, config: Config) {
+  constructor(ctx: Context, config: word.Config)
+  {
     super(ctx, 'word', true);
 
     const WordDriver = new wordDriver(this, ctx);
@@ -41,7 +40,7 @@ export class word extends Service {
 
     const wordServiceTemp = new wordService(ctx);
     this.tools = wordServiceTemp.Tools;
-    this.tools.url = config.searchEndpoint
+    this.tools.url = config.searchEndpoint;
     this.cache = wordServiceTemp.Cache;
     this.editor = wordServiceTemp.Editor;
     this.user = wordServiceTemp.User;
@@ -51,8 +50,16 @@ export class word extends Service {
     this.cache.cacheRefresh();
     this.config = wordServiceTemp.config;
   }
+}
 
-  Config: Schema<Config> = Schema.object({
+export namespace word
+{
+  export interface Config
+  {
+    searchEndpoint: string;
+  }
+
+  export const Config: Schema<Config> = Schema.object({
     searchEndpoint: Schema.string().description('词库插件市场后端地址').default('https://wplugin.reifuu.icu')
   });
 }
