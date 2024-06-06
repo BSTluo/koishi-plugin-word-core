@@ -469,7 +469,7 @@ export const apply = async (ctx: Context, config: Config) =>
       } catch (err)
       {
         // return `获取在线人数失败，请检查网络是否通畅，也可能是服务器挂掉了`;
-        return '词库提交当前状态异常...作者木有办法收到你的鼓励..'
+        return '词库提交当前状态异常...作者木有办法收到你的鼓励..';
       }
     }, 2 * 60 * 1000);
 
@@ -483,6 +483,7 @@ export const apply = async (ctx: Context, config: Config) =>
     ctx.console.addListener('getWord', async (name) =>
     {
       const a = await ctx.word.editor.getCloudWord(name);
+      await ctx.word.cache.cacheRefresh();
       // newNotifier(a);
       return a;
     });
@@ -500,7 +501,11 @@ export const apply = async (ctx: Context, config: Config) =>
       return ctx.word.tools.url;
     });
 
-
+    ctx.console.addListener('getWordList', async () =>
+    {
+      const { idList } = ctx.word.cache.getCache();
+      return idList;
+    });
   });
 };
 
@@ -510,6 +515,7 @@ declare module '@koishijs/plugin-console' {
     'rmWord'(name: string): Promise<"ok" | "词库列表不存在此词库">;
     'getWord'(name: string): Promise<"获取的插件格式异常" | "词库已存在，无法安装" | "ok">;
     'getPluginServerUrl'(): string;
+    'getWordList'(): Promise<string[]>;
   }
 }
 

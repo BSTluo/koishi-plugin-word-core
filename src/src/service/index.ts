@@ -11,7 +11,8 @@ import * as Config from "./config/config";
 export * from './tools/tools';
 export * from './editor/cache';
 
-export class wordService {
+export class wordService
+{
   private ctx: Context;
 
   public Tools: Tools.ToolsFunction = {} as Tools.ToolsFunction;
@@ -30,10 +31,12 @@ export class wordService {
 
   public config: Config.Config = {} as Config.Config;
 
-  constructor(ctx: Context) {
+  constructor(ctx: Context)
+  {
     this.ctx = ctx;
 
-    this.ctx.inject(['database'], async (ctx) => {
+    this.ctx.inject(['database'], async (ctx) =>
+    {
       this.Tools.readDB = (dbName, key) => { return Tools.readDBFunction(ctx, dbName, key); };
       this.Tools.writeDB = (dbName, key, data) => { return Tools.writeDBFunction(ctx, dbName, key, data); };
       this.Tools.getDB = (dbName) => { return Tools.getDBFunction(ctx, dbName); };

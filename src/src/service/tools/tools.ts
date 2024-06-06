@@ -2,14 +2,16 @@ import { Context } from "koishi";
 import { allType, recycleBinList, wordData, wordUserConfig, wordUserPackData, wordUserTemp } from "../..";
 
 // 读取库
-export const readDBFunction = async (ctx: Context, dbName: dbNameList, key: string): Promise<allType> => {
+export const readDBFunction = async (ctx: Context, dbName: dbNameList, key: string): Promise<allType> =>
+{
   const readObjTemp = await ctx.database.get(dbName, key);
   if (readObjTemp.length <= 0) { return {}; }
   return readObjTemp[0].data as allType;
 };
 
 // 保存库
-export const writeDBFunction = async (ctx: Context, dbName: dbNameList, key: string, newData: allType): Promise<boolean> => {
+export const writeDBFunction = async (ctx: Context, dbName: dbNameList, key: string, newData: allType): Promise<boolean> =>
+{
   const readObjTemp = await ctx.database.get(dbName, key);
   if (readObjTemp.length <= 0)
   {
@@ -23,16 +25,19 @@ export const writeDBFunction = async (ctx: Context, dbName: dbNameList, key: str
   }
 };
 
-export const getDBFunction = async (ctx: Context, dbName: dbNameList) => {
+export const getDBFunction = async (ctx: Context, dbName: dbNameList) =>
+{
 
   const idListOrigin = await ctx.database.get(dbName, { id: { $regex: /^[\s\S]+$/ } }, ['id']);
   const dataListOrigin = await ctx.database.get(dbName, { id: { $regex: /^[\s\S]+$/ } }, ['data']);
 
   const data/*: dbCache*/ = {
-    idList: idListOrigin.map(v => {
+    idList: idListOrigin.map(v =>
+    {
       return v.id;
     }),
-    dataList: dataListOrigin.map((v) => {
+    dataList: dataListOrigin.map((v) =>
+    {
       const temp = v.data as allType;
       return temp;
     })
@@ -41,7 +46,8 @@ export const getDBFunction = async (ctx: Context, dbName: dbNameList) => {
   return data;
 };
 
-export const removeDBFunction = async (ctx: Context, dbName: dbNameList, key: string) => {
+export const removeDBFunction = async (ctx: Context, dbName: dbNameList, key: string) =>
+{
   ctx.database.remove(dbName, key);
 };
 
@@ -51,11 +57,12 @@ export const removeDBFunction = async (ctx: Context, dbName: dbNameList, key: st
  * @param maxNumber 随机数上限
  * @returns 
  */
-export const randomNumber = (minNumber: number, maxNumber: number): number => {
+export const randomNumber = (minNumber: number, maxNumber: number): number =>
+{
   return Math.floor(Math.random() * (maxNumber - minNumber + 1)) + minNumber;
 };
 
-export let url = ''
+export let url = '';
 
 type dbNameList = 'wordUserPackData' | 'wordData' | 'recycleBinList' | 'wordUserConfig' | 'wordUserTemp' | 'wordCoreConfig';
 
@@ -65,11 +72,12 @@ export type getDBType = (dbName: dbNameList) => Promise<{ idList: string[], data
 export type removeDBType = (dbName: dbNameList, key: string) => Promise<void>;
 export type randomNumberType = (minNumber: number, maxNumber: number) => number;
 
-export interface ToolsFunction {
+export interface ToolsFunction
+{
   readDB: readDBType;
   writeDB: writeDBType;
   getDB: getDBType;
   removeDB: removeDBType;
   randomNumber: randomNumberType;
-  url: string
+  url: string;
 }
