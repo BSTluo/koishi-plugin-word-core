@@ -83,18 +83,25 @@ export class wordDriver
               const reg = new RegExp(regStr);
 
               const matchResult = q.match(reg);
+              // console.log('q', q);
+              // console.log('reg', reg);
+              // console.log('matchResult', matchResult);
 
               if (!matchResult)
               {
-                Object.keys(wordCache.hasKey).forEach(element =>
+                const wordQuestionDB = Object.keys(wordCache.hasKey);
+
+                for (let i = 0; i < wordQuestionDB.length; i++)
                 {
+                  const element = wordQuestionDB[i];
                   if (q.match(RegExp('^' + element + '$'))) { list = wordCache.hasKey[element]; session.content = element; q = element; return; }
-                });
+                }
               } else
               {
                 if (!matchList[nowTrigger.id]) { matchList[nowTrigger.id] = []; }
                 matchList[nowTrigger.id] = matchList[nowTrigger.id].concat(matchResult[1]);
-
+                q = q.replace(reg, e);
+                session.content = q;
                 if (wordCache.hasKey[q]) { list = wordCache.hasKey[q]; return; }
               }
             }
