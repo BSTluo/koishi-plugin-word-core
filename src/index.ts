@@ -54,11 +54,7 @@ export const apply = async (ctx: Context, config: Config) =>
 
         const hasPermission = await ctx.word.permission.isHave(uid, `word.edit.${nowWordDB}`);
 
-        if (!hasPermission && !config.masterID.includes(uid) && nowWordDB != 'default') { return `<at name="${session.username}" /> 你没有词库【${nowWordDB}】的编辑权限`; }
-
-        const defaultDBPermission = await ctx.word.permission.isHave(uid, `word.edit.default`);
-
-        if (nowWordDB == 'default' && !defaultDBPermission) { return `<at name="${session.username}" /> 你没有词库【${nowWordDB}】的编辑权限`; }
+        if (!hasPermission && !config.masterID.includes(uid)) { return `<at name="${session.username}" /> 你没有词库【${nowWordDB}】的编辑权限`; }
 
         const a = await ctx.word.editor.addWordItem(nowWordDB, uid, question, answer);
 
