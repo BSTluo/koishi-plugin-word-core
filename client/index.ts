@@ -2,6 +2,7 @@ import { Context } from '@koishijs/client'
 import Home from './src/home.vue'
 import Blockly from './src/blockly.vue'
 
+
 import 'virtual:uno.css'
 
 export default (ctx: Context) => {
