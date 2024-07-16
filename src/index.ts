@@ -54,7 +54,7 @@ export const apply = async (ctx: Context, config: Config) =>
 
         const hasPermission = await ctx.word.permission.isHave(uid, `word.edit.${nowWordDB}`);
 
-        if (!hasPermission && !config.masterID.includes(uid) && nowWordDB != 'default') { return `<at name="${session.username}" /> 你没有词库【${nowWordDB}】的编辑权限`; }
+        if (!hasPermission && !config.masterID.includes(uid)) { return `<at name="${session.username}" /> 你没有词库【${nowWordDB}】的编辑权限`; }
 
         const a = await ctx.word.editor.addWordItem(nowWordDB, uid, question, answer);
 
@@ -235,6 +235,7 @@ export const apply = async (ctx: Context, config: Config) =>
         }
       });
 
+    // 查看当前词库的存储格子
     ctx.command('word', '词库核心！').subcommand('.getsave', '查看当前词库的存储格子')
       .example('word.getsave')
       .action(async ({ session }) =>
@@ -349,6 +350,21 @@ export const apply = async (ctx: Context, config: Config) =>
         return `<at name="${session.username}" /> ${a}`;
       });
 
+    // 查看当前词库的作者(new)
+    ctx.command('word', '词库核心！').subcommand('.getauthor', '查看当前词库的作者')
+      .example('word.getauthor')
+      .action(async ({ session }, uid) =>
+      {
+        if (!session) { return; }
+        const mid = session.userId;
+
+        const nowWordDB = await ctx.word.user.getEditWord(mid);
+
+        const a = await ctx.word.editor.getAuthor(nowWordDB);
+
+        return `<at name="${session.username}" /> 当前词库的作者有：\n\n${a.join('\n')}`;
+      });
+
     ctx.command('word', '词库核心！').subcommand('.id', '查看自己的id及名字')
       .example('word.id')
       .action(({ session }) =>
@@ -416,6 +432,15 @@ export const apply = async (ctx: Context, config: Config) =>
         return `<at name="${session.username}" /> 当前群内有以下词库被禁用：\n\n ${skipList.join('，')}`;
       });
 
+    // 获取所有词库
+    ctx.command('word', '词库核心！').subcommand('.alldb', '查看所有词库')
+      .example('word.alldb')
+      .action(async ({ session }) =>
+      {
+        if (!session) { return '发生异常'; }
+        const { idList } = ctx.word.cache.getCache();
+        return `<at name="${session.username}" /> 当前群内有以下词库被禁用：\n\n ${idList.join('\n')}`;
+      });
 
     ctx.on('message', async (session) =>
     {
