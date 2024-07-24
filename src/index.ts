@@ -450,11 +450,13 @@ export const apply = async (ctx: Context, config: Config) =>
       const atBot = `<at id="${session.bot.selfId}"/> `;
       if (session.content.startsWith(atBot)) { session.content = session.content.replace(atBot, ''); }
 
-      await ctx.word.driver.start(session, (str) =>
+      const newSession = session.bot.session(session.event);
+
+      await ctx.word.driver.start(newSession, (str) =>
       {
         if (!str) { return; }
         // console.log(msg)
-        session.send(str);
+        newSession.send(str);
       });
 
     });
