@@ -158,7 +158,6 @@
         justify-content: center;
         max-width: 550px;
         width: 80%;
-        box-shadow: var(--k-card-shadow);
         border-radius: 1.5rem;
 
 
@@ -175,6 +174,9 @@
           border-left: 24px solid transparent;
           caret-color: var(--fg1);
           color: var(--fg1);
+          box-shadow: var(--k-card-shadow);
+
+
 
           padding: 12px 0px 12px 0px;
 
@@ -194,6 +196,9 @@
           right: 10px;
           color: var(--fg1);
           cursor: pointer;
+          i{
+            color: var(--fg1);
+          }
         }
       }
     }
@@ -251,12 +256,11 @@
             border: 1px solid var(--k-card-border);
             display: flex;
             flex-direction: column;
-            outline: #3b82f6 2px solid;
             outline: transparent 2px solid;
 
 
             &:hover {
-              outline: #3b82f6 2px solid;
+              outline: var(--active) 2px solid;
             }
 
             .header {
@@ -318,30 +322,20 @@
                   display: flex;
                   align-items: center;
                   justify-content: center;
-                  width: 30%;
                   height: 60%;
                   right: 15px;
-                  border-radius: 8px;
+                  border-radius: 4px;
+                  font-size: 14px;
                   border: 1px solid var(--el-color-primary);
-                  // color: var(--el-button-text-color);
-                  color: var(--bg0);
+                  color: var(--k-button-hover-bg);
                   transition: var(--color-transition);
-                }
 
-                .setupButton:hover {
-                  position: absolute;
-                  display: flex;
-                  align-items: center;
-                  justify-content: center;
-                  background-color: var(--el-button-hover-bg-color);
-                  width: 30%;
-                  height: 60%;
-                  right: 15px;
-                  border-radius: 8px;
-                  border: 1px solid var(--el-color-primary);
-                  // color: var(--el-button-text-color);
-                  color: var(--el-button-hover-text-color);
-                  transition: var(--color-transition);
+                  padding: 0 16px;
+
+                  &:hover {
+                    background: var(--el-button-hover-bg-color) !important;
+                    color: var(--k-color-active);
+                  }
                 }
               }
             }
@@ -423,7 +417,8 @@ import "bootstrap-icons/font/bootstrap-icons.css";
 import { send } from '@koishijs/client';
 
 export default {
-  data() {
+  data()
+  {
     return {
       url: 'http://127.0.0.1:1145',
       config: {
@@ -448,17 +443,20 @@ export default {
     };
   },
   methods: {
-    async getList() {
+    async getList()
+    {
       const resTemp = await fetch(`${this.url}/getList`);
       const res = await resTemp.json();
 
       this.pluginList = res;
       this.page.time = this.getCurrentFormattedTime();
     },
-    async getPlugin(name) {
+    async getPlugin(name)
+    {
       return `${this.url}/getPlugin/${name}.js`;
     },
-    formatTimestamp(timestamp) {
+    formatTimestamp(timestamp)
+    {
       const now = Date.now();
       const diff = now - timestamp;
 
@@ -493,7 +491,8 @@ export default {
         return `${years}年前`;
       }
     },
-    getCurrentFormattedTime() {
+    getCurrentFormattedTime()
+    {
       const now = new Date();
       const year = now.getFullYear();
       const month = String(now.getMonth() + 1).padStart(2, '0');
@@ -505,7 +504,8 @@ export default {
       return `${year}/${month}/${day} ${hours}:${minutes}:${seconds}`;
     },
     // 安装卸载按钮按下
-    async pluginSetup(name) {
+    async pluginSetup(name)
+    {
       if (!this.pluginStatusList[name])
       {
         const a = await this.getWord(name);
@@ -522,44 +522,52 @@ export default {
     },
 
     // 卸载插件
-    async removeWord(name) {
+    async removeWord(name)
+    {
       console.log('开始卸载插件', name);
       return await send('rmWord', name);
     },
 
     // 安装插件
-    async getWord(name) {
+    async getWord(name)
+    {
       console.log('开始安装插件', name);
       return await send('getWord', name);
     },
 
-    async newError(msg) {
+    async newError(msg)
+    {
       this.errorMsg = msg;
       this.error = true;
 
-      setTimeout(() => {
+      setTimeout(() =>
+      {
         this.error = false;
         this.errorMsg = '';
       }, 2000);
     },
 
-    async newSuccess(msg) {
+    async newSuccess(msg)
+    {
       this.successMsg = msg;
       this.success = true;
 
-      setTimeout(() => {
+      setTimeout(() =>
+      {
         this.success = false;
         this.successMsg = '';
       }, 2000);
     }
   },
-  async mounted() {
+  async mounted()
+  {
     const a = await send('getPluginServerUrl');
     this.url = a;
     this.getList();
   },
   computed: {
-    subPlugList() {
+    subPlugList()
+    {
       this.page.max = Math.ceil(Object.keys(this.pluginList).length / this.page.Pmax);
       const start = (this.page.now - 1) * this.page.Pmax;
       const end = this.page.now * this.page.Pmax;
