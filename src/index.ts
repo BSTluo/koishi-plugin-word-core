@@ -448,13 +448,14 @@ export const apply = async (ctx: Context, config: Config) =>
 
       if (session.userId == session.bot.user.id || session.userId == session.bot.selfId) { return; }
       const atBot = `<at id="${session.bot.selfId}"/> `;
-      if (session.content.startsWith(atBot)) { session.content = session.content.replace(atBot, ''); }
+      const forkSession = session.bot.session(session.event);
+      if (forkSession.content?.startsWith(atBot)) { forkSession.content = session.content.replace(atBot, ''); }
 
-      await ctx.word.driver.start(session, (str) =>
+      await ctx.word.driver.start(forkSession, (str) =>
       {
         if (!str) { return; }
         // console.log(msg)
-        session.send(str);
+        forkSession.send(str);
       });
 
     });
