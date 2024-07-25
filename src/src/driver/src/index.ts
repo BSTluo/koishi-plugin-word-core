@@ -87,7 +87,7 @@ export const parsStart = async (questionList: string, wordData: wordSaveData, wo
   // 你(+:xx:xx)好
   // [你,[+,xx,xx],好]
   const tree = getTree(questionList);
-  // console.log(tree);
+  console.log(tree);
 
   if (!session.content) { return null; }
 
@@ -158,7 +158,7 @@ const getTree = (str: string): any[] =>
         {
           // console.log('1');
           index++;
-        } else if (tempArr[index][length - 1].endsWith('http') || tempArr[index][length - 1].endsWith('https'))
+        } else if (!funcPackKeys.includes(tempArr[0][0]) && !ifFuncPackKeys.includes(tempArr[0][0]))
         {
           // console.log('2');
           if (Array.isArray(tempArr[index][length - 1]))
