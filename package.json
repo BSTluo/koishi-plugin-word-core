@@ -16,6 +16,7 @@
   ],
   "peerDependencies": {
     "@koishijs/plugin-console": "^5.29.2",
+    "blockly": "^11.1.1",
     "koishi": "^4.17.9"
   },
   "koishi": {
@@ -38,11 +39,13 @@
   },
   "devDependencies": {
     "@koishijs/client": "^5.29.2",
+    "blockly": "^11.1.1",
     "bootstrap-icons": "^1.11.3",
     "form-data": "^4.0.0"
   },
   "dependencies": {
     "axios": "^1.7.2",
+    "blockly": "^11.1.1",
     "bootstrap-icons": "^1.11.3",
     "form-data": "^4.0.0"
   }
