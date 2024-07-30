@@ -2,8 +2,14 @@
   <k-layout>
     <div id="pageContainer">
       <div id="outputPane">
-        <pre id="generatedCode"><code></code></pre>
-        <div id="output"></div>
+        <div class="outCode">
+          <div class="wordMenuTitle">编写结果</div>
+          <pre id="generatedCode"><code></code></pre>
+        </div>
+        <div id="output">
+          <div class="wordMenuTitle">操作面板</div>
+          <div class="wordMenu"></div>
+        </div>
       </div>
       <div id="blocklyDiv"></div>
     </div>
@@ -53,6 +59,7 @@ export default {
       Blockly.common.defineBlocks(blocks);
 
       const codeDiv = document.getElementById('generatedCode').firstChild;
+      console.log(codeDiv);
       const blocklyDiv = document.getElementById('blocklyDiv');
       if (!this.theme)
       {
@@ -108,38 +115,69 @@ pre,
 code {
   margin: 0;
   overflow: auto;
-
-  caret-color: var(--fg1);
-  color: var(--fg1);
-  box-shadow: var(--k-card-shadow);
 }
 
 #pageContainer {
   display: flex;
   width: 100%;
   height: 100%;
+
+  #outputPane {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-around;
+    width: 30%;
+    overflow: auto;
+
+    .outCode {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-around;
+
+      height: 49%;
+      width: 95%;
+      border: 1px solid var(--k-color-divider);
+      background-color: var(--k-status-bg, var(--k-side-bg));
+
+      #generatedCode {
+        height: 92%;
+        width: 100%;
+      }
+    }
+
+    #output {
+      height: 49%;
+      width: 95%;
+      border: 1px solid var(--k-color-divider);
+      background-color: var(--k-status-bg, var(--k-side-bg));
+
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-around;
+
+      .wordMenu {
+        height: 92%;
+        width: 100%;
+      }
+    }
+  }
+
+  #blocklyDiv {
+    flex-basis: 100%;
+    height: 100%;
+    min-width: 600px;
+  }
 }
 
-#blocklyDiv {
-  flex-basis: 100%;
-  height: 100%;
-  min-width: 600px;
-}
-
-#outputPane {
+.wordMenuTitle {
+  height: 10%;
+  width: 95%;
   display: flex;
-  flex-direction: column;
-  width: 30%;
-  overflow: auto;
-}
-
-#generatedCode {
-  height: 50%;
-  width: 100%;
-  background-color: var(--k-card-bg);
-}
-
-#output {
-  height: 50%;
+  align-items: center;
+  text-align: center;
+  font-size: 2rem;
 }
 </style>
