@@ -7,7 +7,7 @@ export const permission1 = {
   'tooltip': '判断用户是否满足权限',
   'colour': 85,
   'output': 'String',
-  'message0': '触发者满足：%2 权限时，继续运行',
+  'message0': '触发者满足：%1 权限时，继续运行',
   'args0': [
     {
       'type': 'input_value',
@@ -21,7 +21,7 @@ export const permission2 = {
   'tooltip': '判断用户是否满足权限',
   'colour': 85,
   'output': 'String',
-  'message0': '触发者满足：%2 权限时，执行 %3',
+  'message0': '触发者满足：%1 权限时，执行 %2',
   'args0': [
     {
       'type': 'input_value',

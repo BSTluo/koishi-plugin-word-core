@@ -40,7 +40,7 @@ export const waitInput1Tools = {
     kind: 'block',
     type: 'waitInput1',
     inputs: {
-        question: {
+        value: {
             "shadow": {
                 "type": "text",
                 "fields": {

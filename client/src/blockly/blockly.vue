@@ -26,26 +26,47 @@ export default {
     return {
       // Blockly 工作区实例
       workspace: null,
-      // 工具箱配置
-      toolbox: {},
       // Blockly 生成的代码
-      code: null
+      code: null,
+      // 定义主题
+      theme: null
     };
   },
   methods: {
     // 初始化 Blockly
+    initTheme()
+    {
+      this.theme = Blockly.Theme.defineTheme('night', {
+        'componentStyles': {
+          'workspaceBackgroundColour': '#131313',   // 工作区背景色
+          'toolboxBackgroundColour': '#2f2e2b',     // 工具箱背景色
+          'toolboxForegroundColour': '#f5f5f5',     // 工具箱类别文字颜色
+          'flyoutBackgroundColour': '#252526',      // 弹出背景颜色
+          'flyoutForegroundColour': '#333',         // 弹出标签文本颜色
+          'flyoutOpacity': 1,                       // 弹出不透明度
+
+        }
+      });
+    },
     initBlockly()
     {
       Blockly.common.defineBlocks(blocks);
 
       const codeDiv = document.getElementById('generatedCode').firstChild;
       const blocklyDiv = document.getElementById('blocklyDiv');
-      this.workspace = Blockly.inject(blocklyDiv, { toolbox });
+      if (!this.theme)
+      {
+        this.workspace = Blockly.inject(blocklyDiv, { toolbox: toolbox });
+      } else
+      {
+        this.workspace = Blockly.inject(blocklyDiv, { toolbox: toolbox, theme: this.theme });
+      }
+
 
       const runCode = () =>
       {
-        const code = wordGenerator.workspaceToCode(this.workspace);
-        codeDiv.innerText = code;
+        this.code = wordGenerator.workspaceToCode(this.workspace);
+        codeDiv.innerText = this.code;
       };
 
       load(this.workspace);
@@ -66,17 +87,17 @@ export default {
         }
         runCode();
       });
-
     }
   },
   mounted()
   {
+    this.initTheme();
     this.initBlockly();
   }
 };
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 k-layout {
   margin: 0;
   max-width: 100%;
@@ -87,7 +108,7 @@ pre,
 code {
   margin: 0;
   overflow: auto;
-  
+
   caret-color: var(--fg1);
   color: var(--fg1);
   box-shadow: var(--k-card-shadow);
