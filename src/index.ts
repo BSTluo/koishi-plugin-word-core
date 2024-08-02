@@ -1,14 +1,14 @@
 import { Context, Logger, Schema, h } from 'koishi';
-import { word } from './src/word';
+import { word } from './core/word';
 import { resolve } from 'path';
 import { } from '@koishijs/plugin-console';
 // import { } from '@koishijs/plugin-notifier';
 
-import * as core from './src/index';
+import * as core from './core/index';
 
 export const name = 'word-core';
 
-export * from './src/word';
+export * from './core/word';
 
 export interface Config
 {
@@ -33,6 +33,11 @@ export const logger = new Logger('Word-core');
 // TypeScript 用户需要进行类型合并
 export const apply = async (ctx: Context, config: Config) =>
 {
+  ctx.on('command/before-execute', argv =>
+  {
+
+  });
+
   ctx.plugin(core);
   ctx.plugin(word, { searchEndpoint: config.searchEndpoint });
 
@@ -454,7 +459,7 @@ export const apply = async (ctx: Context, config: Config) =>
       await ctx.word.driver.start(forkSession, (str) =>
       {
         if (!str) { return; }
-        console.log(str)
+        console.log(str);
         forkSession.send(str);
       });
 
@@ -542,6 +547,7 @@ declare module '@koishijs/plugin-console' {
     'getWord'(name: string): Promise<"获取的插件格式异常" | "词库已存在，无法安装" | "ok">;
     'getPluginServerUrl'(): string;
     'getWordList'(): Promise<string[]>;
+    'sandbox-send'(msg: string, event: any): Promise<string>;
   }
 }
 
