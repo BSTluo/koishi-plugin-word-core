@@ -11,8 +11,23 @@
           </div>
         </div>
         <div id="output">
-          <div class="wordMenuTitle">操作面板</div>
-          <div class="wordMenu"></div>
+          <div class="wordMenuTitle">沙盒</div>
+          <div class="wordMenu">
+            <div class="msgBox">
+              <div class="msgItem">
+                <div class="msg">
+                  aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+                </div>
+              </div>
+              <!-- <div class="msg" v-for="(index, key) of 100" :key="i">
+                <div>{{ `${index} ${key}` }}</div>
+              </div> -->
+            </div>
+            <div class="sendBox">
+
+            </div>
+          </div>
+
         </div>
       </div>
       <div id="blocklyDiv"></div>
@@ -183,15 +198,58 @@ k-layout {
       width: 95%;
       border: 1px solid var(--k-color-divider);
       background-color: var(--k-status-bg, var(--k-side-bg));
+      overflow: hidden;
 
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: space-around;
 
+      .wordMenuTitle {
+        height: 7%;
+        width: 95%;
+        display: flex;
+        align-items: center;
+        text-align: center;
+        font-size: 2rem;
+      }
+
       .wordMenu {
-        height: 92%;
+        height: 93%;
         width: 100%;
+        display: flex;
+        flex-direction: column;
+
+        .msgBox {
+          width: 100%;
+          height: 93%;
+          display: flex;
+          flex-direction: column;
+          overflow-y: auto;
+
+          .msgItem {
+            height: 7%;
+            width: max-content;
+            display: flex;
+            border: 2px solid var(--k-color-divider);
+            border-radius: 10px;
+
+            .msg {
+              display: flex;
+              justify-content: center;
+              align-items: center;
+              margin: 10px;
+              word-break: break-word;
+            }
+          }
+        }
+
+        .sendBox {
+          width: 100%;
+          height: 7%;
+          display: flex;
+          flex-direction: row;
+        }
       }
     }
 
