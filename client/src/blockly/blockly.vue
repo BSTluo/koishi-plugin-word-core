@@ -5,6 +5,10 @@
         <div class="outCode">
           <div class="wordMenuTitle">编写结果</div>
           <pre id="generatedCode"><code></code></pre>
+          <div class="menuButton">
+            <div class="copyButton">复制</div>
+            <div class="runButton">运行</div>
+          </div>
         </div>
         <div id="output">
           <div class="wordMenuTitle">操作面板</div>
@@ -27,8 +31,7 @@ import { wordGenerator } from './generators/word';
 
 export default {
   name: 'word-blockly',
-  data()
-  {
+  data() {
     return {
       // Blockly 工作区实例
       workspace: null,
@@ -40,8 +43,7 @@ export default {
   },
   methods: {
     // 初始化 Blockly
-    initTheme()
-    {
+    initTheme() {
       this.theme = Blockly.Theme.defineTheme('night', {
         'componentStyles': {
           'workspaceBackgroundColour': '#131313',   // 工作区背景色
@@ -54,24 +56,20 @@ export default {
         }
       });
     },
-    initBlockly()
-    {
+    initBlockly() {
       Blockly.common.defineBlocks(blocks);
 
       const codeDiv = document.getElementById('generatedCode').firstChild;
       console.log(codeDiv);
       const blocklyDiv = document.getElementById('blocklyDiv');
-      if (!this.theme)
-      {
+      if (!this.theme) {
         this.workspace = Blockly.inject(blocklyDiv, { toolbox: toolbox });
-      } else
-      {
+      } else {
         this.workspace = Blockly.inject(blocklyDiv, { toolbox: toolbox, theme: this.theme });
       }
 
 
-      const runCode = () =>
-      {
+      const runCode = () => {
         this.code = wordGenerator.workspaceToCode(this.workspace);
         codeDiv.innerText = this.code;
       };
@@ -79,25 +77,21 @@ export default {
       load(this.workspace);
       runCode();
 
-      this.workspace.addChangeListener((e) =>
-      {
+      this.workspace.addChangeListener((e) => {
         if (e.isUiEvent) return;
         save(this.workspace);
       });
 
-      this.workspace.addChangeListener((e) =>
-      {
+      this.workspace.addChangeListener((e) => {
         if (e.isUiEvent || e.type == Blockly.Events.FINISHED_LOADING ||
-          this.workspace.isDragging())
-        {
+          this.workspace.isDragging()) {
           return;
         }
         runCode();
       });
     }
   },
-  mounted()
-  {
+  mounted() {
     this.initTheme();
     this.initBlockly();
   }
@@ -109,12 +103,6 @@ k-layout {
   margin: 0;
   max-width: 100%;
   max-height: 100%;
-}
-
-pre,
-code {
-  margin: 0;
-  overflow: auto;
 }
 
 #pageContainer {
@@ -135,20 +123,80 @@ code {
       flex-direction: column;
       align-items: center;
       justify-content: space-around;
-
-      height: 49%;
+      height: 29%;
       width: 95%;
       border: 1px solid var(--k-color-divider);
       background-color: var(--k-status-bg, var(--k-side-bg));
 
+      .wordMenuTitle {
+        height: 15%;
+        width: 95%;
+        display: flex;
+        align-items: center;
+        text-align: center;
+        font-size: 2rem;
+      }
+
       #generatedCode {
+        top: 3%;
+        height: 67%;
+        width: 100%;
+
+        pre,
+        code {
+          overflow: auto;
+        }
+      }
+
+      .menuButton {
+        height: 15%;
+        width: 100%;
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        flex-direction: row;
+
+        .copyButton {
+          height: 100%;
+          width: 50%;
+          border: 1px solid var(--k-color-divider);
+          display: flex;
+          justify-content: space-around;
+          align-items: center;
+          flex-direction: row;
+        }
+
+        .runButton {
+          height: 100%;
+          width: 50%;
+          border: 1px solid var(--k-color-divider);
+          display: flex;
+          justify-content: space-around;
+          align-items: center;
+          flex-direction: row;
+        }
+      }
+    }
+
+    #output {
+      height: 69%;
+      width: 95%;
+      border: 1px solid var(--k-color-divider);
+      background-color: var(--k-status-bg, var(--k-side-bg));
+
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-around;
+
+      .wordMenu {
         height: 92%;
         width: 100%;
       }
     }
 
     #output {
-      height: 49%;
+      height: 69%;
       width: 95%;
       border: 1px solid var(--k-color-divider);
       background-color: var(--k-status-bg, var(--k-side-bg));
@@ -170,14 +218,5 @@ code {
     height: 100%;
     min-width: 600px;
   }
-}
-
-.wordMenuTitle {
-  height: 10%;
-  width: 95%;
-  display: flex;
-  align-items: center;
-  text-align: center;
-  font-size: 2rem;
 }
 </style>
