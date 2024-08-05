@@ -175,9 +175,6 @@
           caret-color: var(--fg1);
           color: var(--fg1);
           box-shadow: var(--k-card-shadow);
-
-
-
           padding: 12px 0px 12px 0px;
 
           &::placeholder {

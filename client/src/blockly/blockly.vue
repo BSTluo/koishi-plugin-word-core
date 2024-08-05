@@ -14,17 +14,25 @@
           <div class="wordMenuTitle">沙盒</div>
           <div class="wordMenu">
             <div class="msgBox">
-              <div class="msgItem">
-                <div class="msg">
-                  aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+              <div class="msgItemBox">
+                <div class="msgItem">
+                  <div class="msg">
+                    道爷我特么成辣！
+                  </div>
                 </div>
               </div>
+
               <!-- <div class="msg" v-for="(index, key) of 100" :key="i">
                 <div>{{ `${index} ${key}` }}</div>
               </div> -->
             </div>
             <div class="sendBox">
-
+              <div class="sendInputBox">
+                <input class="sendInput"></input>
+              </div>
+              <div class="sendButtonBox">
+                <div class="sendButton"><i class="bi bi-cursor"></i></div>
+              </div>
             </div>
           </div>
 
@@ -36,6 +44,7 @@
 </template>
 
 <script>
+import "bootstrap-icons/font/bootstrap-icons.css";
 // 引入 Blockly
 import * as Blockly from 'blockly';
 import { blocks } from './blocks/index';
@@ -46,7 +55,8 @@ import { wordGenerator } from './generators/word';
 
 export default {
   name: 'word-blockly',
-  data() {
+  data()
+  {
     return {
       // Blockly 工作区实例
       workspace: null,
@@ -58,7 +68,8 @@ export default {
   },
   methods: {
     // 初始化 Blockly
-    initTheme() {
+    initTheme()
+    {
       this.theme = Blockly.Theme.defineTheme('night', {
         'componentStyles': {
           'workspaceBackgroundColour': '#131313',   // 工作区背景色
@@ -71,20 +82,24 @@ export default {
         }
       });
     },
-    initBlockly() {
+    initBlockly()
+    {
       Blockly.common.defineBlocks(blocks);
 
       const codeDiv = document.getElementById('generatedCode').firstChild;
       console.log(codeDiv);
       const blocklyDiv = document.getElementById('blocklyDiv');
-      if (!this.theme) {
+      if (!this.theme)
+      {
         this.workspace = Blockly.inject(blocklyDiv, { toolbox: toolbox });
-      } else {
+      } else
+      {
         this.workspace = Blockly.inject(blocklyDiv, { toolbox: toolbox, theme: this.theme });
       }
 
 
-      const runCode = () => {
+      const runCode = () =>
+      {
         this.code = wordGenerator.workspaceToCode(this.workspace);
         codeDiv.innerText = this.code;
       };
@@ -92,21 +107,25 @@ export default {
       load(this.workspace);
       runCode();
 
-      this.workspace.addChangeListener((e) => {
+      this.workspace.addChangeListener((e) =>
+      {
         if (e.isUiEvent) return;
         save(this.workspace);
       });
 
-      this.workspace.addChangeListener((e) => {
+      this.workspace.addChangeListener((e) =>
+      {
         if (e.isUiEvent || e.type == Blockly.Events.FINISHED_LOADING ||
-          this.workspace.isDragging()) {
+          this.workspace.isDragging())
+        {
           return;
         }
         runCode();
       });
     }
   },
-  mounted() {
+  mounted()
+  {
     this.initTheme();
     this.initBlockly();
   }
@@ -221,34 +240,100 @@ k-layout {
         flex-direction: column;
 
         .msgBox {
-          width: 100%;
+          width: 96%;
           height: 93%;
           display: flex;
           flex-direction: column;
           overflow-y: auto;
+          margin-left: 2%;
+          margin-right: 2%;
 
-          .msgItem {
-            height: 7%;
-            width: max-content;
+          .msgItemBox {
             display: flex;
-            border: 2px solid var(--k-color-divider);
-            border-radius: 10px;
+            width: 100%;
 
-            .msg {
+            .msgItem {
+              width: max-content;
+              max-width: 90%;
               display: flex;
+              border: 2px solid var(--k-color-divider);
+              border-radius: 10px;
               justify-content: center;
               align-items: center;
-              margin: 10px;
-              word-break: break-word;
+
+              .msg {
+                margin: 10px;
+                word-break: break-all;
+              }
             }
           }
         }
 
         .sendBox {
           width: 100%;
-          height: 7%;
+          height: 8%;
           display: flex;
           flex-direction: row;
+          align-items: center;
+
+          .sendInputBox {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            .sendInput {
+              width: 90%;
+              height: 70%;
+              background: var(--k-card-bg);
+              border-radius: 8px;
+              display: flex;
+              flex-direction: column;
+              align-items: center;
+              justify-content: center;
+              caret-color: var(--fg1);
+              color: var(--fg1);
+              box-shadow: var(--k-card-shadow);
+              border: 2px solid var(--k-color-divider);
+
+              &::placeholder {
+                color: #67676C;
+                font-size: 14px;
+                padding: 0 0 0 4px;
+              }
+
+              &:focus {
+                outline: 2px solid #3b82f6;
+              }
+            }
+          }
+
+          .sendButtonBox {
+            height: 5vh;
+            width: 5vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            margin-right: 10px;
+
+            .sendButton {
+              height: 90%;
+              width: 90%;
+              display: flex;
+              justify-content: center;
+              align-items: center;
+
+              i {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                color: var(--fg1);
+                font-size: 1.4rem;
+              }
+            }
+          }
         }
       }
     }
