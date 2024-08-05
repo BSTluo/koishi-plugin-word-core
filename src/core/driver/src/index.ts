@@ -87,7 +87,7 @@ export const parsStart = async (questionList: string, wordData: wordSaveData, wo
   // 你(+:xx:xx)好
   // [你,[+,xx,xx],好]
   const tree = getTree(questionList);
-  console.log(tree);
+  // console.log(tree);
 
   if (!session.content) { return null; }
 
@@ -359,7 +359,7 @@ const parseTrees = async (word: word, inData: any[], session: Session | wordData
         if (Array.isArray(overPar))
         {
           const a = await par(overPar, JSON.parse(JSON.stringify(userDataTemp)));
-          console.log(a);
+          // console.log(a);
           if (a)
           {
             return { message: a.message, data: a.data };

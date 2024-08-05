@@ -1,7 +1,7 @@
 import { Context, Logger, Schema, h } from 'koishi';
 import { word } from './core/word';
 import { resolve } from 'path';
-import { } from '@koishijs/plugin-console';
+import { Client, DataService } from '@koishijs/plugin-console';
 // import { } from '@koishijs/plugin-notifier';
 
 import * as core from './core/index';
@@ -487,18 +487,16 @@ export const apply = async (ctx: Context, config: Config) => {
       const { idList } = ctx.word.cache.getCache();
       return idList;
     });
+  });
 
-    const getWebuiBot = () => {
-      return new wordBot(ctx, {})
-    }
 
-    ctx.on('message', a => {
-      const bot = getWebuiBot();
-      if (!a.content) { return }
-      if (a.selfId == 'word-core') { return }
-      bot.createSession(a.content);
-      return '';
-    })
+  const getWebuiBot = () => {
+    return new wordBot(ctx, {})
+  }
+
+  ctx.console.addListener('sandbox-send', async (msg: string) => {
+    const bot = getWebuiBot();
+    bot.createSession(msg);
   });
 };
 
@@ -508,7 +506,7 @@ declare module '@koishijs/plugin-console' {
     'getWord'(name: string): Promise<"获取的插件格式异常" | "词库已存在，无法安装" | "ok">;
     'getPluginServerUrl'(): string;
     'getWordList'(): Promise<string[]>;
-    'sandbox-send'(msg: string, event: any): Promise<string>;
+    'sandbox-send'(msg: string): void;
   }
 }
 

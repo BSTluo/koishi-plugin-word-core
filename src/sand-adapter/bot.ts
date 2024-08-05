@@ -23,20 +23,38 @@ export class wordBot<C extends Context> extends Bot<C> {
   }
 
   async sendMessage(channelId: string, content: Fragment, guildId?: string, options?: SendOptions): Promise<string[]> {
-    console.log('send message', channelId, content, guildId, options)
+    // 先暂时不解析了，先这样吧
+    // 希望没有at之类的是
+    // console.log('send message', channelId, content, guildId, options)
+    const ctx = this.ctx as Context
+    // ctx.emit('word-sandbox-request', content);
+    ctx.console.broadcast(
+      'word-sanbox-request',
+      content
+    )
+    // this.client.send({
+    //   type: 'word-sanbox-request',
+    //   body: content
+    // });
+
     return []
   }
 
   async sendPrivateMessage(userId: string, content: Fragment, guildId?: string, options?: SendOptions): Promise<string[]> {
-    console.log('send private message', userId, content, guildId, options)
+    // console.log('send private message', userId, content, guildId, options)
     return []
   }
 }
 
 export namespace wordBot {
   export interface Config {
-
   }
 }
 
 export default wordBot;
+
+// declare module 'koishi' {
+//   interface Events {
+//     'word-sandbox-request'(content: Fragment): void;
+//   }
+// }
