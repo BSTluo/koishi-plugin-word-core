@@ -3,7 +3,7 @@
     <div id="pageContainer">
       <div id="outputPane">
         <div class="outCode">
-          <div class="wordMenuTitle">编写结果</div>
+          <div class="wordMenuTitle">工作区运行结果</div>
           <pre id="generatedCode"><code></code></pre>
           <div class="menuButton">
             <div class="copyButton" @click="copy()">粘贴到下方输入框</div>
@@ -11,7 +11,7 @@
           </div>
         </div>
         <div id="output">
-          <div class="wordMenuTitle">沙盒</div>
+          <div class="wordMenuTitle">测试沙盒</div>
           <div class="wordMenu">
             <div class="msgBoxs">
               <div class="msgBox" v-for="(item, index) of msgData">
@@ -28,7 +28,7 @@
             </div>
             <div class="sendBox">
               <div class="sendInputBox">
-                <input class="sendInput"></input>
+                <input class="sendInput" placeholder="输入调试的指令吧~~"></input>
               </div>
               <div class="sendButtonBox" @click="sendMessage()">
                 <div class="sendButton"><i class="bi bi-cursor"></i></div>
@@ -52,102 +52,157 @@ import { save, load } from './serialization';
 import { toolbox } from './toolbox';
 // import './index.css';
 import { wordGenerator } from './generators/word';
-import { receive, send } from "@koishijs/client";
+import { receive, send, useContext } from "@koishijs/client";
+
 export default {
   name: 'word-blockly',
-  data() {
+  data()
+  {
     return {
       // Blockly 工作区实例
       workspace: null,
       // Blockly 生成的代码
       code: null,
       // 定义主题
-      theme: null,
+      nightTheme: null,
+      lightTheme: null,
       msgData: []
     };
   },
   methods: {
     // 初始化 Blockly
-    initTheme() {
-      this.theme = Blockly.Theme.defineTheme('night', {
-        'componentStyles': {
-          'workspaceBackgroundColour': '#131313',   // 工作区背景色
-          'toolboxBackgroundColour': '#2f2e2b',     // 工具箱背景色
-          'toolboxForegroundColour': '#f5f5f5',     // 工具箱类别文字颜色
-          'flyoutBackgroundColour': '#252526',      // 弹出背景颜色
-          'flyoutForegroundColour': '#333',         // 弹出标签文本颜色
-          'flyoutOpacity': 1,                       // 弹出不透明度
-        }
-      });
+    initTheme(isDark)
+    {
+      if (isDark)
+      {
+        this.workspace.setTheme(this.nightTheme);
+      } else
+      {
+
+        this.workspace.setTheme(this.lightTheme);
+      }
+
     },
-    initBlockly() {
+    initBlockly()
+    {
       Blockly.common.defineBlocks(blocks);
       const codeDiv = document.getElementById('generatedCode').firstChild;
 
       const blocklyDiv = document.getElementById('blocklyDiv');
-      if (!this.theme) {
-        this.workspace = Blockly.inject(blocklyDiv, { toolbox: toolbox });
-      } else {
-        this.workspace = Blockly.inject(blocklyDiv, { toolbox: toolbox, theme: this.theme });
-      }
 
+      this.workspace = Blockly.inject(blocklyDiv, { toolbox: toolbox });
 
-      const runCode = () => {
+      const runCode = () =>
+      {
         this.code = wordGenerator.workspaceToCode(this.workspace);
         codeDiv.innerText = this.code;
       };
 
-      load(this.workspace);
+      // load(this.workspace);
       runCode();
 
-      this.workspace.addChangeListener((e) => {
+      this.workspace.addChangeListener((e) =>
+      {
         if (e.isUiEvent) return;
-        save(this.workspace);
+        // save(this.workspace);
       });
 
-      this.workspace.addChangeListener((e) => {
+      this.workspace.addChangeListener((e) =>
+      {
         if (e.isUiEvent || e.type == Blockly.Events.FINISHED_LOADING ||
-          this.workspace.isDragging()) {
+          this.workspace.isDragging())
+        {
           return;
         }
         runCode();
       });
     },
     // 发送信息按钮
-    sendMessage() {
-      const msgDom = document.getElementsByClassName('sendInput')[0]
+    sendMessage()
+    {
+      const msgDom = document.getElementsByClassName('sendInput')[0];
 
-      if (!msgDom.value) { return }
+      if (!msgDom.value) { return; }
 
       this.msgData.push({
         user: 'user',
         msg: msgDom.value
-      })
-      send('sandbox-send', msgDom.value)
+      });
+      send('sandbox-send', msgDom.value);
 
-      msgDom.value = ''
+      msgDom.value = '';
 
     },
-    copy() {
-      const msgDom = document.getElementsByClassName('sendInput')[0]
-      msgDom.value = this.code
+    copy()
+    {
+      const msgDom = document.getElementsByClassName('sendInput')[0];
+      msgDom.value = this.code;
     },
-    run() {
-      this.copy()
-      this.sendMessage()
+    run()
+    {
+      this.copy();
+      this.sendMessage();
     }
   },
-  mounted() {
-    this.initTheme();
+  mounted()
+  {
+    this.nightTheme = Blockly.Theme.defineTheme('night', {
+      'componentStyles': {
+        'workspaceBackgroundColour': '#131313',   // 工作区背景色
+        'toolboxBackgroundColour': '#2f2e2b',     // 工具箱背景色
+        'toolboxForegroundColour': '#f5f5f5',     // 工具箱类别文字颜色
+        'flyoutBackgroundColour': '#252526',      // 弹出背景颜色
+        'flyoutForegroundColour': '#333',         // 弹出标签文本颜色
+        'flyoutOpacity': 1,                       // 弹出不透明度
+      }
+    });
+
+    this.lightTheme = Blockly.Theme.defineTheme('light', {
+      'componentStyles': {
+        'workspaceBackgroundColour': '#e7e7e7',   // 工作区背景色
+        'toolboxBackgroundColour': '#b7b7b7',     // 工具箱背景色
+        'toolboxForegroundColour': '#000000',     // 工具箱类别文字颜色
+        'flyoutBackgroundColour': '#a6a6a6',      // 弹出背景颜色
+        'flyoutForegroundColour': '#333',         // 弹出标签文本颜色
+        'flyoutOpacity': 1,                       // 弹出不透明度
+      }
+    });
+
     this.initBlockly();
-    receive('word-sanbox-request', dataTemp=>{
+    this.initTheme(window.document.documentElement.classList.contains('dark'));
+
+    receive('word-sanbox-request', dataTemp =>
+    {
       let data = dataTemp.replace(/\n/g, '<br>').replace(/\s/g, '&nbsp;');
 
       this.msgData.push({
         user: 'bot',
         msg: data
-      })
-    })
+      });
+    });
+
+    const observer = new MutationObserver((mutationsList) =>
+    {
+      for (let mutation of mutationsList)
+      {
+        if (mutation.type === 'attributes' && mutation.attributeName === 'class')
+        {
+
+          const isDark = window.document.documentElement.classList.contains('dark');
+          this.initTheme(isDark);
+        }
+      }
+    });
+
+    observer.observe(window.document.documentElement, { attributes: true });
+
+    document.getElementsByClassName('sendInput')[0].addEventListener("keyup", event =>
+    {
+      if (event.key === "Enter")
+      {
+        this.sendMessage()
+      }
+    });
   }
 };
 </script>
@@ -188,7 +243,7 @@ k-layout {
         display: flex;
         align-items: center;
         text-align: center;
-        font-size: 2rem;
+        font-size: 1.3rem;
       }
 
       #generatedCode {
@@ -252,7 +307,7 @@ k-layout {
         display: flex;
         align-items: center;
         text-align: center;
-        font-size: 2rem;
+        font-size: 1.3rem;
       }
 
       .wordMenu {
