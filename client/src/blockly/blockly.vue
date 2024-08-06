@@ -17,8 +17,7 @@
               <div class="msgBox" v-for="(item, index) of msgData">
                 <div class="msgItemBox" :style="{ justifyContent: item.user == 'bot' ? 'flex-start' : 'flex-end' }">
                   <div class="msgItem">
-                    <div class="msg">
-                      {{ item.msg }}
+                    <div class="msg" v-html="item.msg">
                     </div>
                   </div>
                 </div>
@@ -53,8 +52,7 @@ import { save, load } from './serialization';
 import { toolbox } from './toolbox';
 // import './index.css';
 import { wordGenerator } from './generators/word';
-import { receive, send, useContext } from "@koishijs/client";
-
+import { receive, send } from "@koishijs/client";
 export default {
   name: 'word-blockly',
   data() {
@@ -120,6 +118,7 @@ export default {
       const msgDom = document.getElementsByClassName('sendInput')[0]
 
       if (!msgDom.value) { return }
+
       this.msgData.push({
         user: 'user',
         msg: msgDom.value
@@ -141,7 +140,9 @@ export default {
   mounted() {
     this.initTheme();
     this.initBlockly();
-    receive('word-sanbox-request', data=>{
+    receive('word-sanbox-request', dataTemp=>{
+      let data = dataTemp.replace(/\n/g, '<br>').replace(/\s/g, '&nbsp;');
+
       this.msgData.push({
         user: 'bot',
         msg: data

@@ -23,7 +23,7 @@ export const inject = {
 };
 
 export const Config: Schema<Config> = Schema.object({
-  masterID: Schema.array(String).description('管理员的唯一标识'),
+  masterID: Schema.array(String).description('管理员的唯一标识').default(['word-user']),
   searchEndpoint: Schema.string().description('词库插件市场后端地址').default('https://wplugin.reifuu.icu'),
   telemetry: Schema.boolean().description('告诉作者我正在使用词库~\n\n（求求大家开启这个选项！这对作者真的很重要！）').default(true)
 });
