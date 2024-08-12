@@ -30,11 +30,9 @@ export const Config: Schema<Config> = Schema.object({
 
 export const logger = new Logger('Word-core');
 
+export const usage = '词库的教程文档在这里：https://docs.reifuu.icu/docs/word-core-3.0/00readme/'
 // TypeScript 用户需要进行类型合并
 export const apply = async (ctx: Context, config: Config) => {
-  ctx.on('command/before-execute', argv => {
-
-  });
 
   ctx.plugin(core);
   ctx.plugin(word, { searchEndpoint: config.searchEndpoint });

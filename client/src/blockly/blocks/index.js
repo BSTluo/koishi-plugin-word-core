@@ -26,6 +26,7 @@ import { leaderboard } from './leaderboard';
 import { video } from './video';
 import { music } from './music';
 import { kick1, kick2 } from './kick';
+import { inputAt } from './inputAt';
 
 export const blocks = Blockly.common.createBlockDefinitionsFromJsonArray([
     addItem1,
@@ -63,5 +64,6 @@ export const blocks = Blockly.common.createBlockDefinitionsFromJsonArray([
     video,
     music,
     kick1,
-    kick2
+    kick2,
+    inputAt
 ]);

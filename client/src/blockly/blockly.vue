@@ -132,6 +132,9 @@ export default {
 
       msgDom.value = '';
 
+      const chatContainer = document.getElementsByClassName("msgBoxs")[0];
+      chatContainer.scrollTop = chatContainer.scrollHeight;
+
     },
     copy()
     {
@@ -179,6 +182,12 @@ export default {
         user: 'bot',
         msg: data
       });
+
+      setTimeout(() =>
+      {
+        const chatContainer = document.getElementsByClassName("msgBoxs")[0];
+        chatContainer.scrollTop = chatContainer.scrollHeight;
+      }, 10);
     });
 
     const observer = new MutationObserver((mutationsList) =>
@@ -200,7 +209,7 @@ export default {
     {
       if (event.key === "Enter")
       {
-        this.sendMessage()
+        this.sendMessage();
       }
     });
   }
@@ -322,8 +331,8 @@ k-layout {
           display: flex;
           flex-direction: column;
           overflow-y: auto;
-          margin-left: 2%;
-          margin-right: 2%;
+          scroll-behavior: smooth;
+          margin: 2%;
 
           .msgBox {
             width: 100%;

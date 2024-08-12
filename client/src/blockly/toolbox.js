@@ -29,6 +29,7 @@ import { leaderboardTools } from "./blocks/leaderboard";
 import { videoTools } from "./blocks/video";
 import { musicTools } from "./blocks/music";
 import { kick1Tools, kick2Tools } from "./blocks/kick";
+import { inputAtTools } from "./blocks/inputAt";
 
 /*
 This toolbox contains nearly every single built-in block that Blockly offers,
@@ -46,7 +47,8 @@ export const toolbox = {
       'name': '输入匹配',
       'categorystyle': 'logic_category',
       'contents': [
-        inputNumberTools
+        inputNumberTools,
+        inputAtTools
       ]
     },
     {
