@@ -32,8 +32,9 @@ export const Config: Schema<Config> = Schema.object({
 export const logger = new Logger('Word-core');
 
 export const usage = `词库的教程文档在这里：https://docs.reifuu.icu/docs/word-core-3.0/00readme/
-
-此版本修复了一个bug，暂未进行测试，如果发现对以往的命令无法正常解析的时候！请在论坛或者发送邮件给我，并且恢复上个版本！邮箱：1946831552@qq.com`;
+此版本修复了一个bug，暂未进行测试，如果发现对以往的命令无法正常解析的时候！请在论坛或者发送邮件给我，并且恢复v26版本！
+另外词库暂时会有污染上下文的问题出现，这不是预期的！正在等待官方修复！应该会很快！
+邮箱：1946831552@qq.com`;
 
 // TypeScript 用户需要进行类型合并
 export const apply = async (ctx: Context, config: Config) =>
@@ -455,11 +456,13 @@ export const apply = async (ctx: Context, config: Config) =>
       if (session.userId == session.bot.user.id || session.userId == session.bot.selfId) { return; }
       const atBot = `<at id="${session.bot.selfId}"/> `;
 
-      const forkSession = session.bot.session(JSON.parse(JSON.stringify(session.event)));
+      const forkSession = session.bot.session(session.event);
+
       if (forkSession.content?.startsWith(atBot)) { forkSession.content = session.content.replace(atBot, ''); }
 
       await ctx.word.driver.start(forkSession, (str) =>
       {
+        console.log(str)
         if (!str) { return; }
         // console.log(str);
         forkSession.send(str);

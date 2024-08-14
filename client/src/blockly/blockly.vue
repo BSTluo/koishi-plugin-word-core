@@ -4,7 +4,7 @@
       <div id="outputPane">
         <div class="outCode">
           <div class="wordMenuTitle">工作区运行结果</div>
-          <pre id="generatedCode"><code></code></pre>
+          <div class="generatedCode"></div>
           <div class="menuButton">
             <div class="copyButton" @click="copy()">粘贴到下方输入框</div>
             <div class="runButton" @click="run()">运行</div>
@@ -56,8 +56,7 @@ import { receive, send, useContext } from "@koishijs/client";
 
 export default {
   name: 'word-blockly',
-  data()
-  {
+  data() {
     return {
       // Blockly 工作区实例
       workspace: null,
@@ -71,29 +70,24 @@ export default {
   },
   methods: {
     // 初始化 Blockly
-    initTheme(isDark)
-    {
-      if (isDark)
-      {
+    initTheme(isDark) {
+      if (isDark) {
         this.workspace.setTheme(this.nightTheme);
-      } else
-      {
+      } else {
 
         this.workspace.setTheme(this.lightTheme);
       }
 
     },
-    initBlockly()
-    {
+    initBlockly() {
       Blockly.common.defineBlocks(blocks);
-      const codeDiv = document.getElementById('generatedCode').firstChild;
+      const codeDiv = document.getElementsByClassName('generatedCode')[0];
 
       const blocklyDiv = document.getElementById('blocklyDiv');
 
       this.workspace = Blockly.inject(blocklyDiv, { toolbox: toolbox });
 
-      const runCode = () =>
-      {
+      const runCode = () => {
         this.code = wordGenerator.workspaceToCode(this.workspace);
         codeDiv.innerText = this.code;
       };
@@ -101,25 +95,21 @@ export default {
       // load(this.workspace);
       runCode();
 
-      this.workspace.addChangeListener((e) =>
-      {
+      this.workspace.addChangeListener((e) => {
         if (e.isUiEvent) return;
         // save(this.workspace);
       });
 
-      this.workspace.addChangeListener((e) =>
-      {
+      this.workspace.addChangeListener((e) => {
         if (e.isUiEvent || e.type == Blockly.Events.FINISHED_LOADING ||
-          this.workspace.isDragging())
-        {
+          this.workspace.isDragging()) {
           return;
         }
         runCode();
       });
     },
     // 发送信息按钮
-    sendMessage()
-    {
+    sendMessage() {
       const msgDom = document.getElementsByClassName('sendInput')[0];
 
       if (!msgDom.value) { return; }
@@ -136,19 +126,16 @@ export default {
       chatContainer.scrollTop = chatContainer.scrollHeight;
 
     },
-    copy()
-    {
+    copy() {
       const msgDom = document.getElementsByClassName('sendInput')[0];
       msgDom.value = this.code;
     },
-    run()
-    {
+    run() {
       this.copy();
       this.sendMessage();
     }
   },
-  mounted()
-  {
+  mounted() {
     this.nightTheme = Blockly.Theme.defineTheme('night', {
       'componentStyles': {
         'workspaceBackgroundColour': '#131313',   // 工作区背景色
@@ -174,8 +161,7 @@ export default {
     this.initBlockly();
     this.initTheme(window.document.documentElement.classList.contains('dark'));
 
-    receive('word-sanbox-request', dataTemp =>
-    {
+    receive('word-sanbox-request', dataTemp => {
       let data = dataTemp.replace(/\n/g, '<br>').replace(/\s/g, '&nbsp;');
 
       this.msgData.push({
@@ -183,19 +169,15 @@ export default {
         msg: data
       });
 
-      setTimeout(() =>
-      {
+      setTimeout(() => {
         const chatContainer = document.getElementsByClassName("msgBoxs")[0];
         chatContainer.scrollTop = chatContainer.scrollHeight;
       }, 10);
     });
 
-    const observer = new MutationObserver((mutationsList) =>
-    {
-      for (let mutation of mutationsList)
-      {
-        if (mutation.type === 'attributes' && mutation.attributeName === 'class')
-        {
+    const observer = new MutationObserver((mutationsList) => {
+      for (let mutation of mutationsList) {
+        if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
 
           const isDark = window.document.documentElement.classList.contains('dark');
           this.initTheme(isDark);
@@ -205,10 +187,8 @@ export default {
 
     observer.observe(window.document.documentElement, { attributes: true });
 
-    document.getElementsByClassName('sendInput')[0].addEventListener("keyup", event =>
-    {
-      if (event.key === "Enter")
-      {
+    document.getElementsByClassName('sendInput')[0].addEventListener("keyup", event => {
+      if (event.key === "Enter") {
         this.sendMessage();
       }
     });
@@ -255,15 +235,13 @@ k-layout {
         font-size: 1.3rem;
       }
 
-      #generatedCode {
+      .generatedCode {
         top: 3%;
         height: 67%;
         width: 100%;
-
-        pre,
-        code {
-          overflow: auto;
-        }
+        word-break: break-all;
+        white-space: normal;
+        margin: 10px;
       }
 
       .menuButton {
