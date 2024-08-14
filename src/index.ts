@@ -1,7 +1,7 @@
 import { Context, Logger, Schema, h } from 'koishi';
 import { word } from './core/word';
 import { resolve } from 'path';
-import { Client, DataService } from '@koishijs/plugin-console';
+import { } from '@koishijs/plugin-console';
 // import { } from '@koishijs/plugin-notifier';
 
 import * as core from './core/index';
@@ -454,7 +454,8 @@ export const apply = async (ctx: Context, config: Config) =>
 
       if (session.userId == session.bot.user.id || session.userId == session.bot.selfId) { return; }
       const atBot = `<at id="${session.bot.selfId}"/> `;
-      const forkSession = session.bot.session(session.event);
+
+      const forkSession = session.bot.session(JSON.parse(JSON.stringify(session.event)));
       if (forkSession.content?.startsWith(atBot)) { forkSession.content = session.content.replace(atBot, ''); }
 
       await ctx.word.driver.start(forkSession, (str) =>
@@ -463,7 +464,7 @@ export const apply = async (ctx: Context, config: Config) =>
         // console.log(str);
         forkSession.send(str);
       });
-
+      
     });
 
     ctx.console.addEntry({
