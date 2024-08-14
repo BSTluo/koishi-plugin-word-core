@@ -138,7 +138,6 @@ const getTree = (str: string): any[] =>
 
     while (parseStr.length > 0)
     {
-
       const v = parseStr[0];
       parseStr = parseStr.slice(1);
 
@@ -183,15 +182,16 @@ const getTree = (str: string): any[] =>
           tempArr[index].push(v);
         } else
         {
+          // console.log(tempArr)
           tempArr[index][length - 1] += v;
         }
-        // console.log(tempArr);
       }
     }
-
-    return tempArr;
+    return tempArr[0];
   };
+
   const aTemp = par();
+  // console.log(aTemp);
   const a = aTemp.length > 0 ? aTemp : aTemp[0];
 
   const par2 = (arr: any[]): any[] =>
@@ -218,6 +218,8 @@ const getTree = (str: string): any[] =>
   };
 
   const b = par2(a);
+  // console.log(a);
+  // console.log(b);
   return b;
 };
 
