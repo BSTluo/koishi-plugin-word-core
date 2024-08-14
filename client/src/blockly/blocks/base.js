@@ -55,7 +55,6 @@ const textJoinMutator = {
   domToMutation: function (xmlElement)
   {
     const targetCount = parseInt(xmlElement.getAttribute('items'), 10);
-    console.log(targetCount);
     this.updateShape_(targetCount);
   },
 

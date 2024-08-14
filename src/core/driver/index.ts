@@ -94,14 +94,14 @@ export class wordDriver
                 for (let i = 0; i < wordQuestionDB.length; i++)
                 {
                   const element = wordQuestionDB[i];
-                  if (q.match(RegExp('^' + element + '$'))) { list = wordCache.hasKey[element]; session.content = element; q = element; return; }
+                  if (q.match(RegExp('^' + element + '$'))) { list = wordCache.hasKey[element]; /* session.content = element;*/ q = element; return; }
                 }
               } else
               {
                 if (!matchList[nowTrigger.id]) { matchList[nowTrigger.id] = []; }
                 matchList[nowTrigger.id] = matchList[nowTrigger.id].concat(matchResult[1]);
                 q = q.replace(reg, e);
-                session.content = q;
+                // session.content = q;
                 if (wordCache.hasKey[q]) { list = wordCache.hasKey[q]; return; }
               }
             }
@@ -150,7 +150,7 @@ export class wordDriver
     const parOne = async (): Promise<string | null | undefined> =>
     {
 
-      if (!session.content) { return; }
+      if (!q) { return; }
       const item = overPrimitiveList[witchWordDB];
 
       // 读取那个词库
@@ -169,7 +169,7 @@ export class wordDriver
       parsedList.push(witchWord);
 
       needPar = questionList[witchWord];
-
+  
       const contentList = needPar.split('(换)');
       for (let i of contentList)
       {

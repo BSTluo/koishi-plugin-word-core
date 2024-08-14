@@ -35,7 +35,6 @@ export const getItemAmount2 = {
 wordGenerator.forBlock['getItemAmount1'] = function (block, generator)
 {
   const itemName = generator.valueToCode(block, 'itemName', Order.NONE) || '';
-  console.log(itemName);
   return [`(#:${itemName})`, Order.NONE];
 };
 

@@ -82,14 +82,17 @@ export const parsStart = async (questionList: string, wordData: wordSaveData, wo
 
   funcPackKeys = Object.keys(statement);
   ifFuncPackKeys = Object.keys(ifStatement);
-
+  // console.log(funcPackKeys)
+  // console.log(ifFuncPackKeys)
+  
   // 先将文本拆解为树
   // 你(+:xx:xx)好
   // [你,[+,xx,xx],好]
+  // console.log(questionList);
   const tree = getTree(questionList);
   // console.log(tree);
 
-  if (!session.content) { return null; }
+  if (!questionList) { return null; }
 
   const msg = [];
   let userData = {};
@@ -100,7 +103,7 @@ export const parsStart = async (questionList: string, wordData: wordSaveData, wo
     let over;
     if (Array.isArray(needParMsg))
     {
-      over = await parseTrees(word, needParMsg, session, wordData, !matchList ? {} : matchList, JSON.parse(JSON.stringify(userData)));
+      over = await parseTrees(questionList, word, needParMsg, session, wordData, !matchList ? {} : matchList, JSON.parse(JSON.stringify(userData)));
 
       if (over)
       {
@@ -191,7 +194,7 @@ const getTree = (str: string): any[] =>
   };
 
   const aTemp = par();
-  // console.log(aTemp);
+  
   const a = aTemp.length > 0 ? aTemp : aTemp[0];
 
   const par2 = (arr: any[]): any[] =>
@@ -238,7 +241,7 @@ export interface chatFunctionType
   };
 }
 
-const parseTrees = async (word: word, inData: any[], session: Session | wordDataInputType, wordData: wordSaveData, matchList: matchType, inputUserData: any): Promise<{ data: parTemp, message: string | any[]; } | null> =>
+const parseTrees = async (questionList:string, word: word, inData: any[], session: Session | wordDataInputType, wordData: wordSaveData, matchList: matchType, inputUserData: any): Promise<{ data: parTemp, message: string | any[]; } | null> =>
 {
   // 遍历最深层字符串，解析后返回结果，重复运行
 
@@ -265,7 +268,7 @@ const parseTrees = async (word: word, inData: any[], session: Session | wordData
           userDataTemp = a.data;
         } else
         {
-          saveItemDataTemp[(session.content) ? session.content : ''] = { item: {}, userConfig: {} };
+          saveItemDataTemp[(questionList) ? questionList : ''] = { item: {}, userConfig: {} };
           userDataTemp = { item: {}, userConfig: {} };
         }
       }
@@ -297,7 +300,7 @@ const parseTrees = async (word: word, inData: any[], session: Session | wordData
               if (!userDataTemp.item[uid][saveDB]) { userDataTemp.item[uid][saveDB] = {}; }
 
               userDataTemp.item[uid][saveDB][itemName] = number;
-              saveItemDataTemp[(session.content) ? session.content : ''] = userDataTemp;
+              saveItemDataTemp[(questionList) ? questionList : ''] = userDataTemp;
 
               // return await word.user.updateItem(uid, saveDB, itemName, number);
               return true;
@@ -315,7 +318,7 @@ const parseTrees = async (word: word, inData: any[], session: Session | wordData
 
               if (!userDataTemp.item[uid][saveDB][itemName] && userDataTemp.item[uid][saveDB][itemName] != 0) { userDataTemp.item[uid][saveDB][itemName] = num ? num : 0; }
 
-              saveItemDataTemp[(session.content) ? session.content : ''] = userDataTemp;
+              saveItemDataTemp[(questionList) ? questionList : ''] = userDataTemp;
 
               return userDataTemp.item[uid][saveDB][itemName];
               // return num;
@@ -330,7 +333,7 @@ const parseTrees = async (word: word, inData: any[], session: Session | wordData
               if (!userDataTemp.userConfig[uid]) { userDataTemp.userConfig[uid] = {}; }
 
               userDataTemp.userConfig[uid] = userConfig;
-              saveItemDataTemp[(session.content) ? session.content : ''] = userDataTemp;
+              saveItemDataTemp[(questionList) ? questionList : ''] = userDataTemp;
 
               return userDataTemp.userConfig[uid][key];
             },
@@ -343,7 +346,7 @@ const parseTrees = async (word: word, inData: any[], session: Session | wordData
 
               userDataTemp.userConfig[uid][key] = value;
 
-              saveItemDataTemp[(session.content) ? session.content : ''] = userDataTemp;
+              saveItemDataTemp[(questionList) ? questionList : ''] = userDataTemp;
             },
 
             removeUserConfig: async (uid: string, key: string) =>
@@ -353,7 +356,7 @@ const parseTrees = async (word: word, inData: any[], session: Session | wordData
 
               delete userDataTemp.userConfig[uid][key];
 
-              saveItemDataTemp[(session.content) ? session.content : ''] = userDataTemp;
+              saveItemDataTemp[(questionList) ? questionList : ''] = userDataTemp;
             }
           }
         }, session, isIF);
@@ -367,7 +370,7 @@ const parseTrees = async (word: word, inData: any[], session: Session | wordData
             return { message: a.message, data: a.data };
           } else
           {
-            saveItemDataTemp[(session.content) ? session.content : ''] = { item: {}, userConfig: {} };
+            saveItemDataTemp[(questionList) ? questionList : ''] = { item: {}, userConfig: {} };
             userDataTemp = { item: {}, userConfig: {} };
             return { message: '', data: userDataTemp };
           }

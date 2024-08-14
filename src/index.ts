@@ -462,7 +462,6 @@ export const apply = async (ctx: Context, config: Config) =>
 
       await ctx.word.driver.start(forkSession, (str) =>
       {
-        console.log(str)
         if (!str) { return; }
         // console.log(str);
         forkSession.send(str);
