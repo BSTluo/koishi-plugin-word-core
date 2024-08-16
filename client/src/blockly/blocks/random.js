@@ -15,7 +15,7 @@ export const random = {
             'name': 'number2'
         }
     ],
-    'colour': 85,
+    'colour': 105,
     'tooltip': '随机数生成',
     'output': 'String'
 };

@@ -4,7 +4,7 @@ import { wordGenerator, Order } from '../generators/word';
 export const hidden = {
     'type': 'hidden',
     'message0': '执行内容后隐藏：%1',
-    'colour': 85,
+    'colour': 95,
     'args0': [
         {
             'type': 'input_value',

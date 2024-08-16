@@ -13,7 +13,7 @@ export const wordBaseBlock = {
       'check': 'String'
     }
   ],
-  'colour': 85,
+  'colour': 87,
   'tooltip': '创建一个词库问答',
   'mutator': 'newTextList'
 };
@@ -199,6 +199,7 @@ if (Blockly.Extensions.isRegistered('newTextList'))
 {
   Blockly.Extensions.unregister('newTextList');
 }
+
 Blockly.Extensions.registerMutator(
   'newTextList',
   textJoinMutator,

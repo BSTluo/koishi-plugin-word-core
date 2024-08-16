@@ -3,7 +3,7 @@ import {wordGenerator, Order} from '../generators/word';
 export const ifItem1 = {
   'type': 'ifItem1',
   'tooltip': '判断背包内物品的数量是否满足条件',
-  'colour': 85,
+  'colour': 96,
   'output': 'String',
   'message0': '当满足 %1 %2 %3 时，继续运行',
   'args0': [

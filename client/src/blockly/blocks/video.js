@@ -11,7 +11,7 @@ export const video = {
       'name': 'url'
     }
   ],
-  'colour': 85,
+  'colour': 121,
   'tooltip': '发送视频',
   'output': 'String'
 };

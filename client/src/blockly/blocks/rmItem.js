@@ -14,7 +14,7 @@ export const rmItem1 = {
             'name': 'itemAmount'
         }
     ],
-    'colour': 85,
+    'colour': 106,
     'tooltip': '从触发者处移除一些物品',
     'output': 'String'
 };
@@ -38,7 +38,7 @@ export const rmItem2 = {
             'check': 'String'
         }
     ],
-    'colour': 85,
+    'colour': 106,
     'tooltip': '从某人处移除一些物品',
     'output': 'String'
 };

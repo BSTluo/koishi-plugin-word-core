@@ -4,7 +4,7 @@ import { wordGenerator, Order } from '../generators/word';
 export const thisName = {
     'type': 'thisName',
     'message0': '触发者的昵称',
-    'colour': 85,
+    'colour': 120,
     'tooltip': '获取触发此回答的用户的昵称',
     'output': 'String'
 };

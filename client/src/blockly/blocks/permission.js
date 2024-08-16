@@ -5,7 +5,7 @@ import { wordGenerator, Order } from '../generators/word';
 export const permission1 = {
   'type': 'permission1',
   'tooltip': '判断用户是否满足权限',
-  'colour': 85,
+  'colour': 103,
   'output': 'String',
   'message0': '触发者满足：%1 权限时，继续运行',
   'args0': [
@@ -19,7 +19,7 @@ export const permission1 = {
 export const permission2 = {
   'type': 'permission2',
   'tooltip': '判断用户是否满足权限',
-  'colour': 85,
+  'colour': 103,
   'output': 'String',
   'message0': '触发者满足：%1 权限时，执行 %2',
   'args0': [

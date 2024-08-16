@@ -9,7 +9,7 @@ export const delay1 = {
       'name': 'time'
     }
   ],
-  'colour': 85,
+  'colour': 92,
   'tooltip': '延迟发送之后的消息',
   'output': 'String'
 };
@@ -27,7 +27,7 @@ export const delay2 = {
       'name': 'msg'
     }
   ],
-  'colour': 85,
+  'colour': 92,
   'tooltip': '延迟发送指定的消息',
   'output': 'String'
 };

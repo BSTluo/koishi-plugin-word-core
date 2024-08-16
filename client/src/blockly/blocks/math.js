@@ -25,7 +25,7 @@ export const math = {
             'name': 'number2'
         }
     ],
-    'colour': 85,
+    'colour': 101,
     'tooltip': '四则运算',
     'output': 'String'
 };

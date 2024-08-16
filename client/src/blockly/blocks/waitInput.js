@@ -11,7 +11,7 @@ export const waitInput1 = {
             'name': 'value'
         }
     ],
-    'colour': 85,
+    'colour': 255,
     'tooltip': '等待输入文本',
     'output': 'String'
 };
@@ -19,7 +19,7 @@ export const waitInput1 = {
 export const waitInput2 = {
     'type': 'waitInput2',
     'message0': '等待输入一个值',
-    'colour': 85,
+    'colour': 255,
     'tooltip': '等待输入文本',
     'output': 'String'
 };

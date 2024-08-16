@@ -5,7 +5,7 @@ import { wordGenerator, Order } from '../generators/word';
 export const inputAt = {
     'type': 'inputAt',
     'message0': '一个at',
-    'colour': 85,
+    'colour': 97,
     'tooltip': '匹配一个at',
     'output': 'String'
 };

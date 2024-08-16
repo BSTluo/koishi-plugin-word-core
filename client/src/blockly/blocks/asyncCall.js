@@ -11,7 +11,7 @@ export const asyncCall = {
             'name': 'question'
         }
     ],
-    'colour': 85,
+    'colour': 86,
     'tooltip': '异步地触发一个触发词',
     'output': 'String'
 };

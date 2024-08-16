@@ -11,7 +11,7 @@ export const getInputNumber = {
             'name': 'which'
         }
     ],
-    'colour': 85,
+    'colour': 93,
     'tooltip': '获取输入的第几个数',
     'output': 'String'
 };

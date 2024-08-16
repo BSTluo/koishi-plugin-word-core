@@ -5,7 +5,7 @@ import { wordGenerator, Order } from '../generators/word';
 export const prohibit1 = {
   'type': 'prohibit1',
   'tooltip': '禁言一个人',
-  'colour': 85,
+  'colour': 104,
   'output': 'String',
   'message0': '禁言\n 时长(秒)：%1 \n用户id：%2 \n理由：%3',
   'args0': [
@@ -27,7 +27,7 @@ export const prohibit1 = {
 export const prohibit2 = {
   'type': 'prohibit2',
   'tooltip': '禁言一个人',
-  'colour': 85,
+  'colour': 104,
   'output': 'String',
   'message0': '禁言触发者\n 时长(秒)：%1',
   'args0': [

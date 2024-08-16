@@ -11,7 +11,7 @@ export const call = {
             'name': 'question'
         }
     ],
-    'colour': 85,
+    'colour': 88,
     'tooltip': '触发一个触发词',
     'output': 'String'
 };

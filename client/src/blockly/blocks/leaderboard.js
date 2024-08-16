@@ -11,7 +11,7 @@ export const leaderboard = {
       'name': 'itemName'
     }
   ],
-  'colour': 85,
+  'colour': 100,
   'tooltip': '获取排行榜',
   'output': 'String'
 };

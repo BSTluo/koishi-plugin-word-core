@@ -21,7 +21,7 @@ export const date = {
             ]
         }
     ],
-    'colour': 85,
+    'colour': 91,
     'tooltip': '获取当前时间',
     'output': 'String'
 };

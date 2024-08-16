@@ -12,7 +12,7 @@ export const at1 = {
             'check': 'String'
         }
     ],
-    'colour': 85,
+    'colour': 90,
     'tooltip': 'at一个人',
     'output': 'String'
 };
@@ -27,7 +27,7 @@ export const at2 = {
             'check': 'String'
         }
     ],
-    'colour': 85,
+    'colour': 90,
     'tooltip': 'at一个人',
     'output': 'String'
 };

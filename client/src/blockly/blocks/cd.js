@@ -15,7 +15,7 @@ export const cd1 = {
             'name': 'time'
         }
     ],
-    'colour': 85,
+    'colour': 89,
     'tooltip': '延迟发送指定的消息',
     'output': 'String'
 };

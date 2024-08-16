@@ -5,7 +5,7 @@ import { wordGenerator, Order } from '../generators/word';
 export const kick1 = {
   'type': 'kick1',
   'tooltip': '踢一个人',
-  'colour': 85,
+  'colour': 99,
   'output': 'String',
   'message0': '踢出一个人\n 用户id：%1\n是否为永久踢出：%2',
   'args0': [

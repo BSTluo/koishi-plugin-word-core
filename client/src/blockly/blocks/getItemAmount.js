@@ -9,7 +9,7 @@ export const getItemAmount1 = {
       'name': 'itemName'
     }
   ],
-  'colour': 85,
+  'colour': 94,
   'tooltip': '获取触发者背包内某物品的数量',
   'output': 'String'
 };
@@ -27,7 +27,7 @@ export const getItemAmount2 = {
       'name': 'who'
     }
   ],
-  'colour': 85,
+  'colour': 94,
   'tooltip': '获取某人的背包内某物品的数量',
   'output': 'String'
 };

@@ -11,7 +11,7 @@ export const music = {
       'name': 'url'
     }
   ],
-  'colour': 85,
+  'colour': 102,
   'tooltip': '发送歌曲',
   'output': 'String'
 };

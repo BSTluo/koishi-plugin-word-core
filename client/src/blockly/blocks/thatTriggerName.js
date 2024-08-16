@@ -4,7 +4,7 @@ import { wordGenerator, Order } from '../generators/word';
 export const thatName = {
     'type': 'thatName',
     'message0': '被at的昵称',
-    'colour': 85,
+    'colour': 108,
     'tooltip': '获取触发中at的昵称',
     'output': 'String'
 };

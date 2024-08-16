@@ -5,7 +5,7 @@ import { wordGenerator, Order } from '../generators/word';
 export const inputNumber = {
     'type': 'inputNumber',
     'message0': '一个数字',
-    'colour': 85,
+    'colour': 98,
     'tooltip': '匹配一个数字',
     'output': 'String'
 };
