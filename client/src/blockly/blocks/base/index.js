@@ -1,6 +1,6 @@
 import { wordGenerator, Order } from '../../generators/word';
 import * as Blockly from 'blockly';
-import './plugin'
+import './plugin/questTextList'
 
 export const wordBaseBlock = {
   'type': 'wordBaseBlock',

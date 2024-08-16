@@ -1,7 +1,7 @@
 import * as Blockly from 'blockly';
 
-import { createPlusField } from './src/field_plus';
-import { createMinusField } from './src/field_minus';
+import { createPlusField } from '../src/field_plus';
+import { createMinusField } from '../src/field_minus';
 /**
  * @license
  * Copyright 2020 Google LLC
