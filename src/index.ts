@@ -560,7 +560,7 @@ export const apply = async (ctx: Context, config: Config) =>
 declare module '@koishijs/plugin-console' {
   interface Events
   {
-    'rmWord'(name: string): Promise<"ok" | "词库列表不存在此词库">;
+    'rmWord'(name: string): Promise<"ok" | "词库列表不存在此词库" | "获取的插件格式异常">;
     'getWord'(name: string): Promise<"获取的插件格式异常" | "词库已存在，无法安装" | "ok">;
     'getPluginServerUrl'(): string;
     'getWordList'(): Promise<string[]>;

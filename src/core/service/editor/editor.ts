@@ -96,13 +96,18 @@ export class Editor {
    * @param name 需要删除的词库名
    * @returns 结果
    */
-  async removeWord(name: string): Promise<"词库列表不存在此词库" | "ok"> {
+  async removeWord(name: string): Promise<"词库列表不存在此词库" | "ok" | "获取的插件格式异常"> {
     const wordList = await this.getWordList();
     if (!wordList.includes(name)) { return '词库列表不存在此词库'; }
 
+    const pluginData = this.res[name];
+    if (!pluginData) { return '获取的插件格式异常'; }
+
+    const pluginDBName = pluginData.dbname;
+
     const data = await this.readWord(name);
     this.writeRecycleBin(name, data);
-    this.removeDB('wordData', name);
+    this.removeDB('wordData', pluginDBName);
 
     return 'ok';
   }
@@ -395,7 +400,7 @@ export class Editor {
     const a = await this.getWordList();
     const getDBName = fetchData.name;
     if (a.includes(getDBName)) { return '词库已存在，无法安装'; }
-    this.updateWord(name, fetchData);
+    this.updateWord(getDBName, fetchData);
 
     this.getCache();
     return 'ok';
