@@ -31,8 +31,10 @@ export const Config: Schema<Config> = Schema.object({
 
 export const logger = new Logger('Word-core');
 
-export const usage = `词库的教程文档在这里：https://docs.reifuu.icu/docs/word-core-3.0/00readme/
-如果有问题的话欢迎联系我！
+export const usage = `# 非常感谢大家使用！
+词库的教程文档在这里：https://docs.reifuu.icu/docs/word-core-3.0/00readme/
+如果有问题的话欢迎联系我！词库的商店暂时无法主动提交，如果你有想提交的词库的话！
+请将wordData数据库内对应的词库的文本发送到我的邮箱中！请告诉我你的名字和提交的词库类型！
 邮箱：1946831552@qq.com`;
 
 // TypeScript 用户需要进行类型合并
