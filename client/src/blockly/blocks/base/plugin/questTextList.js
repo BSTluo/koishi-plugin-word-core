@@ -17,7 +17,7 @@ const textJoinMutator = {
      * Number of text inputs on this block.
      * @type {number}
      */
-    itemCount_: 0,
+    questCount_: 0,
 
     /**
      * Creates XML to represent number of inputs.
@@ -27,7 +27,7 @@ const textJoinMutator = {
     mutationToDom: function ()
     {
         const container = Blockly.utils.xml.createElement('mutation');
-        container.setAttribute('items', this.itemCount_);
+        container.setAttribute('items', this.questCount_);
         return container;
     },
 
@@ -49,7 +49,7 @@ const textJoinMutator = {
     saveExtraState: function ()
     {
         return {
-            itemCount: this.itemCount_,
+            itemCount: this.questCount_,
         };
     },
 
@@ -70,13 +70,13 @@ const textJoinMutator = {
      */
     updateShape_: function (targetCount)
     {
-        while (this.itemCount_ < targetCount)
+        while (this.questCount_ < targetCount)
         {
-            this.addPart_();
+            this.addQuestionPart_();
         }
-        while (this.itemCount_ > targetCount)
+        while (this.questCount_ > targetCount)
         {
-            this.removePart_();
+            this.removeQuestionPart_();
         }
         this.updateMinus_();
     },
@@ -88,7 +88,7 @@ const textJoinMutator = {
      */
     plus: function ()
     {
-        this.addPart_();
+        this.addQuestionPart_();
         this.updateMinus_();
     },
 
@@ -99,11 +99,11 @@ const textJoinMutator = {
      */
     minus: function ()
     {
-        if (this.itemCount_ == 0)
+        if (this.questCount_ == 0)
         {
             return;
         }
-        this.removePart_();
+        this.removeQuestionPart_();
         this.updateMinus_();
     },
 
@@ -113,23 +113,23 @@ const textJoinMutator = {
      * @this {Blockly.Block}
      * @private
      */
-    addPart_: function ()
+    addQuestionPart_: function ()
     {
-        if (this.itemCount_ == 0)
+        if (this.questCount_ == 0)
         {
             if (this.getInput('EMPTY'))
             {
                 this.removeInput('EMPTY');
             }
-            this.topInput_ = this.appendValueInput('answer' + this.itemCount_)
+            this.topInput_ = this.appendValueInput('answer' + this.questCount_)
                 .appendField(createPlusField(), 'PLUS')
                 .appendField("答：");
         } else
         {
-            this.appendValueInput('answer' + this.itemCount_);
+            this.appendValueInput('answer' + this.questCount_);
         }
         // Because item inputs are 0-index we decrement first, increment last.
-        this.itemCount_++;
+        this.questCount_++;
     },
 
     /**
@@ -138,11 +138,11 @@ const textJoinMutator = {
      * @this {Blockly.Block}
      * @private
      */
-    removePart_: function ()
+    removeQuestionPart_: function ()
     {
-        this.itemCount_--;
-        this.removeInput('answer' + this.itemCount_);
-        if (this.itemCount_ == 0)
+        this.questCount_--;
+        this.removeInput('answer' + this.questCount_);
+        if (this.questCount_ == 0)
         {
             this.topInput_ = this.appendDummyInput('EMPTY')
                 .appendField(createPlusField(), 'PLUS')
@@ -158,10 +158,10 @@ const textJoinMutator = {
     updateMinus_: function ()
     {
         const minusField = this.getField('MINUS');
-        if (!minusField && this.itemCount_ > 0)
+        if (!minusField && this.questCount_ > 0)
         {
             this.topInput_.insertFieldAt(1, createMinusField(), 'MINUS');
-        } else if (minusField && this.itemCount_ < 1)
+        } else if (minusField && this.questCount_ < 1)
         {
             this.topInput_.removeField('MINUS');
         }
