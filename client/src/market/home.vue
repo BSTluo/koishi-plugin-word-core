@@ -26,8 +26,8 @@
                   <!-- 安装卸载按钮 -->
                   <div class="setup">
                     <div class="setupButton" @click="pluginSetup(item.name)"
-                      :style="{ background: (pluginStatusList[item.name]) ? 'var(--el-color-success)' : 'var(--el-color-primary)' }">
-                      {{ (pluginStatusList[item.name]) ? '卸载' : '安装' }}
+                      :style="{ background: (pluginStatusList[item.dbName]) ? 'var(--el-color-success)' : 'var(--el-color-primary)' }">
+                      {{ (pluginStatusList[item.dbName]) ? '卸载' : '安装' }}
                     </div>
                   </div>
                 </div>
@@ -193,7 +193,8 @@
           right: 10px;
           color: var(--fg1);
           cursor: pointer;
-          i{
+
+          i {
             color: var(--fg1);
           }
         }
@@ -414,8 +415,7 @@ import "bootstrap-icons/font/bootstrap-icons.css";
 import { send } from '@koishijs/client';
 
 export default {
-  data()
-  {
+  data() {
     return {
       url: 'http://127.0.0.1:1145',
       config: {
@@ -440,20 +440,21 @@ export default {
     };
   },
   methods: {
-    async getList()
-    {
+    async getList() {
       const resTemp = await fetch(`${this.url}/getList`);
       const res = await resTemp.json();
 
       this.pluginList = res;
       this.page.time = this.getCurrentFormattedTime();
+      const list = await send('getWordList')
+      for (let item of list) {
+        this.pluginStatusList[item] = true;
+      }
     },
-    async getPlugin(name)
-    {
+    async getPlugin(name) {
       return `${this.url}/getPlugin/${name}.js`;
     },
-    formatTimestamp(timestamp)
-    {
+    formatTimestamp(timestamp) {
       const now = Date.now();
       const diff = now - timestamp;
 
@@ -463,33 +464,26 @@ export default {
       const month = 30 * day;
       const year = 365 * day;
 
-      if (diff < minute)
-      {
+      if (diff < minute) {
         return '刚刚';
-      } else if (diff < hour)
-      {
+      } else if (diff < hour) {
         const minutes = Math.floor(diff / minute);
         return `${minutes}分钟前`;
-      } else if (diff < day)
-      {
+      } else if (diff < day) {
         const hours = Math.floor(diff / hour);
         return `${hours}小时前`;
-      } else if (diff < month)
-      {
+      } else if (diff < month) {
         const days = Math.floor(diff / day);
         return `${days}天前`;
-      } else if (diff < year)
-      {
+      } else if (diff < year) {
         const months = Math.floor(diff / month);
         return `${months}个月前`;
-      } else
-      {
+      } else {
         const years = Math.floor(diff / year);
         return `${years}年前`;
       }
     },
-    getCurrentFormattedTime()
-    {
+    getCurrentFormattedTime() {
       const now = new Date();
       const year = now.getFullYear();
       const month = String(now.getMonth() + 1).padStart(2, '0');
@@ -501,70 +495,60 @@ export default {
       return `${year}/${month}/${day} ${hours}:${minutes}:${seconds}`;
     },
     // 安装卸载按钮按下
-    async pluginSetup(name)
-    {
-      if (!this.pluginStatusList[name])
-      {
+    async pluginSetup(name) {
+      const dbName = this.pluginList[name].dbName
+      if (!this.pluginStatusList[dbName]) {
         const a = await this.getWord(name);
         if (a != "ok") { this.newError(a); return; }
-        this.pluginStatusList[name] = true;
+        this.pluginStatusList[dbName] = true;
         this.newSuccess('插件安装成功');
-      } else
-      {
+      } else {
         const a = await this.removeWord(name);
         if (a != "ok") { this.newError(a); return; }
-        this.pluginStatusList[name] = false;
+        this.pluginStatusList[dbName] = false;
         this.newSuccess('插件卸载成功');
       }
     },
 
     // 卸载插件
-    async removeWord(name)
-    {
+    async removeWord(name) {
       console.log('开始卸载插件', name);
       return await send('rmWord', name);
     },
 
     // 安装插件
-    async getWord(name)
-    {
+    async getWord(name) {
       console.log('开始安装插件', name);
       return await send('getWord', name);
     },
 
-    async newError(msg)
-    {
+    async newError(msg) {
       this.errorMsg = msg;
       this.error = true;
 
-      setTimeout(() =>
-      {
+      setTimeout(() => {
         this.error = false;
         this.errorMsg = '';
       }, 2000);
     },
 
-    async newSuccess(msg)
-    {
+    async newSuccess(msg) {
       this.successMsg = msg;
       this.success = true;
 
-      setTimeout(() =>
-      {
+      setTimeout(() => {
         this.success = false;
         this.successMsg = '';
       }, 2000);
     }
   },
-  async mounted()
-  {
+  async mounted() {
     const a = await send('getPluginServerUrl');
     this.url = a;
     this.getList();
   },
   computed: {
-    subPlugList()
-    {
+    subPlugList() {
       this.page.max = Math.ceil(Object.keys(this.pluginList).length / this.page.Pmax);
       const start = (this.page.now - 1) * this.page.Pmax;
       const end = this.page.now * this.page.Pmax;

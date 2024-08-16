@@ -37,16 +37,14 @@ export class Editor {
     const readData = await this.readDB('wordData', name);
 
     let out: wordSaveData;
-    if (Object.keys(readData).length === 0)
-    {
+    if (Object.keys(readData).length === 0) {
       out = {
         name: name,
         saveDB: 'default',
         author: [],
         data: {}
       };
-    } else
-    {
+    } else {
 
       out = readData as wordSaveData;
     }
@@ -97,11 +95,10 @@ export class Editor {
    * @returns 结果
    */
   async removeWord(name: string): Promise<"词库列表不存在此词库" | "ok" | "获取的插件格式异常"> {
-    const wordList = await this.getWordList();
-    if (!wordList.includes(name)) { return '词库列表不存在此词库'; }
-
+    if (JSON.stringify(this.res) == "{}") { await this.getCloudWordList(); }
     const pluginData = this.res[name];
-    if (!pluginData) { return '获取的插件格式异常'; }
+
+    if (!pluginData) { return '词库列表不存在此词库'; }
 
     const pluginDBName = pluginData.dbname;
 
@@ -221,13 +218,11 @@ export class Editor {
     const author = await this.getAuthor(name);
 
     if (!(await this.isAuthor(name, uid))) { return '您不是作者，无权操作'; }
-    if (!author.includes(authorID))
-    {
+    if (!author.includes(authorID)) {
       author.push(authorID);
       await this.updateAuthor(name, author);
       return '添加完成';
-    } else
-    {
+    } else {
       return '此作者已存在';
     }
   }
@@ -243,11 +238,9 @@ export class Editor {
     let author = await this.getAuthor(name);
 
     if (!(await this.isAuthor(name, uid))) { return '您不是作者，无权操作'; }
-    if (!author.includes(authorID))
-    {
+    if (!author.includes(authorID)) {
       return '此作者不存在';
-    } else
-    {
+    } else {
       author = author.splice(author.indexOf(name), 1);
       await this.updateAuthor(name, author);
       return '已删除作者';
@@ -263,11 +256,9 @@ export class Editor {
   async isAuthor(name: string, authorID: string) {
     const author = await this.getAuthor(name);
 
-    if (!author.includes(authorID))
-    {
+    if (!author.includes(authorID)) {
       return false;
-    } else
-    {
+    } else {
       return true;
     }
   }
@@ -282,8 +273,7 @@ export class Editor {
    */
   async addWordItem(name: string, uid: string, q: string, a: string) {
     const list = await this.getWordList();
-    if (!list.includes(name))
-    {
+    if (!list.includes(name)) {
       const dataTemp: Record<string, string[]> = {};
       dataTemp[q] = [a];
 
@@ -293,8 +283,7 @@ export class Editor {
         author: [uid],
         data: dataTemp,
         saveDB: 'default'
-      }))
-      {
+      })) {
         return 1;
       }
     }
@@ -302,13 +291,11 @@ export class Editor {
     const wordData = await this.readWord(name);
     if (!(await this.isAuthor(name, uid))) { return '您不是作者，无权操作'; }
 
-    if (!Object.keys(wordData.data).includes(q))
-    {
+    if (!Object.keys(wordData.data).includes(q)) {
 
       wordData.data[q] = [a];
       this.addCache(q, name);
-    } else
-    {
+    } else {
       wordData.data[q].push(a);
     }
     const index = wordData.data[q].length;
@@ -329,21 +316,16 @@ export class Editor {
     const wordData = await this.readWord(name);
     if (!(await this.isAuthor(name, uid))) { return '您不是作者，无权操作'; }
 
-    if (!Object.keys(wordData.data).includes(q))
-    {
+    if (!Object.keys(wordData.data).includes(q)) {
       return '此触发词不存在';
-    } else
-    {
-      if (a == 'all')
-      {
+    } else {
+      if (a == 'all') {
         delete wordData.data[q];
         this.rmCache(q, name);
-      } else
-      {
+      } else {
         if (a > wordData.data[q].length) { return '超过触发词的回答上限'; }
         wordData.data[q].splice(a - 1, 1);
-        if (wordData.data[q].length == 0)
-        {
+        if (wordData.data[q].length == 0) {
           delete wordData.data[q];
           this.rmCache(q, name);
         }
@@ -367,11 +349,9 @@ export class Editor {
       const reg = new RegExp(`^${regText}$`);
       return reg.test(q);
     });
-    if (!matchedString)
-    {
+    if (!matchedString) {
       return [];
-    } else
-    {
+    } else {
       return hasKey[q];
     }
   }
@@ -395,15 +375,22 @@ export class Editor {
     const pluginName = pluginData.name;
     // const authorName = pluginData.author;
 
-    const fetchDataTemp = await fetch(`${this.tools.url}/getPlugin/${authorId}/${pluginName}.json`);
-    const fetchData = await fetchDataTemp.json();
-    const a = await this.getWordList();
-    const getDBName = fetchData.name;
-    if (a.includes(getDBName)) { return '词库已存在，无法安装'; }
-    this.updateWord(getDBName, fetchData);
 
-    this.getCache();
-    return 'ok';
+    try {
+      const url = `${this.tools.url}/getPlugin/${authorId}/${pluginName}.json`
+      const fetchDataTemp = await fetch(url);
+      const fetchData = await fetchDataTemp.json();
+      const a = await this.getWordList();
+      const getDBName = fetchData.name;
+      if (a.includes(getDBName)) { return '词库已存在，无法安装'; }
+      this.updateWord(getDBName, fetchData);
+
+      this.getCache();
+      return 'ok';
+    } catch (err) {
+      console.log(err)
+      return '获取的插件格式异常';
+    }
   }
 
   // 云端上传
@@ -419,8 +406,7 @@ export class Editor {
 
     Object.keys(pluginData).forEach(v => {
       const a = v as pluginDataKeys;
-      if (v == 'file' || v == 'tag')
-      {
+      if (v == 'file' || v == 'tag') {
         return;
       }
       {
