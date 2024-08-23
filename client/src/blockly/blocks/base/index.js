@@ -8,8 +8,7 @@ export const wordBaseBlock = {
   'args0': [
     {
       'type': 'input_value',
-      'name': 'question',
-      'check': 'String'
+      'name': 'question'
     }
   ],
   'colour': 87,
