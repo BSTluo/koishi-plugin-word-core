@@ -27,16 +27,14 @@ export const writeDBFunction = async (ctx: Context, dbName: dbNameList, key: str
 
 export const getDBFunction = async (ctx: Context, dbName: dbNameList) =>
 {
-
-  const idListOrigin = await ctx.database.get(dbName, { id: { $regex: /^[\s\S]+$/ } }, ['id']);
-  const dataListOrigin = await ctx.database.get(dbName, { id: { $regex: /^[\s\S]+$/ } }, ['data']);
+  const dbData = await ctx.database.get(dbName, { id: { $regex: /^[\s\S]+$/ } })
 
   const data/*: dbCache*/ = {
-    idList: idListOrigin.map(v =>
+    idList: dbData.map(v =>
     {
       return v.id;
     }),
-    dataList: dataListOrigin.map((v) =>
+    dataList: dbData.map((v) =>
     {
       const temp = v.data as allType;
       return temp;

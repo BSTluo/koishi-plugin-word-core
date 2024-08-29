@@ -1,7 +1,7 @@
 {
   "name": "koishi-plugin-word-core",
   "description": "多功能文字对话引擎！",
-  "version": "1.0.0-alpha.32",
+  "version": "1.0.0-alpha.33",
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",
   "files": [
@@ -15,9 +15,9 @@
     "plugin"
   ],
   "peerDependencies": {
-    "@koishijs/plugin-console": "^5.29.2",
+    "@koishijs/plugin-console": "^5.29.3",
     "blockly": "^11.1.1",
-    "koishi": "^4.17.9"
+    "koishi": "^4.17.12"
   },
   "koishi": {
     "service": {
@@ -38,13 +38,13 @@
     "url": "git+https://github.com/BSTluo/koishi-plugin-word-core.git"
   },
   "devDependencies": {
-    "@koishijs/client": "^5.29.2",
+    "@koishijs/client": "^5.29.3",
     "blockly": "^11.1.1",
     "bootstrap-icons": "^1.11.3",
     "form-data": "^4.0.0"
   },
   "dependencies": {
-    "axios": "^1.7.2",
+    "axios": "^1.7.4",
     "blockly": "^11.1.1",
     "bootstrap-icons": "^1.11.3",
     "form-data": "^4.0.0"
