@@ -84,7 +84,7 @@ export const parsStart = async (questionList: string, wordData: wordSaveData, wo
   ifFuncPackKeys = Object.keys(ifStatement);
   // console.log(funcPackKeys)
   // console.log(ifFuncPackKeys)
-  
+
   // 先将文本拆解为树
   // 你(+:xx:xx)好
   // [你,[+,xx,xx],好]
@@ -155,15 +155,16 @@ const getTree = (str: string): any[] =>
       {
         if (!tempArr[index]) { tempArr[index] = ['']; }
         const length = tempArr[index].length;
-        // console.log(tempArr);
+
         if (Array.isArray(tempArr[index][length - 1]))
         {
           // console.log('1');
           index++;
-        } else if (!funcPackKeys.includes(tempArr[0][0]) && !ifFuncPackKeys.includes(tempArr[0][0]))
+        } else if ((!funcPackKeys.includes(tempArr[0][0]) && !ifFuncPackKeys.includes(tempArr[0][0])) || (tempArr[index][length - 1].endsWith('http') || tempArr[index][length - 1].endsWith('https')))
         {
           // console.log('2');
-          if (Array.isArray(tempArr[index][length - 1]))
+          const lastList = tempArr[index][length - 1];
+          if (Array.isArray(lastList))
           {
             tempArr[index].push(v);
           } else
@@ -178,6 +179,7 @@ const getTree = (str: string): any[] =>
         // console.log(tempArr);
       } else
       {
+
         if (!tempArr[index]) { tempArr[index] = ['']; }
         const length = tempArr[index].length;
         if (Array.isArray(tempArr[index][length - 1]))
@@ -194,7 +196,7 @@ const getTree = (str: string): any[] =>
   };
 
   const aTemp = par();
-  
+
   const a = aTemp.length > 0 ? aTemp : aTemp[0];
 
   const par2 = (arr: any[]): any[] =>
@@ -241,7 +243,7 @@ export interface chatFunctionType
   };
 }
 
-const parseTrees = async (questionList:string, word: word, inData: any[], session: Session | wordDataInputType, wordData: wordSaveData, matchList: matchType, inputUserData: any): Promise<{ data: parTemp, message: string | any[]; } | null> =>
+const parseTrees = async (questionList: string, word: word, inData: any[], session: Session | wordDataInputType, wordData: wordSaveData, matchList: matchType, inputUserData: any): Promise<{ data: parTemp, message: string | any[]; } | null> =>
 {
   // 遍历最深层字符串，解析后返回结果，重复运行
 
