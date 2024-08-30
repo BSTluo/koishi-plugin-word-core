@@ -160,15 +160,18 @@ const getTree = (str: string): any[] =>
         {
           // console.log('1');
           index++;
-        } else if ((!funcPackKeys.includes(tempArr[0][0]) && !ifFuncPackKeys.includes(tempArr[0][0])) || (tempArr[index][length - 1].endsWith('http') || tempArr[index][length - 1].endsWith('https')))
+        } else if ((!funcPackKeys.includes(tempArr[0][0]) && !ifFuncPackKeys.includes(tempArr[0][0])) || (tempArr[index][length - 1].endsWith('http') || tempArr[index][length - 1].endsWith('https')|| tempArr[index][length - 1].endsWith('\\')))
         {
           // console.log('2');
           const lastList = tempArr[index][length - 1];
           if (Array.isArray(lastList))
           {
             tempArr[index].push(v);
-          } else
+          } else if(tempArr[index][length - 1].endsWith('\\'))
           {
+            tempArr[index][length - 1] = tempArr[index][length - 1].slice(0, -1)
+            tempArr[index][length - 1] += v;
+          } else {
             tempArr[index][length - 1] += v;
           }
         } else
