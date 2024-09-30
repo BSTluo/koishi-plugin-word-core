@@ -453,7 +453,7 @@ export const apply = async (ctx: Context, config: Config) =>
 
     // 删除某个词库
     ctx.command('word', '词库核心！').subcommand('.rmdb <dbName:string>', '删除某个词库')
-      .example('word.addauthor 6503fb7b50308')
+      .example('word.rmdb default')
       .action(async ({ session }, dbName) =>
       {
         if (!session) { return; }
@@ -472,7 +472,7 @@ export const apply = async (ctx: Context, config: Config) =>
 
     // 查看回收站
     ctx.command('word', '词库核心！').subcommand('.recycledb', '查看回收站')
-      .example('word.addauthor 6503fb7b50308')
+      .example('word.recycledb')
       .action(async ({ session }) =>
       {
         if (!session) { return; }
@@ -490,8 +490,8 @@ export const apply = async (ctx: Context, config: Config) =>
       });
 
     // 从回收站回收某个词库
-    ctx.command('word', '词库核心！').subcommand('.recycledb <dbName:string>', '从回收站回收某个词库')
-      .example('word.addauthor 6503fb7b50308')
+    ctx.command('word', '词库核心！').subcommand('.restoredb <dbName:string>', '从回收站回收某个词库')
+      .example('word.restoredb default')
       .action(async ({ session }, dbName) =>
       {
         if (!session) { return; }
