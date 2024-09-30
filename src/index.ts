@@ -447,7 +447,7 @@ export const apply = async (ctx: Context, config: Config) =>
       {
         if (!session) { return '发生异常'; }
         const { idList } = ctx.word.cache.getCache();
-        return `<at name="${session.username}" /> 当前群内有以下词库被禁用：\n\n ${idList.join('\n')}`;
+        return `<at name="${session.username}" /> 当前存在以下词库：\n\n ${idList.join('\n')}`;
       });
 
     ctx.on('message', async (session) =>
@@ -467,7 +467,7 @@ export const apply = async (ctx: Context, config: Config) =>
         // console.log(str);
         forkSession.send(str);
       });
-      
+
     });
 
     ctx.console.addEntry({
