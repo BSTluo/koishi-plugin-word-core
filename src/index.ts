@@ -32,7 +32,7 @@ export const Config: Schema<Config> = Schema.object({
 export const logger = new Logger('Word-core');
 
 export const usage = `# 非常感谢大家使用！
-词库的教程文档在这里：https://docs.reifuu.icu/docs/word-core-3.0/00readme/
+词库的教程文档在这里：https://docs.reifuu.icu/
 如果有问题的话欢迎联系我！词库的商店暂时无法主动提交，如果你有想提交的词库的话！
 请将wordData数据库内对应的词库的文本发送到我的邮箱中！请告诉我你的名字和提交的词库类型！
 邮箱：1946831552@qq.com`;
@@ -477,13 +477,13 @@ export const apply = async (ctx: Context, config: Config) =>
 
     // 上传
     // ctx.word.editor.updateCloudWord({
-    //   tag: [],
-    //   author: 'word-core',
-    //   name: '测试项目',
+    //   tag: ['smmcar','fa','fa♂Q'],
+    //   author: 'smmcat',
+    //   name: '学fa♂音',
     //   wiki: '',
-    //   authorId: 'BSTluo',
-    //   dbName: 'default',
-    //   descriptor: '这是一个测试项目',
+    //   authorId: 'smmcat',
+    //   dbName: 'studyFa',
+    //   descriptor: '学fa♂音！',
     //   version: '0.0.1',
     //   icon: 'games'
     // })

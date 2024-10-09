@@ -116,7 +116,7 @@ export class wordDriver
       };
       getCanReplace();
     }
-
+    
     if (!list) { return; }
     if (list.length <= 0) { return; }
 
@@ -231,7 +231,7 @@ export class wordDriver
           }
         } catch (err: any)
         {
-          // console.log(err);
+          console.log(err);
           const errorType = err.message;
           if (!errorType) { return err; }
           const msg = errorType.split(':')[1];
