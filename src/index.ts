@@ -373,6 +373,7 @@ export const apply = async (ctx: Context, config: Config) =>
         return `<at name="${session.username}" /> 当前词库的作者有：\n\n${a.join('\n')}`;
       });
 
+    // 查看自己的id或者名字
     ctx.command('word', '词库核心！').subcommand('.id', '查看自己的id及名字')
       .example('word.id')
       .action(({ session }) =>
@@ -448,6 +449,63 @@ export const apply = async (ctx: Context, config: Config) =>
         if (!session) { return '发生异常'; }
         const { idList } = ctx.word.cache.getCache();
         return `<at name="${session.username}" /> 当前存在以下词库：\n\n ${idList.join('\n')}`;
+      });
+
+    // 删除某个词库
+    ctx.command('word', '词库核心！').subcommand('.rmdb <dbName:string>', '删除某个词库')
+      .example('word.rmdb default')
+      .action(async ({ session }, dbName) =>
+      {
+        if (!session) { return; }
+        const mid = session.userId;
+
+        const nowWordDB = await ctx.word.user.getEditWord(mid);
+
+        const hasPermission = await ctx.word.permission.isHave(mid, `word.edit.${nowWordDB}`);
+
+        if (!hasPermission && !config.masterID.includes(mid)) { return `<at name="${session.username}" /> 你没有词库【${nowWordDB}】的编辑权限`; }
+
+        const a = await ctx.word.editor.removeWord(dbName);
+
+        return `<at name="${session.username}" /> ${a}`;
+      });
+
+    // 查看回收站
+    ctx.command('word', '词库核心！').subcommand('.recycledb', '查看回收站')
+      .example('word.recycledb')
+      .action(async ({ session }) =>
+      {
+        if (!session) { return; }
+        const mid = session.userId;
+
+        const nowWordDB = await ctx.word.user.getEditWord(mid);
+
+        const hasPermission = await ctx.word.permission.isHave(mid, `word.edit.${nowWordDB}`);
+
+        if (!hasPermission && !config.masterID.includes(mid)) { return `<at name="${session.username}" /> 你没有词库【${nowWordDB}】的编辑权限`; }
+
+        const a = await ctx.word.editor.getRecycleBinList();
+
+        return `<at name="${session.username}" /> ${a}`;
+      });
+
+    // 从回收站回收某个词库
+    ctx.command('word', '词库核心！').subcommand('.restoredb <dbName:string>', '从回收站回收某个词库')
+      .example('word.restoredb default')
+      .action(async ({ session }, dbName) =>
+      {
+        if (!session) { return; }
+        const mid = session.userId;
+
+        const nowWordDB = await ctx.word.user.getEditWord(mid);
+
+        const hasPermission = await ctx.word.permission.isHave(mid, `word.edit.${nowWordDB}`);
+
+        if (!hasPermission && !config.masterID.includes(mid)) { return `<at name="${session.username}" /> 你没有词库【${nowWordDB}】的编辑权限`; }
+
+        const a = await ctx.word.editor.restoreWord(dbName);
+
+        return `<at name="${session.username}" /> ${a}`;
       });
 
     ctx.on('message', async (session) =>
