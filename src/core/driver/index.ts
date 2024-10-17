@@ -203,7 +203,7 @@ export class wordDriver
       {
         try
         {
-          let abc = await this.parMsg(i, wordData, session, matchList);
+          let abc = await this.parMsgPrivate(i, wordData, session, matchList);
 
           if (!abc) { continue; }
           const a = abc.message;
@@ -213,6 +213,7 @@ export class wordDriver
           // 获取物品
 
           const needSave = needSaveObj.item;
+
           if (needSave)
           {
             for (let uid in needSave)
@@ -338,15 +339,156 @@ export class wordDriver
   }
 
   /**
-   * 词库解析文本
+   * 词库本体解析文本
    * @param msg 需要解析的文本
-   * @param wordParConfig 文本所在的词库配置，{data?: xxx, author?: xxx, saveDB: xxx, name?: xxx}
+   * @param wordSaveData 文本所在的词库配置，{data: xxx, author: xxx, saveDB: xxx, name: xxx}
    * @param session koishi的上下文Session，或是session的关键元素
    * @param matchList 输入匹配列表，可空
    * @returns 返回解析结果
    */
-  async parMsg(msg: string, wordParConfig: wordParConfig, session: Session | wordDataInputType, matchList?: matchType)
+  private async parMsgPrivate(msg: string, wordSaveData: wordSaveData, session: Session | wordDataInputType, matchList?: matchType)
   {
-    return await parsStart(msg, wordParConfig as wordSaveData, this.word, session, matchList);
+    return await parsStart(msg, wordSaveData, this.word, session, matchList);
+  }
+
+  /**
+     * 词库解析文本
+     * @param msg 需要解析的文本
+     * @param wordParConfig 文本所在的词库配置，{data?: xxx, author?: xxx, saveDB: xxx, name?: xxx}
+     * @param session koishi的上下文Session，或是session的关键元素
+     * @param matchList 输入匹配列表，可空
+     * @returns 返回解析结果
+     */
+  async parMsg(msg: string, wordParConfig: wordParConfig, session: Session | wordDataInputType, matchList?: matchType): Promise<string | undefined | null>
+  {
+    try
+    {
+      let abc = await this.parMsgPrivate(msg, wordParConfig as wordSaveData, session, matchList);
+
+      if (!abc) { return; }
+      const a = abc.message;
+      // console.log(abc)
+
+      const needSaveObj = abc.data;
+      // 获取物品
+
+      const needSave = needSaveObj.item;
+
+      if (needSave)
+      {
+        for (let uid in needSave)
+        {
+          const saveDBList = needSave[uid];
+
+          for (let saveDB in saveDBList)
+          {
+            const itemNameList = saveDBList[saveDB];
+
+            for (let itemName in itemNameList)
+            {
+              const num = itemNameList[itemName];
+              await this.word.user.updateItem(uid, saveDB, itemName, num);
+            }
+          }
+        }
+      }
+
+      const needSaveConfig = needSaveObj.userConfig;
+      if (needSaveConfig)
+      {
+        for (let uid in needSaveConfig)
+        {
+          for (let key in needSaveConfig[uid])
+          {
+            await this.word.user.setConfig(uid, key, needSaveConfig[uid][key]);
+          }
+        }
+      }
+
+      const ok = await this.word.user.saveConfig();
+      // const ok2 = await this.word.user.saveTemp();
+
+      if (ok)
+      {
+        // if (ok) {
+        return a;
+      } else
+      {
+        return (' [word-core] 数据保存失败');
+
+      }
+    } catch (err: any)
+    {
+      console.log(err);
+      const errorType = err.message;
+      if (!errorType) { return err; }
+      const msg = errorType.split(':')[1];
+
+      // 执行后立刻终止，并且不保存数据
+      if (errorType.startsWith('kill'))
+      {
+        // console.log(msg)
+        if (msg) { return msg; }
+        return;
+      }
+
+      // 执行后立即终止，但是保存数据
+      // if (errorType.startsWith('end'))
+      // {
+      //   const needSaveObj = saveItemDataTemp[q];
+      //   // 获取物品
+      //   const needSave = needSaveObj.item;
+      //   if (needSave)
+      //   {
+      //     for (let uid in needSave)
+      //     {
+      //       const saveDBList = needSave[uid];
+
+      //       for (let saveDB in saveDBList)
+      //       {
+      //         const itemNameList = saveDBList[saveDB];
+
+      //         for (let itemName in itemNameList)
+      //         {
+      //           const num = itemNameList[itemName];
+      //           await this.word.user.updateItem(uid, saveDB, itemName, num);
+      //         }
+      //       }
+      //     }
+      //   }
+
+      //   const needSaveConfig = needSaveObj.userConfig;
+      //   if (needSaveConfig)
+      //   {
+      //     for (let uid in needSaveConfig)
+      //     {
+      //       for (let key in needSaveConfig[uid])
+      //       {
+      //         await this.word.user.setConfig(uid, key, needSaveConfig[uid][key]);
+      //       }
+      //     }
+      //   }
+
+      //   const ok = await this.word.user.saveConfig();
+      //   // const ok2 = await this.word.user.saveTemp();
+
+      //   // if (ok && ok2)
+      //   if (ok)
+      //   {
+      //     if (msg) { return msg; }
+      //     return;
+      //   } else
+      //   {
+      //     if (msg) { return ' [word-core] 数据保存失败，并且' + msg; }
+      //     return ' [word-core] 数据保存失败';
+      //   }
+      // }
+
+      // 执行后立即终止，不保存数据，并且进入下次解析
+      if (errorType.startsWith('next'))
+      {
+        return '';
+      }
+    }
   }
 }
