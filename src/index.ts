@@ -525,7 +525,6 @@ export const apply = async (ctx: Context, config: Config) =>
         // console.log(str);
         forkSession.send(str);
       });
-
     });
 
     ctx.console.addEntry({

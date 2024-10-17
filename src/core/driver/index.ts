@@ -2,10 +2,38 @@ import { Context } from 'koishi';
 import { parsStart, saveItemDataTemp, wordDataInputType } from './src';
 import { word } from '../word';
 import { Session } from 'koishi';
+import { wordSaveData } from '..';
 
 export const inject = {
   require: ['word']
 };
+
+
+export interface wordParConfig
+{
+  /**
+   * 需要解析的词库名字，可空
+   */
+  name?: string;
+
+  /**
+   * 数据保存到的背包存储格位置
+   */
+  saveDB: string;
+
+  /**
+   * 此库的作者id列表，可空
+   */
+  author?: string[];
+
+  /**
+   * 词库的问答配置，可空
+   * {
+   *  触发词: ["回复a","回复b",......,"回复c"]
+   * }
+   */
+  data?: Record<string, string[]>;
+}
 
 export type matchType = Record<string, string[]>;
 
@@ -116,7 +144,7 @@ export class wordDriver
       };
       getCanReplace();
     }
-    
+
     if (!list) { return; }
     if (list.length <= 0) { return; }
 
@@ -169,13 +197,13 @@ export class wordDriver
       parsedList.push(witchWord);
 
       needPar = questionList[witchWord];
-  
+
       const contentList = needPar.split('(换)');
       for (let i of contentList)
       {
         try
         {
-          let abc = await parsStart(i, wordData, this.word, session, matchList);
+          let abc = await this.parMsg(i, wordData, session, matchList);
 
           if (!abc) { continue; }
           const a = abc.message;
@@ -307,5 +335,18 @@ export class wordDriver
     };
 
     await parOne();
+  }
+
+  /**
+   * 词库解析文本
+   * @param msg 需要解析的文本
+   * @param wordParConfig 文本所在的词库配置，{data?: xxx, author?: xxx, saveDB: xxx, name?: xxx}
+   * @param session koishi的上下文Session，或是session的关键元素
+   * @param matchList 输入匹配列表，可空
+   * @returns 返回解析结果
+   */
+  async parMsg(msg: string, wordParConfig: wordParConfig, session: Session | wordDataInputType, matchList?: matchType)
+  {
+    return await parsStart(msg, wordParConfig as wordSaveData, this.word, session, matchList);
   }
 }
