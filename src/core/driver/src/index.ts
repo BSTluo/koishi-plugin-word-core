@@ -144,31 +144,49 @@ const getTree = (str: string): any[] =>
       const v = parseStr[0];
       parseStr = parseStr.slice(1);
       // console.log(v)
-      
+
       if (v == '(')
       {
         if (!tempArr[index]) { tempArr[index] = []; }
         const length = tempArr[index].length;
-        
-        if (tempArr[index][length - 1]?.endsWith('\\'))
+
+        if (typeof tempArr[index][length - 1] == 'string')
         {
-          tempArr[index][length - 1] = tempArr[index][length - 1].slice(0, -1);
-          tempArr[index][length - 1] += v;
-        } else
+          if (tempArr[index][length - 1].endsWith('\\'))
+          {
+            tempArr[index][length - 1] = tempArr[index][length - 1].slice(0, -1);
+            tempArr[index][length - 1] += v;
+          } else
+          {
+            tempArr[index].push(par());
+          }
+        }
+        else
         {
           tempArr[index].push(par());
         }
+
+
       } else if (v == ')')
       {
         if (!tempArr[index]) { tempArr[index] = []; }
         const length = tempArr[index].length;
-        if (tempArr[index][length - 1]?.endsWith('\\'))
+
+        if (typeof tempArr[index][length - 1] == 'string')
         {
-          tempArr[index][length - 1] = tempArr[index][length - 1].slice(0, -1);
-          tempArr[index][length - 1] += v;
-        } else {
+          if (tempArr[index][length - 1]?.endsWith('\\'))
+          {
+            tempArr[index][length - 1] = tempArr[index][length - 1].slice(0, -1);
+            tempArr[index][length - 1] += v;
+          } else
+          {
+            return tempArr;
+          }
+        } else
+        {
           return tempArr;
         }
+
       } else if (v == ':')
       {
         if (!tempArr[index]) { tempArr[index] = ['']; }
