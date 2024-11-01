@@ -96,21 +96,24 @@ export class wordDriver
     {
       const testMsgGrammar = () =>
       {
-        for (let item of wordCache.grammarKeys)
+        let item = '';
+
+        for (let a of wordCache.grammarKeys)
         {
+          item = a;
           for (const key of triggerList)
           {
             const reg = this.word.trigger.trigger[key].reg[0]; // 获取正则表达式字符串
             const escapedKey = key.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // 转义正则特殊字符
-            const b = item.replace(new RegExp(escapedKey, 'g'), `(${reg})`);
+            item = item.replace(new RegExp(escapedKey, 'g'), `${reg}`);
 
-            const msgReg = new RegExp(`^${b}$`);
-
+            const msgReg = new RegExp(`^${item}$`);
+            
             if (msgReg.test(q))
             {
-              list = wordCache.hasKey[item];
-
-              return item;
+              list = wordCache.hasKey[a];
+              
+              return a;
             }
 
           }
@@ -118,12 +121,10 @@ export class wordDriver
       };
 
       const grammarMssg = testMsgGrammar();
-
+      
       if (!list) { return; }
       if (list.length <= 0) { return; }
       if (!grammarMssg) { return; }
-
-
 
       for (const key of triggerList)
       {
@@ -147,7 +148,6 @@ export class wordDriver
       }
 
       q = grammarMssg;
-
       // 找到这个触发词对应的词库，并开始解析
       // const getCanReplace = () =>
       // {
