@@ -276,7 +276,6 @@ export class Editor {
     if (!list.includes(name)) {
       const dataTemp: Record<string, string[]> = {};
       dataTemp[q] = [a];
-
       this.addCache(q, name);
       if (await this.updateWord(name, {
         name: name,
