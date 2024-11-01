@@ -102,21 +102,52 @@ export class wordDriver
           {
             const reg = this.word.trigger.trigger[key].reg[0]; // 获取正则表达式字符串
             const escapedKey = key.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // 转义正则特殊字符
-            const b = item.replace(new RegExp(escapedKey, 'g'), reg);
+            const b = item.replace(new RegExp(escapedKey, 'g'), `(${reg})`);
 
-            const msgReg = new RegExp(b);
+            const msgReg = new RegExp(`^${b}$`);
 
             if (msgReg.test(q))
             {
-              q = item;
-              list = wordCache.hasKey[q];
-              return;
+              list = wordCache.hasKey[item];
+
+              return item;
             }
 
           }
         }
       };
-      testMsgGrammar();
+
+      const grammarMssg = testMsgGrammar();
+
+      if (!list) { return; }
+      if (list.length <= 0) { return; }
+      if (!grammarMssg) { return; }
+
+
+
+      for (const key of triggerList)
+      {
+        const id = this.word.trigger.trigger[key].id;
+
+        const reg = this.word.trigger.trigger[key].reg[0]; // 获取正则表达式字符串
+
+        const escapedKey = key.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // 转义正则特殊字符
+        const b = grammarMssg.replace(new RegExp(escapedKey, 'g'), `${reg}`);
+
+        const msgReg = new RegExp(`^${b}$`);
+
+        if (msgReg.test(q))
+        {
+          const list = q.match(msgReg) || [];
+
+          if (!matchList[id]) { matchList[id] = []; }
+          matchList[id] = matchList[id].concat(list.slice(1, list.length));
+
+        }
+      }
+
+      q = grammarMssg;
+
       // 找到这个触发词对应的词库，并开始解析
       // const getCanReplace = () =>
       // {
@@ -222,6 +253,7 @@ export class wordDriver
       needPar = questionList[witchWord];
 
       const contentList = needPar.split('(换)');
+      console.log('aaa', matchList);
       for (let i of contentList)
       {
         try
