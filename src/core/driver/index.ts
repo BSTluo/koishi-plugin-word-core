@@ -253,7 +253,7 @@ export class wordDriver
       needPar = questionList[witchWord];
 
       const contentList = needPar.split('(换)');
-      console.log('aaa', matchList);
+      // console.log('aaa', matchList);
       for (let i of contentList)
       {
         try
@@ -315,7 +315,7 @@ export class wordDriver
           }
         } catch (err: any)
         {
-          console.log(err);
+          // console.log(err);
           const errorType = err.message;
           if (!errorType) { return err; }
           const msg = errorType.split(':')[1];
