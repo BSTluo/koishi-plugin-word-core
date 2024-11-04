@@ -92,57 +92,111 @@ export class wordDriver
 
     let over = false;
 
-    if (!wordCache.hasKey[q])
+    if (!wordCache.normalKeys.includes(q))
     {
-      // 找到这个触发词对应的词库，并开始解析
-      const getCanReplace = () =>
+      const testMsgGrammar = () =>
       {
-        while (!over)
+        let item = '';
+
+        for (let a of wordCache.grammarKeys)
         {
-          const oldQ = q;
-
-          for (let e of triggerList)
+          item = a;
+          for (const key of triggerList)
           {
-            const nowTrigger = this.word.trigger.trigger[e];
-            const regList = nowTrigger.reg;
+            const reg = this.word.trigger.trigger[key].reg[0]; // 获取正则表达式字符串
+            const escapedKey = key.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // 转义正则特殊字符
+            item = item.replace(new RegExp(escapedKey, 'g'), `${reg}`);
 
-            for (let regStr of regList)
+            const msgReg = new RegExp(`^${item}$`);
+            
+            if (msgReg.test(q))
             {
-              const reg = new RegExp(regStr);
-
-              const matchResult = q.match(reg);
-              // console.log('q', q);
-              // console.log('reg', reg);
-              // console.log('matchResult', matchResult);
-
-              if (!matchResult)
-              {
-                const wordQuestionDB = Object.keys(wordCache.hasKey);
-
-                for (let i = 0; i < wordQuestionDB.length; i++)
-                {
-                  const element = wordQuestionDB[i];
-                  if (q.match(RegExp('^' + element + '$'))) { list = wordCache.hasKey[element]; /* session.content = element;*/ q = element; return; }
-                }
-              } else
-              {
-                if (!matchList[nowTrigger.id]) { matchList[nowTrigger.id] = []; }
-                matchList[nowTrigger.id] = matchList[nowTrigger.id].concat(matchResult[1]);
-                q = q.replace(reg, e);
-                // session.content = q;
-                if (wordCache.hasKey[q]) { list = wordCache.hasKey[q]; return; }
-              }
+              list = wordCache.hasKey[a];
+              
+              return a;
             }
-          }
 
-          if (oldQ === q)
-          {
-            over = true;
-            return;
           }
         }
       };
-      getCanReplace();
+
+      const grammarMssg = testMsgGrammar();
+      
+      if (!list) { return; }
+      if (list.length <= 0) { return; }
+      if (!grammarMssg) { return; }
+
+      for (const key of triggerList)
+      {
+        const id = this.word.trigger.trigger[key].id;
+
+        const reg = this.word.trigger.trigger[key].reg[0]; // 获取正则表达式字符串
+
+        const escapedKey = key.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // 转义正则特殊字符
+        const b = grammarMssg.replace(new RegExp(escapedKey, 'g'), `${reg}`);
+
+        const msgReg = new RegExp(`^${b}$`);
+
+        if (msgReg.test(q))
+        {
+          const list = q.match(msgReg) || [];
+
+          if (!matchList[id]) { matchList[id] = []; }
+          matchList[id] = matchList[id].concat(list.slice(1, list.length));
+
+        }
+      }
+
+      q = grammarMssg;
+      // 找到这个触发词对应的词库，并开始解析
+      // const getCanReplace = () =>
+      // {
+      //   while (!over)
+      //   {
+      //     const oldQ = q;
+
+      //     for (let e of triggerList)
+      //     {
+      //       const nowTrigger = this.word.trigger.trigger[e];
+      //       const regList = nowTrigger.reg;
+
+      //       for (let regStr of regList)
+      //       {
+      //         const reg = new RegExp(regStr);
+
+      //         const matchResult = q.match(reg);
+      //         // console.log('q', q);
+      //         // console.log('reg', reg);
+      //         // console.log('matchResult', matchResult);
+
+      //         if (!matchResult)
+      //         {
+      //           const wordQuestionDB = Object.keys(wordCache.hasKey);
+
+      //           for (let i = 0; i < wordQuestionDB.length; i++)
+      //           {
+      //             const element = wordQuestionDB[i];
+      //             if (q.match(RegExp('^' + element + '$'))) { list = wordCache.hasKey[element]; /* session.content = element;*/ q = element; return; }
+      //           }
+      //         } else
+      //         {
+      //           if (!matchList[nowTrigger.id]) { matchList[nowTrigger.id] = []; }
+      //           matchList[nowTrigger.id] = matchList[nowTrigger.id].concat(matchResult[1]);
+      //           q = q.replace(reg, e);
+      //           // session.content = q;
+      //           if (wordCache.hasKey[q]) { list = wordCache.hasKey[q]; return; }
+      //         }
+      //       }
+      //     }
+
+      //     if (oldQ === q)
+      //     {
+      //       over = true;
+      //       return;
+      //     }
+      //   }
+      // };
+      // getCanReplace();
     }
 
     if (!list) { return; }
@@ -199,6 +253,7 @@ export class wordDriver
       needPar = questionList[witchWord];
 
       const contentList = needPar.split('(换)');
+      // console.log('aaa', matchList);
       for (let i of contentList)
       {
         try
@@ -260,7 +315,7 @@ export class wordDriver
           }
         } catch (err: any)
         {
-          console.log(err);
+          // console.log(err);
           const errorType = err.message;
           if (!errorType) { return err; }
           const msg = errorType.split(':')[1];
