@@ -1,3 +1,10 @@
+<div align="center">
+  <a href="https://koishi.chat/" target="_blank">
+    <img width="160" src="https://koishi.chat/logo.png" alt="logo">
+  </a>
+  <h1 id="koishi"><a href="https://koishi.chat/" target="_blank">Koishi</a></h1>
+</div>
+
 # koishi-plugin-word-core
 
 [![npm](https://img.shields.io/npm/v/koishi-plugin-word-core?style=flat-square)](https://www.npmjs.com/package/koishi-plugin-word-core)
