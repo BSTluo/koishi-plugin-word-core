@@ -241,7 +241,7 @@ export class Editor {
     if (!author.includes(authorID)) {
       return '此作者不存在';
     } else {
-      author = author.splice(author.indexOf(name), 1);
+      author.splice(author.indexOf(name), 1);
       await this.updateAuthor(name, author);
       return '已删除作者';
     }
