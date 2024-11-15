@@ -16,7 +16,7 @@
 
 ## 简介
 
-[文档地址](https://docs.reifuu.icu/src/3.0/)
+[文档 WIKI 地址](https://docs.reifuu.icu/src/3.0/)
 
 `word-core`是一款设置对话的插件，类似于`dialogue`插件，可以通过设置`触发词`以及`回答`来让机器人与你对话
 
