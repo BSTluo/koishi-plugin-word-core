@@ -56,9 +56,11 @@ export class wordDriver
   async start(session: Session | wordDataInputType, callback: (str: string | null | undefined) => void)
   {
     // this.ctx.inject(['word'], async ctx => {
+
     if (!session.content) { return; }
 
     let q: string = session.content;
+
     const wordCache = await this.word.cache.getCache();
 
     const matchList: matchType = {};
@@ -108,11 +110,11 @@ export class wordDriver
             item = item.replace(new RegExp(escapedKey, 'g'), `${reg}`);
 
             const msgReg = new RegExp(`^${item}$`);
-            
+
             if (msgReg.test(q))
             {
               list = wordCache.hasKey[a];
-              
+
               return a;
             }
 
@@ -121,7 +123,7 @@ export class wordDriver
       };
 
       const grammarMssg = testMsgGrammar();
-      
+
       if (!list) { return; }
       if (list.length <= 0) { return; }
       if (!grammarMssg) { return; }

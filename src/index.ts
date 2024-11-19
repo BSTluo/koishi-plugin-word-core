@@ -1,4 +1,4 @@
-import { Context, Logger, Schema, h } from 'koishi';
+import { Context, Logger, Schema, clone, h } from 'koishi';
 import { word } from './core/word';
 import { resolve } from 'path';
 import { } from '@koishijs/plugin-console';
@@ -515,7 +515,9 @@ export const apply = async (ctx: Context, config: Config) =>
       if (session.userId == session.bot.user.id || session.userId == session.bot.selfId) { return; }
       const atBot = `<at id="${session.bot.selfId}"/> `;
 
-      const forkSession = session.bot.session(session.event);
+      const forkSession = session.bot.session(clone(session.event));
+      
+      forkSession.content = session.content;
 
       if (forkSession.content?.startsWith(atBot)) { forkSession.content = session.content.replace(atBot, ''); }
 
