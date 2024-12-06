@@ -1,4 +1,4 @@
-import { Context, Element, Session, capitalize, is, Bot } from "koishi";
+import { Session, Bot } from "koishi";
 import { ifStatement, statement, statusMsg } from "../../extend/statement";
 import { matchType } from "..";
 import { word } from "../../word";
@@ -19,7 +19,7 @@ export interface wordDataInputType
 
 type parTemp = {
   // item:{userid:{saveDB:{itemName:number}}}
-  item: Record<string, Record<string, Record<string, number>>>,
+  item: Record<string, Record<string, Record<string, number | string[]>>>,
   userConfig: Record<string, settingType>;
 };
 
@@ -280,6 +280,8 @@ export interface chatFunctionType
     getUserConfig: (uid: string, key: string) => Promise<settingTypeValue>;
     saveUserConfig: (uid: string, key: string, value: settingTypeValue) => Promise<void>;
     removeUserConfig: (uid: string, key: string) => Promise<void>;
+    getList: (uid: string, saveDB: string, itemName: string) => Promise<any>;
+    saveList: (uid: string, saveDB: string, itemName: string, list: string[]) => Promise<boolean>;
   };
 }
 
@@ -351,6 +353,7 @@ const parseTrees = async (questionList: string, word: word, inData: any[], sessi
             getItem: async (uid: string, saveDB: string, itemName: string) =>
             {
               const num = await word.user.getItem(uid, saveDB, itemName);
+              if (Array.isArray(num)) { return end('该物品是列表型'); }
 
               if (!userDataTemp.item) { userDataTemp.item = {}; }
 
@@ -399,7 +402,46 @@ const parseTrees = async (questionList: string, word: word, inData: any[], sessi
               delete userDataTemp.userConfig[uid][key];
 
               saveItemDataTemp[(questionList) ? questionList : ''] = userDataTemp;
-            }
+            },
+
+            getList: async (uid: string, saveDB: string, listName: string) =>
+            {
+              const num = await word.user.getItem(uid, saveDB, listName);
+              if (typeof num != 'number') { return end('该物品是数量型'); }
+
+              if (!userDataTemp.item) { userDataTemp.item = {}; }
+
+              if (!userDataTemp.item[uid]) { userDataTemp.item[uid] = {}; }
+
+              if (!userDataTemp.item[uid][saveDB]) { userDataTemp.item[uid][saveDB] = {}; }
+
+              if (
+                !userDataTemp.item[uid][saveDB][listName] &&
+                !(Array.isArray(userDataTemp.item[uid][saveDB][listName]) && userDataTemp.item[uid][saveDB][listName].length === 0)
+              )
+              {
+                userDataTemp.item[uid][saveDB][listName] = num ? num : [];
+              }
+              saveItemDataTemp[(questionList) ? questionList : ''] = userDataTemp;
+
+              return userDataTemp.item[uid][saveDB][listName];
+              // return num;
+            },
+
+            saveList: async (uid: string, saveDB: string, itemName: string, list: string[]) =>
+            {
+              if (!userDataTemp.item) { userDataTemp.item = {}; }
+
+              if (!userDataTemp.item[uid]) { userDataTemp.item[uid] = {}; }
+
+              if (!userDataTemp.item[uid][saveDB]) { userDataTemp.item[uid][saveDB] = {}; }
+
+              userDataTemp.item[uid][saveDB][itemName] = list;
+              saveItemDataTemp[(questionList) ? questionList : ''] = userDataTemp;
+
+              // return await word.user.updateItem(uid, saveDB, itemName, number);
+              return true;
+            },
           }
         }, session, isIF);
 
