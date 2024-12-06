@@ -39,10 +39,12 @@ const next: typeNext = (data?: string) =>
 
 // 杀死此回复词
 // data为返回的值
-type typeEnd = (data?: string) => {
+type typeEndBack = {
   status: 'end';
   data: string | undefined;
 };
+
+type typeEnd = (data?: string) => typeEndBack;
 
 const end: typeEnd = (data?: string) =>
 {
@@ -276,11 +278,11 @@ export interface chatFunctionType
   parPack: typeParPack;
   internal: {
     saveItem: (uid: string, saveDB: string, itemName: string, number: number) => Promise<boolean>;
-    getItem: (uid: string, saveDB: string, itemName: string) => Promise<any>;
+    getItem: (uid: string, saveDB: string, itemName: string) => Promise<number | statusMsg>;
     getUserConfig: (uid: string, key: string) => Promise<settingTypeValue>;
     saveUserConfig: (uid: string, key: string, value: settingTypeValue) => Promise<void>;
     removeUserConfig: (uid: string, key: string) => Promise<void>;
-    getList: (uid: string, saveDB: string, itemName: string) => Promise<any>;
+    getList: (uid: string, saveDB: string, itemName: string) => Promise<string[] | statusMsg>;
     saveList: (uid: string, saveDB: string, itemName: string, list: string[]) => Promise<boolean>;
   };
 }
@@ -353,7 +355,7 @@ const parseTrees = async (questionList: string, word: word, inData: any[], sessi
             getItem: async (uid: string, saveDB: string, itemName: string) =>
             {
               const num = await word.user.getItem(uid, saveDB, itemName);
-              if (Array.isArray(num)) { return end('该物品是列表型'); }
+              if (Array.isArray(num) && num) { return kill('该物品是列表型'); }
 
               if (!userDataTemp.item) { userDataTemp.item = {}; }
 
@@ -361,9 +363,14 @@ const parseTrees = async (questionList: string, word: word, inData: any[], sessi
 
               if (!userDataTemp.item[uid][saveDB]) { userDataTemp.item[uid][saveDB] = {}; }
 
-              if (!userDataTemp.item[uid][saveDB][itemName] && userDataTemp.item[uid][saveDB][itemName] != 0) { userDataTemp.item[uid][saveDB][itemName] = num ? num : 0; }
+              if (!userDataTemp.item[uid][saveDB][itemName] && userDataTemp.item[uid][saveDB][itemName] != 0)
+              {
+                userDataTemp.item[uid][saveDB][itemName] = num ? num : 0;
+              }
 
               saveItemDataTemp[(questionList) ? questionList : ''] = userDataTemp;
+
+              userDataTemp.item[uid][saveDB][itemName] = userDataTemp.item[uid][saveDB][itemName] as number;
 
               return userDataTemp.item[uid][saveDB][itemName];
               // return num;
@@ -407,7 +414,7 @@ const parseTrees = async (questionList: string, word: word, inData: any[], sessi
             getList: async (uid: string, saveDB: string, listName: string) =>
             {
               const num = await word.user.getItem(uid, saveDB, listName);
-              if (typeof num != 'number') { return end('该物品是数量型'); }
+              if (!Array.isArray(num) && num) { return kill('该物品是数量型'); }
 
               if (!userDataTemp.item) { userDataTemp.item = {}; }
 
@@ -424,6 +431,8 @@ const parseTrees = async (questionList: string, word: word, inData: any[], sessi
               }
               saveItemDataTemp[(questionList) ? questionList : ''] = userDataTemp;
 
+              userDataTemp.item[uid][saveDB][listName] = userDataTemp.item[uid][saveDB][listName] as string[];
+
               return userDataTemp.item[uid][saveDB][listName];
               // return num;
             },
@@ -438,7 +447,7 @@ const parseTrees = async (questionList: string, word: word, inData: any[], sessi
 
               userDataTemp.item[uid][saveDB][itemName] = list;
               saveItemDataTemp[(questionList) ? questionList : ''] = userDataTemp;
-
+              console.log(saveItemDataTemp);
               // return await word.user.updateItem(uid, saveDB, itemName, number);
               return true;
             },
