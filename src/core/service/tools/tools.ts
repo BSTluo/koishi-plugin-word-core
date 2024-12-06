@@ -1,4 +1,4 @@
-import { Context } from "koishi";
+import { Context, Random } from "koishi";
 import { allType, recycleBinList, wordData, wordUserConfig, wordUserPackData, wordUserTemp } from "../..";
 
 // 读取库
@@ -27,7 +27,7 @@ export const writeDBFunction = async (ctx: Context, dbName: dbNameList, key: str
 
 export const getDBFunction = async (ctx: Context, dbName: dbNameList) =>
 {
-  const dbData = await ctx.database.get(dbName, { id: { $regex: /^[\s\S]+$/ } })
+  const dbData = await ctx.database.get(dbName, { id: { $regex: /^[\s\S]+$/ } });
 
   const data/*: dbCache*/ = {
     idList: dbData.map(v =>
@@ -55,9 +55,17 @@ export const removeDBFunction = async (ctx: Context, dbName: dbNameList, key: st
  * @param maxNumber 随机数上限
  * @returns 
  */
+const random = new Random(() => Math.random());
+
 export const randomNumber = (minNumber: number, maxNumber: number): number =>
 {
-  return Math.floor(Math.random() * (maxNumber - minNumber + 1)) + minNumber;
+  if (minNumber > maxNumber)
+  {
+    return random.int(maxNumber, minNumber);
+  } else
+  {
+    return random.int(minNumber, maxNumber);
+  }
 };
 
 export let url = '';
