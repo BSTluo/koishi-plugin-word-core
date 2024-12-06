@@ -22,6 +22,28 @@ export function getCache()
   return wordCache;
 };
 
+function isRegexSyntax(str:string)
+{
+  // 定义正则语法字符的匹配规则
+  const regexSyntax = /[.*+?^${}()|[\]\\]/;
+
+  // 第一步：初步检测是否包含正则语法字符
+  if (!regexSyntax.test(str))
+  {
+    return false;
+  }
+
+  // 第二步：尝试解析字符串为正则表达式
+  try
+  {
+    new RegExp(str); // 如果能成功创建正则，说明是合法的正则语法
+    return true;
+  } catch (e)
+  {
+    return false; // 无法解析为正则，说明不是完整的正则语法
+  }
+}
+
 export const cacheRefresh = async (getDBTools: getDBType) =>
 {
   const triggerKeys = Object.keys(trigger);
@@ -49,13 +71,12 @@ export const cacheRefresh = async (getDBTools: getDBType) =>
 
       for (let a of triggerKeys)
       {
-        if (v.includes(a))
+        if (v.includes(a) || isRegexSyntax(v))
         {
           wordCache.grammarKeys.push(v);
           return;
         }
       }
-
       wordCache.normalKeys.push(v);
     });
   });
