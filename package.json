@@ -15,9 +15,9 @@
     "plugin"
   ],
   "peerDependencies": {
-    "@koishijs/plugin-console": "^5.30.0",
-    "blockly": "^11.2.0-beta.0",
-    "koishi": "^4.18.0"
+    "@koishijs/plugin-console": "^5.30.1",
+    "blockly": "^11.2.0-beta.2",
+    "koishi": "^4.18.2"
   },
   "koishi": {
     "service": {
@@ -38,14 +38,14 @@
     "url": "git+https://github.com/BSTluo/koishi-plugin-word-core.git"
   },
   "devDependencies": {
-    "@koishijs/client": "^5.30.0",
-    "blockly": "^11.2.0-beta.0",
+    "@koishijs/client": "^5.30.1",
+    "blockly": "^11.2.0-beta.2",
     "bootstrap-icons": "^1.11.3",
     "form-data": "^4.0.1"
   },
   "dependencies": {
-    "axios": "^1.7.7",
-    "blockly": "^11.2.0-beta.0",
+    "axios": "^1.7.9",
+    "blockly": "^11.2.0-beta.2",
     "bootstrap-icons": "^1.11.3",
     "form-data": "^4.0.1"
   }
