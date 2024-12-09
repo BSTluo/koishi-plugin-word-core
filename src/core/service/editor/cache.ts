@@ -22,7 +22,7 @@ export function getCache()
   return wordCache;
 };
 
-function isRegexSyntax(str:string)
+function isRegexSyntax(str: string)
 {
   // 定义正则语法字符的匹配规则
   const regexSyntax = /[.*+?^${}()|[\]\\]/;
@@ -105,12 +105,12 @@ export const addCache = (q: string, wordName: string) =>
   {
     if (q.includes(a))
     {
-      wordCache.grammarKeys.push(q);
+      if (!wordCache.grammarKeys.includes(q)) { wordCache.grammarKeys.push(q); }
       return;
     }
   }
 
-  wordCache.normalKeys.push(q);
+  if (!wordCache.normalKeys.includes(q)) { wordCache.normalKeys.push(q); }
 };
 
 // 取消标识某问题属于某词库
