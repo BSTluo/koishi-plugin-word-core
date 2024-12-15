@@ -61,10 +61,10 @@ export const randomNumber = (minNumber: number, maxNumber: number): number =>
 {
   if (minNumber > maxNumber)
   {
-    return random.int(maxNumber, minNumber);
+    return Math.floor(Math.random() * (minNumber - maxNumber + 1)) + maxNumber;
   } else
   {
-    return random.int(minNumber, maxNumber);
+    return Math.floor(Math.random() * (maxNumber - minNumber + 1)) + minNumber;
   }
 };
 
