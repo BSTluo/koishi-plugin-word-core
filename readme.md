@@ -35,3 +35,11 @@
 作者QQ：1946831552
 
 词库交流群：312762918
+
+## 附属插件列表
+
+基础语法包：[https://github.com/BSTluo/koishi-plugin-word-core-grammar-basic](https://github.com/BSTluo/koishi-plugin-word-core-grammar-basic)
+
+基础触发器：[https://github.com/BSTluo/koishi-plugin-word-core-event-trigger-basic](https://github.com/BSTluo/koishi-plugin-word-core-event-trigger-basic)
+
+花园触发器：[https://github.com/BSTluo/koishi-plugin-word-core-iirose-event-trigger](https://github.com/BSTluo/koishi-plugin-word-core-iirose-event-trigger)
