@@ -73,14 +73,16 @@ export const cacheRefresh = async (getDBTools: getDBType) =>
       {
         if (v.includes(a) || isRegexSyntax(v))
         {
-          wordCache.grammarKeys.push(v);
+          if (!wordCache.grammarKeys.includes(v)) { wordCache.grammarKeys.push(v); }
+
           return;
         }
       }
-      wordCache.normalKeys.push(v);
+      if (!wordCache.normalKeys.includes(v)) { wordCache.normalKeys.push(v); }
+
     });
   });
-
+  // console.log(wordCache)
   return wordCache;
 };
 
@@ -103,13 +105,12 @@ export const addCache = (q: string, wordName: string) =>
 
   for (let a of triggerKeys)
   {
-    if (q.includes(a))
+    if (q.includes(a) || isRegexSyntax(q))
     {
       if (!wordCache.grammarKeys.includes(q)) { wordCache.grammarKeys.push(q); }
       return;
     }
   }
-
   if (!wordCache.normalKeys.includes(q)) { wordCache.normalKeys.push(q); }
 };
 

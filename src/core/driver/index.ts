@@ -61,7 +61,7 @@ export class wordDriver
 
     let q: string = session.content;
 
-    const wordCache = await this.word.cache.getCache();
+    const wordCache = this.word.cache.getCache();
 
     const matchList: matchType = {};
 

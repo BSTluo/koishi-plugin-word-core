@@ -15,6 +15,7 @@ export interface wordDataInputType
   event?: Session['event'];
   prompt?: Session['prompt'];
   guildId?: Session['guildId'];
+  execute?: Session['execute'];
 }
 
 type parTemp = {
