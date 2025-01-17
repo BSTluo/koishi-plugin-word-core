@@ -13,7 +13,8 @@
     "moduleResolution": "Bundler",
     "jsx": "react-jsx",
     "jsxImportSource": "@satorijs/element",
-    "strict": true
+    "strict": true,
+    "strictFunctionTypes": false
   },
   "include": [
     "src",

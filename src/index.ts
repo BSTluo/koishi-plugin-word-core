@@ -486,7 +486,7 @@ export const apply = async (ctx: Context, config: Config) =>
 
         const a = await ctx.word.editor.getRecycleBinList();
 
-        return `<at name="${session.username}" /> ${a}`;
+        return `<at name="${session.username}" /> 回收站包含以下词库：\n${a.join('\n')}`;
       });
 
     // 从回收站回收某个词库
@@ -606,7 +606,7 @@ export const apply = async (ctx: Context, config: Config) =>
 
   const getWebuiBot = () =>
   {
-    return new wordBot(ctx, {});
+    return new wordBot(ctx as any, {});
   };
 
   ctx.console.addListener('sandbox-send', async (msg: string) =>

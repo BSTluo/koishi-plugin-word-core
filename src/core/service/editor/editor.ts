@@ -95,16 +95,16 @@ export class Editor {
    * @returns 结果
    */
   async removeWord(name: string): Promise<"词库列表不存在此词库" | "ok" | "获取的插件格式异常"> {
-    if (JSON.stringify(this.res) == "{}") { await this.getCloudWordList(); }
-    const pluginData = this.res[name];
+    // if (JSON.stringify(this.res) == "{}") { await this.getCloudWordList(); }
+    // const pluginData = this.res[name];
+    
+    const wordList = await this.getWordList();
 
-    if (!pluginData) { return '词库列表不存在此词库'; }
-
-    const pluginDBName = pluginData.dbname;
+    if (!wordList.includes(name)) { return '词库列表不存在此词库'; }
 
     const data = await this.readWord(name);
     this.writeRecycleBin(name, data);
-    this.removeDB('wordData', pluginDBName);
+    this.removeDB('wordData', name);
 
     return 'ok';
   }
