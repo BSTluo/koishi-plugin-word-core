@@ -124,12 +124,18 @@ export const parsStart = async (questionList: string, wordData: wordSaveData, wo
   }
 
   const msgOut = msg.join('');
+
   if (msgOut)
   {
     return { message: msgOut, data: userData };
   } else
   {
-    return null;
+    
+    if (userData.hasOwnProperty('item')) {
+      return { message: '', data: userData };
+    } else {
+      return null;
+    }
   }
 };
 

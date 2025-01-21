@@ -262,9 +262,9 @@ export class wordDriver
         {
           let abc = await this.parMsgPrivate(i, wordData, session, matchList);
 
+          // console.log(abc);
           if (!abc) { continue; }
           const a = abc.message;
-          // console.log(abc)
 
           const needSaveObj = abc.data;
           // 获取物品
@@ -317,7 +317,7 @@ export class wordDriver
           }
         } catch (err: any)
         {
-          // console.log(err);
+          console.log(err);
           const errorType = err.message;
           if (!errorType) { return err; }
           const msg = errorType.split(':')[1];
@@ -424,7 +424,6 @@ export class wordDriver
 
       if (!abc) { return; }
       const a = abc.message;
-      // console.log(abc)
 
       const needSaveObj = abc.data;
       // 获取物品
