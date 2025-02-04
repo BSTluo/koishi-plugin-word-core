@@ -3,6 +3,7 @@ import { parsStart, saveItemDataTemp, wordDataInputType } from './src';
 import { word } from '../word';
 import { Session } from 'koishi';
 import { wordSaveData } from '..';
+import { triggerType } from '../extend/trigger';
 
 export const inject = {
   require: ['word']
@@ -37,6 +38,76 @@ export interface wordParConfig
 
 export type matchType = Record<string, string[]>;
 
+function parseTriggrtString(a:string, b:string, mapping:triggerType) {
+  // 获取所有占位符的 key
+  const placeholderKeys = Object.keys(mapping);
+  // 构造一个正则，用来匹配 b 中的占位符（注意：对 key 做了转义）
+  const placeholderPattern = new RegExp(
+    placeholderKeys.map(k => k.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|'),
+    'g'
+  );
+
+  // 解析 b，分离出文字部分与占位符部分
+  const segments = [];
+  let lastIndex = 0;
+  let match;
+  while ((match = placeholderPattern.exec(b)) !== null) {
+    if (match.index > lastIndex) {
+      // 文字部分不再做转义，直接当做正则拼接
+      segments.push({ type: 'literal', value: b.slice(lastIndex, match.index) });
+    }
+    segments.push({ type: 'placeholder', value: match[0] });
+    lastIndex = match.index + match[0].length;
+  }
+  if (lastIndex < b.length) {
+    segments.push({ type: 'literal', value: b.slice(lastIndex) });
+  }
+
+  // 构造最终的正则表达式字符串，同时记录占位符对应的捕获组位置
+  let regexStr = '';
+  let groupIndex = 0;
+  // 用于记录每个占位符对应的 id 以及捕获组编号
+  const placeholderGroupMap: { id: string; group: number; }[] = [];
+
+  segments.forEach(seg => {
+    if (seg.type === 'literal') {
+      // 注意：直接拼接文字部分，不做转义，
+      // 这样可以使得 b 中的 "\\d" 保持为 "\d"（匹配数字）的含义
+      regexStr += seg.value;
+    } else if (seg.type === 'placeholder') {
+      const config = mapping[seg.value];
+      if (!config || !config.reg || !config.reg[0]) {
+        throw new Error(`占位符 ${seg.value} 对应的正则配置不存在`);
+      }
+      // 取出该占位符对应的正则片段（假定只有一个捕获组）
+      const snippet = config.reg[0];
+      regexStr += snippet;
+      groupIndex += 1;
+      placeholderGroupMap.push({ id: config.id, group: groupIndex });
+    }
+  });
+
+  // 构造完整正则：要求匹配整个字符串
+  const finalRegex = new RegExp('^' + regexStr + '$');
+  // 调试时可打印查看构造的正则
+  // console.log("构造的正则：", finalRegex);
+
+  const matchResult = finalRegex.exec(a);
+  if (!matchResult) {
+    // 若不匹配，返回空对象
+    return {};
+  }
+
+  // 根据捕获组的编号，提取结果到最终的对象中
+  const result: matchType = {};
+  placeholderGroupMap.forEach(({ id, group }) => {
+    if (!result[id]) result[id] = [];
+    result[id].push(matchResult[group]);
+  });
+
+  return result;
+}
+
 export class wordDriver
 {
   private ctx: Context;
@@ -63,7 +134,7 @@ export class wordDriver
 
     const wordCache = this.word.cache.getCache();
 
-    const matchList: matchType = {};
+    let matchList: matchType = {};
 
     // let matchedString: string | undefined;
 
@@ -91,8 +162,6 @@ export class wordDriver
 
     // 获取输入替换列表
     const triggerList = Object.keys(this.word.trigger.trigger);
-
-    let over = false;
 
     if (!wordCache.normalKeys.includes(q))
     {
@@ -128,26 +197,7 @@ export class wordDriver
       if (list.length <= 0) { return; }
       if (!grammarMssg) { return; }
 
-      for (const key of triggerList)
-      {
-        const id = this.word.trigger.trigger[key].id;
-
-        const reg = this.word.trigger.trigger[key].reg[0]; // 获取正则表达式字符串
-
-        const escapedKey = key.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // 转义正则特殊字符
-        const b = grammarMssg.replace(new RegExp(escapedKey, 'g'), `${reg}`);
-
-        const msgReg = new RegExp(`^${b}$`);
-
-        if (msgReg.test(q))
-        {
-          const list = q.match(msgReg) || [];
-
-          if (!matchList[id]) { matchList[id] = []; }
-          matchList[id] = matchList[id].concat(list.slice(1, list.length));
-
-        }
-      }
+      matchList = parseTriggrtString(q, grammarMssg, this.word.trigger.trigger);
 
       q = grammarMssg;
       // 找到这个触发词对应的词库，并开始解析
