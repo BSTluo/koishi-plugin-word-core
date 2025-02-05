@@ -7,13 +7,16 @@ export const statement: statementType = {
 export const ifStatement: ifStatementType = {
 
 };
+
+export type statementRuleType = (string | number)[];
+
 /**
  * 新增规则
  * @param ruleTrigger 词库语句关键词
  * @param callback 触发时执行的函数，返回值为字符串，此字符串会替换词库语句
  * @returns 当前整个statment规则
  */
-export const addStatement = (ruleTrigger: string, callback: (inData: chatFunctionType, session: Session | wordDataInputType) => statementCallBackType, rule?: number[]) =>
+export const addStatement = (ruleTrigger: string, callback: (inData: chatFunctionType, session: Session | wordDataInputType) => statementCallBackType, rule?: statementRuleType) =>
 {
   if (!statement[ruleTrigger] || !ifStatement[ruleTrigger])
   {
@@ -51,11 +54,11 @@ export const rmStatement = (ruleTrigger: string) =>
 export type statementCallBackType = Promise<string | void | statusMsg>;
 
 export type statementType = {
-  [key: string]: { func: (inData: chatFunctionType, session: Session | wordDataInputType) => statementCallBackType, rule?: number[]; };
+  [key: string]: { func: (inData: chatFunctionType, session: Session | wordDataInputType) => statementCallBackType, rule?: statementRuleType; };
 };
 
 export type ifStatementType = {
-  [key: string]: { func: (inData: chatFunctionType, session: Session | wordDataInputType) => statementCallBackType, rule: number[]; };
+  [key: string]: { func: (inData: chatFunctionType, session: Session | wordDataInputType) => statementCallBackType, rule: statementRuleType; };
 };
 
 export type statusMsg = { status: string; data?: string; };
@@ -64,6 +67,6 @@ export interface statementFunction
 {
   statement: statementType;
   ifStatement: ifStatementType;
-  addStatement: (ruleTrigger: string, callback: (inData: chatFunctionType, session: Session | wordDataInputType) => statementCallBackType, rule?: number[]) => statementType;
+  addStatement: (ruleTrigger: string, callback: (inData: chatFunctionType, session: Session | wordDataInputType) => statementCallBackType, rule?: statementRuleType) => statementType;
   rmStatement: (ruleTrigger: string) => statementType;
 }

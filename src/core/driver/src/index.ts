@@ -1,5 +1,5 @@
 import { Session, Bot } from "koishi";
-import { ifStatement, statement, statusMsg } from "../../extend/statement";
+import { ifStatement, statement, statementRuleType, statusMsg } from "../../extend/statement";
 import { matchType } from "..";
 import { word } from "../../word";
 import { settingType, settingTypeValue, wordSaveData } from "../..";
@@ -130,10 +130,12 @@ export const parsStart = async (questionList: string, wordData: wordSaveData, wo
     return { message: msgOut, data: userData };
   } else
   {
-    
-    if (userData.hasOwnProperty('item')) {
+
+    if (userData.hasOwnProperty('item'))
+    {
       return { message: '', data: userData };
-    } else {
+    } else
+    {
       return null;
     }
   }
@@ -302,8 +304,14 @@ const parseTrees = async (questionList: string, word: word, inData: any[], sessi
   {
     let userDataTemp = data;
     let isIF = ifFuncPackKeys.includes(functonArray[0]);
-    const rule: number[] = (isIF) ? ifStatement[functonArray[0]].rule as number[] : [0];
-
+    let rule: statementRuleType = (isIF) ? ifStatement[functonArray[0]].rule as number[] : [0];
+    if (rule[0] == 'while')
+    {
+      const a = rule.slice(1);
+      const b = functonArray.slice(1);
+      rule = Array.from({ length: b.length }, (_, i) => a[i % a.length]);
+    }
+    
     // 查看当前输入数组的各项是否都为字符串，若发现包含非字符串的项，则递归调用自身解析
     for (let i = 0; i < functonArray.length; i++)
     {
