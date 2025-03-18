@@ -31,11 +31,20 @@ export const Config: Schema<Config> = Schema.object({
 
 export const logger = new Logger('Word-core');
 
-export const usage = `# 非常感谢大家使用！
-词库的教程文档在这里：https://docs.reifuu.icu/
-如果有问题的话欢迎联系我！词库的商店暂时无法主动提交，如果你有想提交的词库的话！
-请将wordData数据库内对应的词库的文本发送到我的邮箱中！请告诉我你的名字和提交的词库类型！
-邮箱：1946831552@qq.com`;
+export const usage = `# 快速入门
+
+这个插件是一个用于编辑小游戏，或者让机器人根据关键词回复的插件。
+
+快速入门请查看这里：https://forum.koishi.xyz/t/topic/7663
+
+# 备注
+1. 词库的教程文档在这里：https://docs.reifuu.icu/
+2. 如果有问题的话欢迎联系我，QQ：1946831552！
+3. 词库的商店暂时无法主动提交，如果你有想提交的词库的话！
+4. 请将wordData数据库内对应的词库的文本发送到我的邮箱中！请告诉我你的名字和提交的词库类型！
+5. 邮箱：1946831552@qq.com
+
+# 欢迎加入我们的群聊一起交流！QQ群：312762918`;
 
 // TypeScript 用户需要进行类型合并
 export const apply = async (ctx: Context, config: Config) =>
@@ -51,7 +60,7 @@ export const apply = async (ctx: Context, config: Config) =>
     ctx.command('word', '词库核心！').subcommand('.add <question:string> <answer:string>', '为一个触发词添加回复').usage('添加一个词库')
       .example('word.add 你好 你也好')
       .action(async ({ session }, question, answer) =>
-      {
+      { 
         if (!session) { return; }
         if (!question) { return `<at name="${session.username}" /> 你没有设置触发词`; }
         if (!answer) { return `<at name="${session.username}" /> 你没有设置回答`; }
