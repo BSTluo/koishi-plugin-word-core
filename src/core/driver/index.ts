@@ -38,74 +38,113 @@ export interface wordParConfig
 
 export type matchType = Record<string, string[]>;
 
-function parseTriggrtString(a:string, b:string, mapping:triggerType) {
-  // 获取所有占位符的 key
-  const placeholderKeys = Object.keys(mapping);
-  // 构造一个正则，用来匹配 b 中的占位符（注意：对 key 做了转义）
-  const placeholderPattern = new RegExp(
-    placeholderKeys.map(k => k.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|'),
-    'g'
-  );
+function parseTriggrtString(
+  str: string,
+  template: string,
+  trigger: triggerType
+): matchType | null
+{
+  const matchList: matchType = {};
+  const templatePattern = /\(([@#数])\)/g;
 
-  // 解析 b，分离出文字部分与占位符部分
-  const segments = [];
+  interface TemplatePart
+  {
+    type: 'text' | 'token';
+    value?: string;
+    key?: string;
+    trigger?: {
+      reg: string[];
+      id: string;
+    };
+  }
+
+  const parts: TemplatePart[] = [];
   let lastIndex = 0;
-  let match;
-  while ((match = placeholderPattern.exec(b)) !== null) {
-    if (match.index > lastIndex) {
-      // 文字部分不再做转义，直接当做正则拼接
-      segments.push({ type: 'literal', value: b.slice(lastIndex, match.index) });
+  let match: RegExpExecArray | null;
+
+  while ((match = templatePattern.exec(template)) !== null)
+  {
+    const symbol = match[1];
+    const fullSymbol = `(${symbol})`;
+    const triggerItem = trigger[fullSymbol];
+
+    if (!triggerItem)
+    {
+      throw new Error(`Missing trigger config for ${fullSymbol}`);
     }
-    segments.push({ type: 'placeholder', value: match[0] });
+
+    // 前面的文本部分
+    if (match.index > lastIndex)
+    {
+      parts.push({
+        type: 'text',
+        value: template.slice(lastIndex, match.index)
+      });
+    }
+
+    // 占位符部分
+    parts.push({
+      type: 'token',
+      key: symbol,
+      trigger: triggerItem
+    });
+
     lastIndex = match.index + match[0].length;
   }
-  if (lastIndex < b.length) {
-    segments.push({ type: 'literal', value: b.slice(lastIndex) });
+
+  // 模板结尾剩余文本
+  if (lastIndex < template.length)
+  {
+    parts.push({
+      type: 'text',
+      value: template.slice(lastIndex)
+    });
   }
 
-  // 构造最终的正则表达式字符串，同时记录占位符对应的捕获组位置
-  let regexStr = '';
-  let groupIndex = 0;
-  // 用于记录每个占位符对应的 id 以及捕获组编号
-  const placeholderGroupMap: { id: string; group: number; }[] = [];
+  let cursor = 0;
 
-  segments.forEach(seg => {
-    if (seg.type === 'literal') {
-      // 注意：直接拼接文字部分，不做转义，
-      // 这样可以使得 b 中的 "\\d" 保持为 "\d"（匹配数字）的含义
-      regexStr += seg.value;
-    } else if (seg.type === 'placeholder') {
-      const config = mapping[seg.value];
-      if (!config || !config.reg || !config.reg[0]) {
-        throw new Error(`占位符 ${seg.value} 对应的正则配置不存在`);
+  for (const part of parts)
+  {
+    if (part.type === 'text')
+    {
+      if (!str.startsWith(part.value!, cursor))
+      {
+        return null; // 不匹配
       }
-      // 取出该占位符对应的正则片段（假定只有一个捕获组）
-      const snippet = config.reg[0];
-      regexStr += snippet;
-      groupIndex += 1;
-      placeholderGroupMap.push({ id: config.id, group: groupIndex });
+      cursor += part.value!.length;
+    } else if (part.type === 'token')
+    {
+      const { reg, id } = part.trigger!;
+      let matched = false;
+
+      for (const regStr of reg)
+      {
+        const regex = new RegExp(regStr, 'y'); // sticky 匹配
+        regex.lastIndex = cursor;
+        const result = regex.exec(str);
+
+        if (result && result[1] !== undefined)
+        {
+          const value = result[1];
+          if (!matchList[id]) matchList[id] = [];
+          matchList[id].push(value);
+          cursor = regex.lastIndex;
+          matched = true;
+          break;
+        }
+      }
+
+      if (!matched)
+      {
+        return null; // 占位符没匹配上
+      }
     }
-  });
-
-  // 构造完整正则：要求匹配整个字符串
-  const finalRegex = new RegExp('^' + regexStr + '$');
-  // 调试时可打印查看构造的正则
-  // console.log("构造的正则：", finalRegex);
-
-  const matchResult = finalRegex.exec(a);
-  if (!matchResult) {
-    // 若不匹配，返回空对象
-    return {};
   }
 
-  // 根据捕获组的编号，提取结果到最终的对象中
-  const result: matchType = {};
-  placeholderGroupMap.forEach(({ id, group }) => {
-    if (!result[id]) result[id] = [];
-    result[id].push(matchResult[group]);
-  });
+  // 确保字符串完全匹配
+  if (cursor !== str.length) return null;
 
-  return result;
+  return matchList;
 }
 
 export class wordDriver
@@ -171,21 +210,35 @@ export class wordDriver
 
         for (let a of wordCache.grammarKeys)
         {
-          item = a;
+          let b = a;
           for (const key of triggerList)
           {
-            const reg = this.word.trigger.trigger[key].reg[0]; // 获取正则表达式字符串
-            const escapedKey = key.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // 转义正则特殊字符
-            item = item.replace(new RegExp(escapedKey, 'g'), `${reg}`);
-
-            const msgReg = new RegExp(`^${item}$`);
-
-            if (msgReg.test(q))
+            for (const reg of this.word.trigger.trigger[key].reg)
             {
-              list = wordCache.hasKey[a];
+              item = b;
+              const escapedKey = key.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // 转义正则特殊字符
+              item = item.replace(new RegExp(escapedKey, 'g'), `${reg}`);
 
-              return a;
+              const msgReg = new RegExp(`^${item}$`);
+
+              if (msgReg.test(q))
+              {
+                list = wordCache.hasKey[a];
+                return a;
+              }
             }
+            // const reg = this.word.trigger.trigger[key].reg[0]; // 获取正则表达式字符串
+            // const escapedKey = key.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // 转义正则特殊字符
+            // item = item.replace(new RegExp(escapedKey, 'g'), `${reg}`);
+
+            // const msgReg = new RegExp(`^${item}$`);
+
+            // if (msgReg.test(q))
+            // {
+            //   list = wordCache.hasKey[a];
+
+            //   return a;
+            // }
 
           }
         }
@@ -197,8 +250,8 @@ export class wordDriver
       if (list.length <= 0) { return; }
       if (!grammarMssg) { return; }
 
-      matchList = parseTriggrtString(q, grammarMssg, this.word.trigger.trigger);
-
+      matchList = parseTriggrtString(q, grammarMssg, this.word.trigger.trigger) || {};
+      
       q = grammarMssg;
       // 找到这个触发词对应的词库，并开始解析
       // const getCanReplace = () =>

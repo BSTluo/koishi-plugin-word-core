@@ -2,8 +2,8 @@
 // 将某些输入替换为xx符号
 // 获取trigger
 export const trigger: triggerType = {
-  '(@)': { reg: ['\\s\*<at name=\\"([\\s\\S]+?)\\"\\/>\\s\*'], id: 'name' },
-  '(#)': { reg: ['\\s\*<at id=\\"([\\s\\S]+?)\\"\\/>\\s\*'], id: 'id' }
+  '(@)': { reg: ['\\s*<at\\s+id=\\"(?:\\d+)\\"\\s+name=\\"@([^\\"]*)\\"\\s*/?>\\s*', '\\s\*<at name=\\"([\\s\\S]+?)\\"\\/>\\s\*'], id: 'name' },
+  '(#)': { reg: ['\\s*<at\\s+id=\\\"(\\d+)\\\"\\s+(?:name=\\\"[^\\\"]*\\\")\\s*/?>\\s*', '\\s\*<at id=\\"([\\s\\S]+?)\\"\\/>\\s\*'], id: 'id' }
 };
 
 /**
@@ -13,8 +13,10 @@ export const trigger: triggerType = {
  * @param matchReg 此内容的正则
  * @returns 
  */
-export const addTrigger = (triggerName: string, replaceStr: string, matchReg: string) => {
-  if (!trigger[replaceStr]) {
+export const addTrigger = (triggerName: string, replaceStr: string, matchReg: string) =>
+{
+  if (!trigger[replaceStr])
+  {
     trigger[replaceStr] = {
       reg: [],
       id: triggerName
@@ -31,7 +33,8 @@ export const addTrigger = (triggerName: string, replaceStr: string, matchReg: st
  * @param matchReg 此内容的正则
  * @returns 
  */
-export const rmTrigger = (replaceStr: string, matchReg: string) => {
+export const rmTrigger = (replaceStr: string, matchReg: string) =>
+{
   if (!trigger[replaceStr]) { return trigger; }
   if (!trigger[replaceStr].reg.includes(matchReg)) { return trigger; }
 
@@ -44,7 +47,8 @@ export type triggerType = {
   [key: string]: { reg: string[], id: string; };
 };
 
-export interface triggerFunction {
+export interface triggerFunction
+{
   trigger: triggerType;
   addTrigger: (triggerName: string, replaceStr: string, matchReg: string) => triggerType;
   rmTrigger: (replaceStr: string, matchReg: string) => triggerType;
