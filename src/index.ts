@@ -60,12 +60,12 @@ export const apply = async (ctx: Context, config: Config) =>
     ctx.command('word', '词库核心！').subcommand('.add <question:string> <answer:string>', '为一个触发词添加回复').usage('添加一个词库')
       .example('word.add 你好 你也好')
       .action(async ({ session }, question, answer) =>
-      { 
+      {
         if (!session) { return; }
         if (!question) { return `<at name="${session.username}" /> 你没有设置触发词`; }
         if (!answer) { return `<at name="${session.username}" /> 你没有设置回答`; }
 
-        const uid = session.userId;
+        const uid = session.userId || session.uid;
 
         const nowWordDB = await ctx.word.user.getEditWord(uid);
 
@@ -93,7 +93,7 @@ export const apply = async (ctx: Context, config: Config) =>
         if (!question) { return `<at name="${session.username}" /> 你没有设置触发词`; }
         if (!/^\d+$|^all$/.test(whichTemp)) { return `<at name="${session.username}" /> 你没有设置需要被删除的序号或序号不正确`; }
 
-        const uid = session.userId;
+        const uid = session.userId || session.uid;
         const which = (whichTemp === 'all') ? 'all' : Number(whichTemp);
 
         const nowWordDB = await ctx.word.user.getEditWord(uid);
@@ -119,7 +119,7 @@ export const apply = async (ctx: Context, config: Config) =>
         if (!session) { return; }
         let newDB = test;
         if (!test) { newDB = 'default'; }
-        const uid = session.userId;
+        const uid = session.userId || session.uid;
 
         const a = await ctx.word.user.setEditWord(uid, newDB);
         if (a)
@@ -136,7 +136,7 @@ export const apply = async (ctx: Context, config: Config) =>
       .action(async ({ session }) =>
       {
         if (!session) { return; }
-        const uid = session.userId;
+        const uid = session.userId || session.uid;
 
         const a = await ctx.word.user.getEditWord(uid);
 
@@ -165,7 +165,9 @@ export const apply = async (ctx: Context, config: Config) =>
       {
         if (!session) { return; }
         if (!question) { return `<at name="${session.username}" /> 你没有输入需要查询的关键词`; }
-        const nowDB = await ctx.word.user.getEditWord(session.userId);
+        
+        const uid = session.userId || session.uid;
+        const nowDB = await ctx.word.user.getEditWord(uid);
 
         const a = await ctx.word.editor.readWord(nowDB);
 
@@ -187,7 +189,9 @@ export const apply = async (ctx: Context, config: Config) =>
       .action(async ({ session }, dbName) =>
       {
         if (!session) { return; }
-        dbName = (dbName) ? dbName : await ctx.word.user.getEditWord(session.userId);
+
+        const uid = session.userId || session.uid;
+        dbName = (dbName) ? dbName : await ctx.word.user.getEditWord(uid);
 
         const a = await ctx.word.editor.readWord(dbName);
         const questionList = Object.keys(a.data);
@@ -209,7 +213,7 @@ export const apply = async (ctx: Context, config: Config) =>
         if (!session) { return; }
         if (!cell) { return `<at name="${session.username}" /> 你没有输入存储格子名称`; }
 
-        const uid = session.userId;
+        const uid = session.userId || session.uid;
 
         const nowWordDB = await ctx.word.user.getEditWord(uid);
         const hasPermission = await ctx.word.permission.isHave(uid, `word.edit.${nowWordDB}`);
@@ -234,7 +238,7 @@ export const apply = async (ctx: Context, config: Config) =>
       {
         if (!session) { return; }
 
-        const uid = session.userId;
+        const uid = session.userId || session.uid;
 
         const nowWordDB = await ctx.word.user.getEditWord(uid);
         const hasPermission = await ctx.word.permission.isHave(uid, `word.edit.${nowWordDB}`);
@@ -259,7 +263,7 @@ export const apply = async (ctx: Context, config: Config) =>
       {
         if (!session) { return; }
 
-        const uid = session.userId;
+        const uid = session.userId || session.uid;
 
         const nowWordDB = await ctx.word.user.getEditWord(uid);
 
@@ -284,7 +288,7 @@ export const apply = async (ctx: Context, config: Config) =>
       {
         if (!session) { return; }
 
-        const mid = session.userId;
+        const mid = session.userId || session.uid;
 
         const hasPermission = await ctx.word.permission.isHave(mid, 'word.admin.add');
 
@@ -315,7 +319,7 @@ export const apply = async (ctx: Context, config: Config) =>
       {
         if (!session) { return; }
 
-        const mid = session.userId;
+        const mid = session.userId || session.uid;
 
         const hasPermission = await ctx.word.permission.isHave(mid, 'word.admin.rm');
         if (!hasPermission && !config.masterID.includes(mid)) { return `<at name="${session.username}" /> 你没有词库的【删除权限】权限`; }
@@ -336,7 +340,7 @@ export const apply = async (ctx: Context, config: Config) =>
       .action(async ({ session }, uid) =>
       {
         if (!session) { return; }
-        const mid = session.userId;
+        const mid = session.userId || session.uid;
 
         const nowWordDB = await ctx.word.user.getEditWord(mid);
 
@@ -355,7 +359,7 @@ export const apply = async (ctx: Context, config: Config) =>
       .action(async ({ session }, uid) =>
       {
         if (!session) { return; }
-        const mid = session.userId;
+        const mid = session.userId || session.uid;
 
         const nowWordDB = await ctx.word.user.getEditWord(mid);
         const hasPermission = await ctx.word.permission.isHave(uid, `word.edit.${nowWordDB}`);
@@ -373,7 +377,7 @@ export const apply = async (ctx: Context, config: Config) =>
       .action(async ({ session }, uid) =>
       {
         if (!session) { return; }
-        const mid = session.userId;
+        const mid = session.userId || session.uid;
 
         const nowWordDB = await ctx.word.user.getEditWord(mid);
 
@@ -402,6 +406,8 @@ export const apply = async (ctx: Context, config: Config) =>
 
         const skipData = await ctx.word.config.getConfig('filtration') as unknown as Record<string, string[]>;
 
+        if (!session.channelId) { return `<at name="${session.username}" /> 你没有在频道中使用此命令`; }
+
         if (!skipData[session.channelId]) { skipData[session.channelId] = []; }
 
         skipData[session.channelId].push(dbName);
@@ -420,6 +426,8 @@ export const apply = async (ctx: Context, config: Config) =>
         if (!dbName) { return `<at name="${session.username}" /> 你没有输入词库名称`; }
 
         const skipData = await ctx.word.config.getConfig('filtration') as unknown as Record<string, string[]>;
+
+        if (!session.channelId) { return `<at name="${session.username}" /> 你没有在频道中使用此命令`; }
 
         if (!skipData[session.channelId]) { skipData[session.channelId] = []; }
 
@@ -442,6 +450,8 @@ export const apply = async (ctx: Context, config: Config) =>
         if (!session) { return '发生异常'; }
 
         const skipData = await ctx.word.config.getConfig('filtration') as unknown as Record<string, string[]>;
+
+        if (!session.channelId) { return `<at name="${session.username}" /> 你没有在频道中使用此命令`; }
 
         if (!skipData[session.channelId]) { return `<at name="${session.username}" /> 当前群内未设置禁用的词库`; }
 
@@ -466,7 +476,7 @@ export const apply = async (ctx: Context, config: Config) =>
       .action(async ({ session }, dbName) =>
       {
         if (!session) { return; }
-        const mid = session.userId;
+        const mid = session.userId || session.uid;
 
         const nowWordDB = await ctx.word.user.getEditWord(mid);
 
@@ -485,7 +495,7 @@ export const apply = async (ctx: Context, config: Config) =>
       .action(async ({ session }) =>
       {
         if (!session) { return; }
-        const mid = session.userId;
+        const mid = session.userId || session.uid;
 
         const nowWordDB = await ctx.word.user.getEditWord(mid);
 
@@ -504,7 +514,7 @@ export const apply = async (ctx: Context, config: Config) =>
       .action(async ({ session }, dbName) =>
       {
         if (!session) { return; }
-        const mid = session.userId;
+        const mid = session.userId || session.uid;
 
         const nowWordDB = await ctx.word.user.getEditWord(mid);
 
@@ -520,12 +530,14 @@ export const apply = async (ctx: Context, config: Config) =>
     ctx.on('message', async (session) =>
     {
       if (!session.content) { return; }
+      const uid = session.userId || session.uid;
+      const botId = session.bot.user?.id || session.bot.selfId || session.bot.userId || session.bot.sid;
 
-      if (session.userId == session.bot.user.id || session.userId == session.bot.selfId) { return; }
+      if (uid == botId) { return; }
       const atBot = `<at id="${session.bot.selfId}"/> `;
 
       const forkSession = session.bot.session(clone(session.event));
-      
+
       forkSession.content = session.content;
 
       if (forkSession.content?.startsWith(atBot)) { forkSession.content = session.content.replace(atBot, ''); }

@@ -6,10 +6,14 @@ export class wordBot<C extends Context> extends Bot<C>
 {
   constructor(ctx: C, config: wordBot.Config)
   {
-    super(ctx, config as any);
+    super(ctx, config as any, 'word-sandbox');
     this.platform = 'word-sandbox';
     this.selfId = 'word-core';
-    this.user.name = 'word-core';
+    this.user = {
+      id: 'word-core',
+      name: 'word-core',
+      nick: 'Word Core',
+    }
   }
 
   // 这里接下来引用的是
