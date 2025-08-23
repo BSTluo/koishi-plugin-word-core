@@ -462,7 +462,7 @@ const parseTrees = async (questionList: string, word: word, inData: any[], sessi
 
               userDataTemp.item[uid][saveDB][itemName] = list;
               saveItemDataTemp[(questionList) ? questionList : ''] = userDataTemp;
-              console.log(saveItemDataTemp);
+              // console.log(saveItemDataTemp);
               // return await word.user.updateItem(uid, saveDB, itemName, number);
               return true;
             },
