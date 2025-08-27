@@ -198,7 +198,7 @@ export class wordDriver
 
     // 过滤过群组的群组列表
     let list = wordCache.hasKey[q];
-
+    console.log(q)
     // 获取输入替换列表
     const triggerList = Object.keys(this.word.trigger.trigger);
 
