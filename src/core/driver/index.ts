@@ -217,15 +217,21 @@ export class wordDriver
             {
               item = b;
               const escapedKey = key.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // 转义正则特殊字符
+              // console.log("escapedKey", escapedKey);
               item = item.replace(new RegExp(escapedKey, 'g'), `${reg}`);
 
               const msgReg = new RegExp(`^${item}$`);
+
+              // console.log("msgReg", msgReg)
+              // console.log("q", q)
 
               if (msgReg.test(q))
               {
                 list = wordCache.hasKey[a];
                 return a;
               }
+
+              b = item;
             }
             // const reg = this.word.trigger.trigger[key].reg[0]; // 获取正则表达式字符串
             // const escapedKey = key.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // 转义正则特殊字符
@@ -251,7 +257,7 @@ export class wordDriver
       if (!grammarMssg) { return; }
 
       matchList = parseTriggrtString(q, grammarMssg, this.word.trigger.trigger) || {};
-      
+
       q = grammarMssg;
       // 找到这个触发词对应的词库，并开始解析
       // const getCanReplace = () =>
