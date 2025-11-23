@@ -13,6 +13,7 @@ export * from './core/word';
 
 export interface Config
 {
+  EnableAt: boolean;
   masterID: string[];
   searchEndpoint: string;
   telemetry: boolean;
@@ -24,6 +25,7 @@ export const inject = {
 };
 
 export const Config: Schema<Config> = Schema.object({
+  EnableAt: Schema.boolean().default(false).description('是否开启仅接收at机器人的消息'),
   masterID: Schema.array(String).description('管理员的唯一标识').default(['word-user']),
   searchEndpoint: Schema.string().description('词库插件市场后端地址').default('https://wplugin.reifuu.icu'),
   telemetry: Schema.boolean().description('告诉作者我正在使用词库~\n\n（求求大家开启这个选项！这对作者真的很重要！）').default(true)
@@ -165,7 +167,7 @@ export const apply = async (ctx: Context, config: Config) =>
       {
         if (!session) { return; }
         if (!question) { return `<at name="${session.username}" /> 你没有输入需要查询的关键词`; }
-        
+
         const uid = session.userId || session.uid;
         const nowDB = await ctx.word.user.getEditWord(uid);
 
@@ -529,21 +531,33 @@ export const apply = async (ctx: Context, config: Config) =>
 
     ctx.on('message', async (session) =>
     {
-      console.log('a')
-      console.log(h.parse(session.content || ''));
-      
       if (!session.content) { return; }
       const uid = session.userId || session.uid;
       const botId = session.bot.user?.id || session.bot.selfId || session.bot.userId || session.bot.sid;
-      
-      if (uid == botId) { return; }
-      const atBot = `<at id="${session.bot.selfId}"/> `;
 
+      if (uid == botId) { return; }
       const forkSession = session.bot.session(clone(session.event));
 
-      forkSession.content = session.content;
+      if (!forkSession.content) { return; }
+      const firstElement = h.parse(forkSession.content);
 
-      if (forkSession.content?.startsWith(atBot)) { forkSession.content = session.content.replace(atBot, ''); }
+      if (firstElement[0].type === 'at')
+      {
+        const atId = firstElement[0].attrs.id;
+        if (atId == botId)
+        {
+          forkSession.content = forkSession.content.replace(firstElement[0].toString(), '').trim();
+        } else 
+        {
+          if (config.EnableAt) { return; }
+        }
+      }
+      else {
+        if (config.EnableAt) { return; }
+      }
+      // const atBot = `<at id="${session.bot.selfId}"/> `;
+
+      // if (forkSession.content?.startsWith(atBot)) { forkSession.content = session.content.replace(atBot, ''); }
 
       await ctx.word.driver.start(forkSession, (str) =>
       {
