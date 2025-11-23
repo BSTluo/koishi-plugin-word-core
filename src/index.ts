@@ -529,10 +529,13 @@ export const apply = async (ctx: Context, config: Config) =>
 
     ctx.on('message', async (session) =>
     {
+      console.log('a')
+      console.log(h.parse(session.content || ''));
+      
       if (!session.content) { return; }
       const uid = session.userId || session.uid;
       const botId = session.bot.user?.id || session.bot.selfId || session.bot.userId || session.bot.sid;
-
+      
       if (uid == botId) { return; }
       const atBot = `<at id="${session.bot.selfId}"/> `;
 
