@@ -534,9 +534,11 @@ export const apply = async (ctx: Context, config: Config) =>
       if (!session.content) { return; }
       const uid = session.userId || session.uid;
       const botId = session.bot.user?.id || session.bot.selfId || session.bot.userId || session.bot.sid;
-
+      
       if (uid == botId) { return; }
       const forkSession = session.bot.session(clone(session.event));
+      
+      forkSession.content = session.content + "";
 
       if (!forkSession.content) { return; }
       const firstElement = h.parse(forkSession.content);
