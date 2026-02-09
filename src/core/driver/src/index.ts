@@ -293,6 +293,8 @@ export interface chatFunctionType
     removeUserConfig: (uid: string, key: string) => Promise<void>;
     getList: (uid: string, saveDB: string, itemName: string) => Promise<string[] | statusMsg>;
     saveList: (uid: string, saveDB: string, itemName: string, list: string[]) => Promise<boolean>;
+    clearUserData: (uid: string, saveDB: string) => Promise<boolean>;
+    killUserData: (uid: string) => Promise<boolean>;
   };
 }
 
@@ -311,7 +313,7 @@ const parseTrees = async (questionList: string, word: word, inData: any[], sessi
       const b = functonArray.slice(1);
       rule = Array.from({ length: b.length }, (_, i) => a[i % a.length]);
     }
-    
+
     // 查看当前输入数组的各项是否都为字符串，若发现包含非字符串的项，则递归调用自身解析
     for (let i = 0; i < functonArray.length; i++)
     {
@@ -352,6 +354,7 @@ const parseTrees = async (questionList: string, word: word, inData: any[], sessi
           wordData: wordData,
           parPack: parPack,
           internal: { // 缓存功能
+            // 保存缓存内的物品：数量
             saveItem: async (uid: string, saveDB: string, itemName: string, number: number) =>
             {
               if (!userDataTemp.item) { userDataTemp.item = {}; }
@@ -367,6 +370,7 @@ const parseTrees = async (questionList: string, word: word, inData: any[], sessi
               return true;
             },
 
+            // 获取缓存内的物品：数量
             getItem: async (uid: string, saveDB: string, itemName: string) =>
             {
               const num = await word.user.getItem(uid, saveDB, itemName);
@@ -391,6 +395,7 @@ const parseTrees = async (questionList: string, word: word, inData: any[], sessi
               // return num;
             },
 
+            // 获取用户设置
             getUserConfig: async (uid: string, key: string) =>
             {
               const userConfig = await word.user.getConfig(uid);
@@ -405,6 +410,7 @@ const parseTrees = async (questionList: string, word: word, inData: any[], sessi
               return userDataTemp.userConfig[uid][key];
             },
 
+            // 保存用户配置
             saveUserConfig: async (uid: string, key: string, value: settingTypeValue) =>
             {
               if (!userDataTemp.userConfig) { userDataTemp.userConfig = {}; }
@@ -416,6 +422,7 @@ const parseTrees = async (questionList: string, word: word, inData: any[], sessi
               saveItemDataTemp[(questionList) ? questionList : ''] = userDataTemp;
             },
 
+            // 删除用户配置
             removeUserConfig: async (uid: string, key: string) =>
             {
               if (!userDataTemp.userConfig[uid]) { userDataTemp.userConfig[uid] = await word.user.getConfig(uid); }
@@ -426,6 +433,7 @@ const parseTrees = async (questionList: string, word: word, inData: any[], sessi
               saveItemDataTemp[(questionList) ? questionList : ''] = userDataTemp;
             },
 
+            // 获取物品：数组
             getList: async (uid: string, saveDB: string, listName: string) =>
             {
               const num = await word.user.getItem(uid, saveDB, listName);
@@ -452,6 +460,7 @@ const parseTrees = async (questionList: string, word: word, inData: any[], sessi
               // return num;
             },
 
+            // 保存物品：数组
             saveList: async (uid: string, saveDB: string, itemName: string, list: string[]) =>
             {
               if (!userDataTemp.item) { userDataTemp.item = {}; }
@@ -466,6 +475,39 @@ const parseTrees = async (questionList: string, word: word, inData: any[], sessi
               // return await word.user.updateItem(uid, saveDB, itemName, number);
               return true;
             },
+
+            // 删除一个人的背包内某个存储格的数据
+            clearUserData: async (uid: string, saveDB: string) =>
+            {
+              if (!userDataTemp.item) { userDataTemp.item = {}; }
+
+              if (!userDataTemp.item[uid]) { userDataTemp.item[uid] = {}; }
+
+              if (!userDataTemp.item[uid][saveDB]) { userDataTemp.item[uid][saveDB] = {}; }
+
+              userDataTemp.item[uid][saveDB] = {};
+
+              delete userDataTemp.item[uid][saveDB];
+
+              saveItemDataTemp[(questionList) ? questionList : ''] = userDataTemp;
+              return true;
+
+            },
+
+            // 删除一个人的所有背包数据
+            killUserData: async (uid: string) =>
+            {
+              if (!userDataTemp.item) { userDataTemp.item = {}; }
+
+              if (!userDataTemp.item[uid]) { userDataTemp.item[uid] = {}; }
+
+              userDataTemp.item[uid] = {};
+
+              delete userDataTemp.item[uid];
+
+              saveItemDataTemp[(questionList) ? questionList : ''] = userDataTemp;
+              return true;
+            }
           }
         }, session, isIF);
 
